@@ -1,0 +1,103 @@
+{
+  "id": "orbit-dashboard",
+  "slug": "orbit-dashboard",
+  "title": "Orbit Dashboard",
+  "subtitle": "Operations dashboard for distributed product teams.",
+  "summary": "Orbit Dashboard gives leadership and contributors one place to track delivery health and team velocity.",
+  "description": "Orbit Dashboard is a scalable admin and reporting experience for multi-team operations. The layout and component system are optimized for dense data, fast filtering, and consistent front-end implementation.",
+  "category": "Dashboard Design",
+  "tasks": [
+    "Dashboard Design",
+    "Frontend Development",
+    "UI/UX Design"
+  ],
+  "tag1": "Dashboard Design",
+  "tag2": "Frontend Development",
+  "image": "https://picsum.photos/seed/orbit-dashboard/1600/1000",
+  "cover": "https://picsum.photos/seed/orbit-dashboard/1600/1000",
+  "thumbnail": "https://picsum.photos/seed/orbit-dashboard/1600/1000",
+  "client": "Orbit Systems",
+  "industry": "SaaS",
+  "status": "published",
+  "date": "2025-11-30",
+  "overview": "Orbit Dashboard is a Dashboard Design case study focused on creating a clear, high-performing product experience aligned with business goals and user needs. The project combines visual polish, practical UX decisions, and implementation-ready structure for long-term scale.",
+  "problem": "The existing experience lacked a clear hierarchy, had inconsistent interaction patterns, and made it difficult for users to complete key actions confidently.",
+  "solution": "I redesigned the core flow using a modular UI system, simplified information architecture, and reusable patterns that improved clarity across every major touchpoint.",
+  "result": "The final direction delivered a cleaner, faster, and more consistent product foundation that is ready for engineering handoff and future CMS-driven content updates.",
+  "highlights": [
+    {
+      "label": "Timeline",
+      "value": "6 weeks"
+    },
+    {
+      "label": "Role",
+      "value": "Lead Designer"
+    },
+    {
+      "label": "Coverage",
+      "value": "18 key screens"
+    },
+    {
+      "label": "Outcome",
+      "value": "+31% faster task completion in prototype testing"
+    }
+  ],
+  "process": [
+    {
+      "title": "Discover",
+      "description": "Mapped project goals, reviewed existing experience gaps, and aligned scope with client priorities and user expectations."
+    },
+    {
+      "title": "Structure",
+      "description": "Built a clear information hierarchy and wireframe direction to simplify navigation and reduce cognitive load."
+    },
+    {
+      "title": "Design",
+      "description": "Developed high-fidelity screens and reusable components with consistent spacing, typography, and interaction states."
+    },
+    {
+      "title": "Deliver",
+      "description": "Prepared design documentation, responsive behavior notes, and implementation-ready assets for smooth development handoff."
+    }
+  ],
+  "sections": [
+    {
+      "title": "Context and challenge",
+      "body": "Orbit Dashboard needed a stronger product narrative and clearer user pathways. This section documents the initial friction points and the strategic decisions used to prioritize improvements.",
+      "image": "https://picsum.photos/seed/orbit-dashboard-section-1/1600/1000"
+    },
+    {
+      "title": "Design approach",
+      "body": "The visual and interaction system was rebuilt around consistency, readability, and conversion-focused hierarchy. Components were designed to scale across future pages without losing cohesion.",
+      "image": "https://picsum.photos/seed/orbit-dashboard-section-2/1600/1000"
+    },
+    {
+      "title": "Delivery and iteration",
+      "body": "After validating the new direction, refinements focused on responsiveness, edge states, and implementation details so the project remains maintainable as content and features expand.",
+      "image": "https://picsum.photos/seed/orbit-dashboard-section-3/1600/1000"
+    }
+  ],
+  "gallery": [
+    {
+      "src": "https://picsum.photos/seed/orbit-dashboard-gallery-1/1600/1000",
+      "alt": "Orbit Dashboard gallery image 1"
+    },
+    {
+      "src": "https://picsum.photos/seed/orbit-dashboard-gallery-2/1600/1000",
+      "alt": "Orbit Dashboard gallery image 2"
+    },
+    {
+      "src": "https://picsum.photos/seed/orbit-dashboard-gallery-3/1600/1000",
+      "alt": "Orbit Dashboard gallery image 3"
+    },
+    {
+      "src": "https://picsum.photos/seed/orbit-dashboard-gallery-4/1600/1000",
+      "alt": "Orbit Dashboard gallery image 4"
+    }
+  ],
+  "nextSteps": [
+    "Run another round of usability testing on updated flows and collect task-completion feedback.",
+    "Expand the component set with additional states for edge cases and localization.",
+    "Integrate analytics hooks to measure conversion, drop-off, and engagement trends post-launch."
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "id": "lumen-finance",
+  "slug": "lumen-finance",
+  "title": "Lumen Finance",
+  "subtitle": "Finance dashboard for portfolio planning.",
+  "summary": "Lumen Finance helps users monitor cash flow, allocations, and long-term performance in one view.",
+  "description": "Lumen Finance is a structured finance product concept centered on transparency and control. It combines intuitive data hierarchy, scenario previews, and guided flows for users managing personal and business portfolios.",
+  "category": "UI/UX Design",
+  "tasks": [
+    "UI/UX Design",
+    "Product Design",
+    "Dashboard Design"
+  ],
+  "tag1": "UI/UX Design",
+  "tag2": "Dashboard Design",
+  "image": "https://picsum.photos/seed/lumen-finance/1600/1000",
+  "cover": "https://picsum.photos/seed/lumen-finance/1600/1000",
+  "thumbnail": "https://picsum.photos/seed/lumen-finance/1600/1000",
+  "client": "Lumen Capital",
+  "industry": "Fintech",
+  "status": "published",
+  "date": "2025-12-01",
+  "overview": "Lumen Finance is a UI/UX Design case study focused on creating a clear, high-performing product experience aligned with business goals and user needs. The project combines visual polish, practical UX decisions, and implementation-ready structure for long-term scale.",
+  "problem": "The existing experience lacked a clear hierarchy, had inconsistent interaction patterns, and made it difficult for users to complete key actions confidently.",
+  "solution": "I redesigned the core flow using a modular UI system, simplified information architecture, and reusable patterns that improved clarity across every major touchpoint.",
+  "result": "The final direction delivered a cleaner, faster, and more consistent product foundation that is ready for engineering handoff and future CMS-driven content updates.",
+  "highlights": [
+    {
+      "label": "Timeline",
+      "value": "12 weeks"
+    },
+    {
+      "label": "Role",
+      "value": "Lead Designer"
+    },
+    {
+      "label": "Coverage",
+      "value": "20 key screens"
+    },
+    {
+      "label": "Outcome",
+      "value": "+35% faster onboarding completion"
+    }
+  ],
+  "process": [
+    {
+      "title": "Discover",
+      "description": "Mapped project goals, reviewed existing experience gaps, and aligned scope with client priorities and user expectations."
+    },
+    {
+      "title": "Structure",
+      "description": "Built a clear information hierarchy and wireframe direction to simplify navigation and reduce cognitive load."
+    },
+    {
+      "title": "Design",
+      "description": "Developed high-fidelity screens and reusable components with consistent spacing, typography, and interaction states."
+    },
+    {
+      "title": "Deliver",
+      "description": "Prepared design documentation, responsive behavior notes, and implementation-ready assets for smooth development handoff."
+    }
+  ],
+  "sections": [
+    {
+      "title": "Context and challenge",
+      "body": "Lumen Finance needed a stronger product narrative and clearer user pathways. This section documents the initial friction points and the strategic decisions used to prioritize improvements.",
+      "image": "https://picsum.photos/seed/lumen-finance-section-1/1600/1000"
+    },
+    {
+      "title": "Design approach",
+      "body": "The visual and interaction system was rebuilt around consistency, readability, and conversion-focused hierarchy. Components were designed to scale across future pages without losing cohesion.",
+      "image": "https://picsum.photos/seed/lumen-finance-section-2/1600/1000"
+    },
+    {
+      "title": "Delivery and iteration",
+      "body": "After validating the new direction, refinements focused on responsiveness, edge states, and implementation details so the project remains maintainable as content and features expand.",
+      "image": "https://picsum.photos/seed/lumen-finance-section-3/1600/1000"
+    }
+  ],
+  "gallery": [
+    {
+      "src": "https://picsum.photos/seed/lumen-finance-gallery-1/1600/1000",
+      "alt": "Lumen Finance gallery image 1"
+    },
+    {
+      "src": "https://picsum.photos/seed/lumen-finance-gallery-2/1600/1000",
+      "alt": "Lumen Finance gallery image 2"
+    },
+    {
+      "src": "https://picsum.photos/seed/lumen-finance-gallery-3/1600/1000",
+      "alt": "Lumen Finance gallery image 3"
+    },
+    {
+      "src": "https://picsum.photos/seed/lumen-finance-gallery-4/1600/1000",
+      "alt": "Lumen Finance gallery image 4"
+    }
+  ],
+  "nextSteps": [
+    "Run another round of usability testing on updated flows and collect task-completion feedback.",
+    "Expand the component set with additional states for edge cases and localization.",
+    "Integrate analytics hooks to measure conversion, drop-off, and engagement trends post-launch."
+  ]
+}

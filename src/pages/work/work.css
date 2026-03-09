@@ -1,0 +1,732 @@
+/* Dedicated Work page stylesheet */
+
+.workPage .hero {
+  display: block;
+}
+
+.workPage .aboutShell,
+.workPage .workShell,
+.workPage .workSectionInner {
+  width: 100%;
+  max-width: 100%;
+  padding-left: 42px;
+  padding-right: 42px;
+}
+
+.workPage .cardScroll {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Header alignment copied from contact/about shell pattern */
+.workPage .aboutStickyHeader {
+  position: relative;
+  z-index: 30;
+  background: #fff;
+}
+
+.workPage .aboutStickyHeader .aboutTopbar {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.workPage .aboutTopbar .logo {
+  flex: 0 0 auto;
+}
+
+.workPage .aboutHeaderRight {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-left: auto;
+  min-width: 0;
+}
+
+.workPage .aboutDesktopSocial {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+}
+
+.workPage .aboutTopbar .social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.workPage .aboutTopbar .menu-wrapper--desktop {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin: 0;
+}
+
+.workPage .aboutTopbar .menu-wrapper--desktop .hamburger {
+  padding: 8px;
+  margin: 0;
+}
+
+.workPage .aboutTopbar .menu-wrapper--desktop .hamburger span {
+  background: var(--ink);
+}
+
+.workPage .aboutTopbar .menu-wrapper--mobile {
+  display: none;
+}
+
+.workPage .workHeroSection--clean {
+  min-height: 100%;
+  background: #fff;
+  color: #0b0b0d;
+}
+
+.workPage .workHeroShell--clean {
+  padding-top: 38px;
+  padding-bottom: 72px;
+  min-height: 100%;
+}
+
+.workPage .workHeroHeadingWrapClean {
+  padding-top: 44px;
+  margin-bottom: 16px;
+}
+
+.workPage .workHeroTitleClean {
+  margin: 0 auto;
+  max-width: 760px;
+  text-align: center;
+  font-family: "DM Serif Display", serif;
+  font-weight: 400;
+  font-size: clamp(3rem, 5vw, 4.8rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: #111111;
+}
+
+/* Motion scope: only page content is animated, never header/footer */
+.workPage .workMotionScope {
+  position: relative;
+}
+
+.workPage .workMotionScope .workReveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0) scale(0.988);
+  filter: blur(7px);
+  transition:
+    transform 0.72s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.5s ease,
+    filter 0.56s ease;
+  will-change: transform, opacity, filter;
+}
+
+.workPage .workMotionScope .workReveal--soft {
+  transform: translate3d(0, 18px, 0);
+  filter: blur(5px);
+}
+
+.workPage .workMotionScope .workReveal--lift {
+  transform: translate3d(0, 34px, 0) scale(0.992);
+}
+
+.workPage .workMotionScope .workReveal--card {
+  transition-delay: calc(var(--reveal-order, 0) * 55ms);
+}
+
+.workPage .workMotionScope .workReveal.is-inview {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.workPage .workFinalCtaCard .workReveal--soft {
+  transition-delay: calc(80ms + var(--reveal-order, 0) * 70ms);
+}
+
+.workPage .workCarouselStage {
+  position: relative;
+  width: 100%;
+  height: 640px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+}
+
+.workPage .workCarouselNavMobile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.workPage .workCarouselNavBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.workPage .workCarouselDotsClean {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.workPage .workCarouselDotClean {
+  width: 6px;
+  height: 6px;
+  border: none;
+  border-radius: 999px;
+  background: #d0d0d0;
+  transform: scale(1);
+}
+
+.workPage .workCarouselDotClean.is-active {
+  background: #111111;
+  transform: scale(1.35);
+}
+
+/* Shared Work card style */
+.workPage .workCard {
+  width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #fcfcfc;
+  box-shadow:
+    0 2px 8px rgba(7, 12, 18, 0.05),
+    0 18px 52px rgba(7, 12, 18, 0.11),
+    0 0 0 1px rgba(9, 12, 16, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.workPage .workCard__visual {
+  padding: 16px 16px 0;
+}
+
+.workPage .workCard__image {
+  width: 100%;
+  height: 300px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #eef2f0 0%, #e7efeb 52%, #dee9f1 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(7, 12, 18, 0.07),
+    0 12px 30px rgba(7, 12, 18, 0.08);
+  flex-shrink: 0;
+}
+
+.workPage .workCard__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.workPage .workCard__footer {
+  padding: 16px 18px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #fcfcfc;
+}
+
+.workPage .workCard__text {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.workPage .workCard__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.workPage .workCard__title {
+  font-family: "DM Serif Display", serif;
+  font-weight: 400;
+  font-size: 1.28rem;
+  color: #111111;
+  margin: 0;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.workPage .workCard__task {
+  font-size: 0.92rem;
+  color: rgba(17, 17, 17, 0.58);
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  max-width: none;
+}
+
+.workPage .workCard__arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.09);
+  background: #111111;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+/* Featured carousel cards (random 5) */
+.workPage .workCarouselStage .workCard__visual {
+  padding: 20px 20px 0;
+}
+
+.workPage .workCarouselStage .workCard__image {
+  height: 540px;
+}
+
+.workPage .workCarouselStage .workCard__footer {
+  padding: 20px 24px 24px;
+}
+
+.workPage .workCarouselStage .workCard__title {
+  font-size: 1.64rem;
+}
+
+.workPage .workCarouselStage .workCard__task {
+  font-size: 1.04rem;
+}
+
+/* Ordered project grid */
+.workPage .workGridSection {
+  max-width: 1260px;
+  margin: 66px auto 0;
+}
+
+.workPage .workGridHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.workPage .workGridTitle {
+  margin: 0;
+  font-family: "DM Serif Display", serif;
+  font-weight: 400;
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  letter-spacing: -0.02em;
+  color: #111111;
+}
+
+.workPage .workProjectsGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.workPage .workProjectsGrid > .workGridCard {
+  grid-column: span 2;
+}
+
+.workPage .workProjectsGrid > .workGridCard:nth-child(5n + 4),
+.workPage .workProjectsGrid > .workGridCard:nth-child(5n + 5) {
+  grid-column: span 3;
+}
+
+.workPage .workProjectsGrid .workCard {
+  height: 100%;
+}
+
+.workPage .workProjectsGrid .workCard__image {
+  height: clamp(270px, 23vw, 380px);
+}
+
+.workPage .workGridCard.workParallax .workCard__image img {
+  transform: translate3d(0, var(--work-parallax-y, 0px), 0);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.workPage .workLoadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.workPage .workLoadMoreBtn,
+.workPage .workFinalCtaBtn {
+  border: 0;
+  border-radius: 999px;
+  background: #6a58ff;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.98rem;
+  letter-spacing: 0.01em;
+  padding: 13px 26px;
+  line-height: 1;
+  box-shadow: 0 12px 28px rgba(106, 88, 255, 0.34);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.workPage .workLoadMoreBtn:hover,
+.workPage .workFinalCtaBtn:hover {
+  background: #5d4cf2;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(106, 88, 255, 0.42);
+}
+
+.workPage .workLoadMoreBtn:active,
+.workPage .workFinalCtaBtn:active {
+  background: #4f40dc;
+  transform: translateY(0);
+  box-shadow: 0 9px 20px rgba(106, 88, 255, 0.3);
+}
+
+.workPage .workLoadMoreBtn:focus-visible,
+.workPage .workFinalCtaBtn:focus-visible {
+  outline: 2px solid #8f82ff;
+  outline-offset: 3px;
+}
+
+.workPage .workFinalCtaSection {
+  max-width: 1260px;
+  margin: 68px auto 0;
+}
+
+.workPage .workFinalCtaCard {
+  position: relative;
+  border-radius: 32px;
+  padding: clamp(44px, 7vw, 88px) clamp(22px, 6vw, 84px);
+  text-align: center;
+  background:
+    radial-gradient(1200px 420px at 50% -5%, rgba(106, 88, 255, 0.14), transparent 70%),
+    #fcfcff;
+  border: 1px solid rgba(106, 88, 255, 0.2);
+  box-shadow:
+    0 18px 52px rgba(11, 11, 13, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.55) inset;
+}
+
+.workPage .workFinalCtaTitle {
+  margin: 0;
+  font-family: "DM Serif Display", serif;
+  font-size: clamp(2rem, 4.4vw, 4.3rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #121218;
+}
+
+.workPage .workFinalCtaText {
+  max-width: 760px;
+  margin: 20px auto 0;
+  font-size: clamp(0.98rem, 1.35vw, 1.35rem);
+  line-height: 1.7;
+  color: rgba(18, 18, 24, 0.68);
+}
+
+.workPage .workFinalCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  margin-top: 28px;
+  padding: 15px 34px;
+  min-height: 52px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workPage .workMotionScope .workReveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .workPage .workGridCard.workParallax .workCard__image img {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+.workPage .homeFooter {
+  padding-top: 14px;
+}
+
+@media (min-width: 981px) {
+  .workPage .workHeroTitleClean {
+    max-width: 980px;
+  }
+
+  .workPage .workCarouselStage {
+    height: 840px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .workPage .workHeroShell--clean {
+    padding: 42px 34px 64px;
+  }
+
+  .workPage .workCarouselStage {
+    height: 700px;
+  }
+
+  .workPage .workCarouselStage .workCard__image {
+    height: 450px;
+  }
+}
+
+@media (max-width: 980px) {
+  .workPage .hero {
+    height: calc(100dvh - 28px) !important;
+    border-radius: 22px;
+  }
+
+  .workPage .aboutShell,
+  .workPage .workShell,
+  .workPage .workSectionInner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .workPage .aboutStickyHeader {
+    position: relative;
+    top: auto;
+    z-index: 50;
+    background: #fff;
+    border-bottom: 0;
+    transform: none;
+    backface-visibility: visible;
+  }
+
+  .workPage .aboutStickyHeader .aboutTopbar {
+    padding: 12px 0;
+  }
+
+  .workPage .aboutDesktopSocial {
+    display: none !important;
+  }
+
+  .workPage .aboutTopbar .menu-wrapper--desktop {
+    display: none !important;
+  }
+
+  .workPage .aboutTopbar .menu-wrapper--mobile {
+    display: flex !important;
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    margin-left: auto !important;
+  }
+
+  .workPage .aboutTopbar .menu-wrapper--mobile .hamburger span {
+    background: var(--ink) !important;
+  }
+
+  .workPage .workHeroHeadingWrapClean {
+    padding-top: 0;
+    margin-bottom: 10px;
+  }
+
+  .workPage .workHeroTitleClean {
+    max-width: 320px;
+    font-size: clamp(2.2rem, 9vw, 3.2rem);
+  }
+
+  .workPage .workCarouselStage {
+    height: 520px;
+  }
+
+  .workPage .workCarouselStage .workCard__visual {
+    padding: 12px 12px 0;
+  }
+
+  .workPage .workCarouselStage .workCard__image {
+    height: 250px;
+  }
+
+  .workPage .workCarouselStage .workCard__footer {
+    padding: 16px 18px 18px;
+  }
+
+  .workPage .workCarouselStage .workCard__title {
+    font-size: 1.3rem;
+  }
+
+  .workPage .workCarouselStage .workCard__task {
+    font-size: 0.92rem;
+  }
+
+  .workPage .workGridSection {
+    margin-top: 46px;
+  }
+
+  .workPage .workFinalCtaSection {
+    margin-top: 52px;
+  }
+
+  .workPage .workFinalCtaCard {
+    border-radius: 26px;
+    padding: 44px 22px;
+  }
+
+  .workPage .workProjectsGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .workPage .workProjectsGrid > .workGridCard {
+    grid-column: span 1 !important;
+  }
+
+  .workPage .workProjectsGrid .workCard__visual {
+    padding: 14px 14px 0;
+  }
+
+  .workPage .workProjectsGrid .workCard__image {
+    height: clamp(390px, 92vw, 580px);
+  }
+
+  .workPage .workProjectsGrid .workCard__footer {
+    padding: 16px 18px 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .workPage .workHeroShell--clean {
+    padding: 28px 20px 44px;
+  }
+
+  .workPage .workHeroHeadingWrapClean {
+    padding-top: 22px;
+    margin-bottom: 14px;
+  }
+
+  .workPage .workCarouselStage {
+    height: 620px;
+  }
+
+  .workPage .workCarouselStage .workCard__visual {
+    padding: 14px 14px 0;
+  }
+
+  .workPage .workCarouselStage .workCard__image {
+    height: clamp(360px, 94vw, 520px);
+  }
+
+  .workPage .workProjectsGrid .workCard__image {
+    height: clamp(360px, 94vw, 520px);
+  }
+
+  .workPage .workFinalCtaTitle {
+    font-size: clamp(1.9rem, 9vw, 3rem);
+  }
+
+  .workPage .workFinalCtaText {
+    margin-top: 14px;
+    font-size: 0.98rem;
+    line-height: 1.62;
+  }
+
+  .workPage .workFinalCtaBtn {
+    margin-top: 22px;
+  }
+}
+
+@media (max-width: 430px) {
+  .workPage .aboutShell,
+  .workPage .workShell,
+  .workPage .workSectionInner {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .workPage .aboutStickyHeader .aboutTopbar {
+    padding: 11px 0;
+  }
+
+  .workPage .logo-text {
+    font-size: 12px !important;
+    letter-spacing: 0.1em !important;
+  }
+
+  .workPage .workHeroTitleClean {
+    max-width: 280px;
+    font-size: clamp(2rem, 10vw, 2.7rem);
+  }
+
+  .workPage .workCarouselStage {
+    height: 470px;
+  }
+
+  .workPage .workCarouselStage .workCard__visual {
+    padding: 10px 10px 0;
+  }
+
+  .workPage .workCarouselStage .workCard__image {
+    height: 340px;
+  }
+
+  .workPage .workProjectsGrid .workCard__visual {
+    padding: 10px 10px 0;
+  }
+
+  .workPage .workProjectsGrid .workCard__image {
+    height: 340px;
+  }
+
+  .workPage .workCard__title {
+    font-size: 1.12rem;
+  }
+
+  .workPage .workCard__task {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .workPage .aboutTopbar {
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .workPage .aboutHeaderRight {
+    gap: 10px;
+  }
+}

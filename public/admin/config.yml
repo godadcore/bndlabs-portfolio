@@ -1,0 +1,170 @@
+backend:
+  # Placeholder backend. Configure later (git-gateway / github / gitlab).
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "projects"
+    label: "Projects"
+    folder: "src/content/projects"
+    create: true
+    format: "json"
+    extension: "json"
+    slug: "{{slug}}"
+    fields:
+      - { label: "ID", name: "id", widget: "string", hint: "Stable project id for CMS and routing." }
+      - { label: "Slug", name: "slug", widget: "string", hint: "Used in route: /work/:slug" }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+      - { label: "Summary", name: "summary", widget: "text", required: false }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Category", name: "category", widget: "string", required: false }
+      - label: "Tasks"
+        name: "tasks"
+        widget: "list"
+        required: false
+        field: { label: "Task", name: "task", widget: "string" }
+      - { label: "Tag 1", name: "tag1", widget: "string" }
+      - { label: "Tag 2", name: "tag2", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Cover", name: "cover", widget: "image", required: false }
+      - { label: "Thumbnail", name: "thumbnail", widget: "image", required: false }
+      - { label: "Client", name: "client", widget: "string", required: false }
+      - { label: "Industry", name: "industry", widget: "string", required: false }
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        default: "published"
+        options: ["draft", "published", "archived"]
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Overview", name: "overview", widget: "text", required: false }
+      - { label: "Problem", name: "problem", widget: "text", required: false }
+      - { label: "Solution", name: "solution", widget: "text", required: false }
+      - { label: "Result", name: "result", widget: "text", required: false }
+      - label: "Highlights"
+        name: "highlights"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "Value", name: "value", widget: "string" }
+      - label: "Process"
+        name: "process"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Description", name: "description", widget: "text" }
+      - label: "Sections"
+        name: "sections"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Body", name: "body", widget: "text" }
+          - { label: "Image", name: "image", widget: "image", required: false }
+      - label: "Gallery"
+        name: "gallery"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Image", name: "src", widget: "image" }
+          - { label: "Alt text", name: "alt", widget: "string", required: false }
+      - label: "Next steps"
+        name: "nextSteps"
+        widget: "list"
+        required: false
+        field: { label: "Step", name: "step", widget: "string" }
+      - label: "Case Study"
+        name: "caseStudy"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - { label: "Brand name", name: "brandName", widget: "string", required: false }
+          - { label: "Region", name: "region", widget: "string", required: false }
+          - { label: "Year override", name: "year", widget: "string", required: false, hint: "Optional override. Otherwise derived from Date." }
+          - { label: "Hero image override", name: "heroImage", widget: "image", required: false }
+          - { label: "Overview intro", name: "overviewIntro", widget: "text", required: false }
+          - { label: "Goal", name: "goal", widget: "text", required: false }
+          - { label: "My role", name: "myRole", widget: "string", required: false }
+          - label: "Responsibilities"
+            name: "responsibilities"
+            widget: "list"
+            required: false
+            field: { label: "Responsibility", name: "responsibility", widget: "string" }
+          - { label: "Research intro", name: "researchIntro", widget: "text", required: false }
+          - label: "Pain points"
+            name: "painPoints"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }
+          - label: "Personas"
+            name: "personas"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Image", name: "image", widget: "image", required: false }
+              - { label: "Name", name: "name", widget: "string" }
+              - { label: "Age", name: "age", widget: "string", required: false }
+              - { label: "Gender", name: "gender", widget: "string", required: false }
+              - { label: "Occupation", name: "occupation", widget: "string", required: false }
+              - { label: "Location", name: "location", widget: "string", required: false }
+              - { label: "Education", name: "education", widget: "string", required: false }
+              - { label: "Quote", name: "quote", widget: "text", required: false }
+              - { label: "Bio", name: "bio", widget: "text", required: false }
+              - label: "Goals"
+                name: "goals"
+                widget: "list"
+                required: false
+                field: { label: "Goal", name: "goal", widget: "string" }
+              - label: "Frustrations"
+                name: "frustrations"
+                widget: "list"
+                required: false
+                field: { label: "Frustration", name: "frustration", widget: "string" }
+          - { label: "Journey goal", name: "journeyGoal", widget: "text", required: false }
+          - { label: "Journey map image", name: "journeyMapImage", widget: "image", required: false }
+          - { label: "Wireframes intro", name: "wireframesIntro", widget: "text", required: false }
+          - { label: "App map description", name: "appmapDesc", widget: "text", required: false }
+          - { label: "App map image", name: "appmapImage", widget: "image", required: false }
+          - { label: "Digital wireframes description", name: "digitalWireDesc", widget: "text", required: false }
+          - { label: "Digital wireframes image", name: "digitalWireImage", widget: "image", required: false }
+          - { label: "Usability intro", name: "usabilityIntro", widget: "text", required: false }
+          - label: "Usability findings"
+            name: "usabilityFindings"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Text", name: "text", widget: "text" }
+          - { label: "Design intro", name: "designIntro", widget: "text", required: false }
+          - { label: "Mockups description", name: "mockupsDesc", widget: "text", required: false }
+          - { label: "Mockup overview image", name: "mockupOverviewImage", widget: "image", required: false }
+          - label: "Mockup screens"
+            name: "mockupScreens"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Image", name: "src", widget: "image" }
+              - { label: "Label", name: "label", widget: "string", required: false }
+          - { label: "Prototype description", name: "protoDesc", widget: "text", required: false }
+          - { label: "Prototype screen image", name: "protoScreenImage", widget: "image", required: false }
+          - label: "Prototype bullets"
+            name: "protoList"
+            widget: "list"
+            required: false
+            field: { label: "Bullet", name: "bullet", widget: "string" }
+          - { label: "Outcome intro", name: "outcomeIntro", widget: "text", required: false }
+          - { label: "Impact", name: "impact", widget: "text", required: false }
+          - { label: "What I learned", name: "learned", widget: "text", required: false }
+          - label: "Case study next steps"
+            name: "nextSteps"
+            widget: "list"
+            required: false
+            field: { label: "Step", name: "step", widget: "string" }
