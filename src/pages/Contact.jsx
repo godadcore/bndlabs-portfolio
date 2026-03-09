@@ -3,6 +3,7 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
+import usePullToRefresh from "../hooks/usePullToRefresh";
 import { BASE_KEYWORDS, CONTACT_EMAIL, SITE_NAME, SOCIAL_LINKS } from "../lib/site";
 import "./contact.css";
 
@@ -239,6 +240,8 @@ export default function Contact() {
   const [errorMessage, setErrorMessage] = useState("");
   const scrollRootRef = useRef(null);
   const motionScopeRef = useRef(null);
+
+  usePullToRefresh(scrollRootRef);
 
   const publicEmail = CONTACT_EMAIL;
   const publicPhone = "+234 000 000 0000";

@@ -191,6 +191,7 @@ body{
 .next-inner{ max-width: 920px; margin: 0 auto; }
 
 .cardScroll{
+  --pull-refresh-offset: 0px;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -200,6 +201,16 @@ body{
   scrollbar-width: none !important;
   -ms-overflow-style: none;
   overscroll-behavior: contain;
+  transform: translate3d(0, var(--pull-refresh-offset), 0);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cardScroll[data-pull-refresh="pulling"],
+.cardScroll[data-pull-refresh="ready"]{
+  transition: none;
+}
+.cardScroll[data-pull-refresh="refreshing"],
+.cardScroll[data-pull-refresh="settling"]{
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .cardScroll > *{
   width: 100%;

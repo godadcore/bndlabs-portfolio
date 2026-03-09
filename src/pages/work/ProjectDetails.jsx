@@ -4,6 +4,7 @@ import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import WorkCard from "../../components/work/WorkCard";
 import Seo from "../../components/seo/Seo";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { getAllProjects, getProjectBySlug } from "../../lib/projects";
 import {
   BASE_KEYWORDS,
@@ -48,6 +49,8 @@ export default function ProjectDetails() {
   const [personaIndex, setPersonaIndex] = useState(0);
   const scrollRootRef = useRef(null);
   const motionScopeRef = useRef(null);
+
+  usePullToRefresh(scrollRootRef);
 
   useEffect(() => {
     if (!project) return undefined;

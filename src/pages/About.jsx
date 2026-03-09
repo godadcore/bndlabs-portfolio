@@ -17,6 +17,7 @@ import ProcessIconTwo from "../components/about/ProcessIconTwo";
 import ProcessIconThree from "../components/about/ProcessIconThree";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
+import usePullToRefresh from "../hooks/usePullToRefresh";
 import { BASE_KEYWORDS, SITE_NAME } from "../lib/site";
 
 function CountUp({ to = 0, suffix = "+", duration = 1400, startWhen = false }) {
@@ -58,6 +59,8 @@ export default function About() {
   const scrollRef = useRef(null);
   const statsRef = useRef(null);
   const galleryRef = useRef(null);
+
+  usePullToRefresh(scrollRef);
 
   const statsInView = useInView(statsRef, {
     once: true,

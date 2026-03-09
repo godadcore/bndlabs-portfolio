@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import WhatIDo3D from "./WhatIDo3D";
 
-export default function WhatIDo() {
+export default function WhatIDo({ onContactClick }) {
   const sectionRef = useRef(null);
   const [inView, setInView] = useState(false);
   const [ratio, setRatio] = useState(0);
@@ -45,7 +45,9 @@ export default function WhatIDo() {
             <span className="w3">Solve.</span>
           </h2>
 
-          <button className="whatidoBtn">Contact Me</button>
+          <button type="button" className="whatidoBtn" onClick={onContactClick}>
+            Contact Me
+          </button>
         </div>
 
         <div className={`whatidoRight ${inView ? "in-view" : ""}`} aria-hidden="true">

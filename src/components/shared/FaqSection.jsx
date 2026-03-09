@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import "./faq-section.css";
 
 const DEFAULT_FAQS = [
   {

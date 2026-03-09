@@ -4,6 +4,7 @@ import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import WorkCard from "../../components/work/WorkCard";
 import Seo from "../../components/seo/Seo";
+import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { getAllProjects } from "../../lib/projects";
 import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
 import "./work.css";
@@ -89,6 +90,8 @@ export default function Work() {
   const isDraggingRef = useRef(false);
   const scrollRootRef = useRef(null);
   const motionScopeRef = useRef(null);
+
+  usePullToRefresh(scrollRootRef);
 
   const isMobile = vw <= 640;
   const isTablet = vw > 640 && vw <= 980;

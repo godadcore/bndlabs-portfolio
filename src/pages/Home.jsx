@@ -7,6 +7,7 @@ import ContactSection from "../components/home/ContactSection";
 import Footer from "../components/layout/Footer";
 import BrandMark from "../components/layout/BrandMark";
 import Seo from "../components/seo/Seo";
+import usePullToRefresh from "../hooks/usePullToRefresh";
 import { BASE_KEYWORDS, SITE_NAME, SOCIAL_LINKS } from "../lib/site";
 
 const Hero3D = lazy(() => import("../components/home/Hero3D"));
@@ -18,6 +19,8 @@ export default function Home() {
   const mobileWrapRef = useRef(null);
   const desktopWrapRef = useRef(null);
   const scrollRef = useRef(null);
+
+  usePullToRefresh(scrollRef);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -217,7 +220,7 @@ export default function Home() {
           </section>
 
           <section id="whatido">
-            <WhatIDo />
+            <WhatIDo onContactClick={() => scrollToId("contact")} />
           </section>
 
           <section id="selectedwork">

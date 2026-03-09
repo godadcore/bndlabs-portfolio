@@ -1,12 +1,17 @@
+import { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Header from "../components/layout/Header";
 import Seo from "../components/seo/Seo";
+import usePullToRefresh from "../hooks/usePullToRefresh";
 import { SITE_NAME } from "../lib/site";
 import "./not-found.css";
 
 export default function NotFound() {
   const location = useLocation();
+  const scrollRef = useRef(null);
+
+  usePullToRefresh(scrollRef);
 
   return (
     <main className="page notFoundPage">
@@ -19,7 +24,7 @@ export default function NotFound() {
       />
 
       <section className="hero aboutCard" aria-label="Page not found">
-        <div className="cardScroll">
+        <div className="cardScroll" ref={scrollRef}>
           <section className="aboutHeroShell" id="top">
             <div className="aboutShell">
               <div className="aboutStickyHeader">
