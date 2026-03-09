@@ -131,7 +131,13 @@ function Scene({ progress = 0 }) {
 export default function WhatIDo3D({ progress = 0 }) {
   return (
     <div className="whatido3d">
-      <Canvas shadows camera={{ position: [0, 1.2, 4.2], fov: 45 }} gl={{ antialias: true }}>
+      <Canvas
+        shadows
+        dpr={[1, 1.5]}
+        camera={{ position: [0, 1.2, 4.2], fov: 45 }}
+        gl={{ antialias: true, powerPreference: "high-performance" }}
+        performance={{ min: 0.75 }}
+      >
         <color attach="background" args={["#ffffff"]} />
         <OrbitControls
           enablePan={false}

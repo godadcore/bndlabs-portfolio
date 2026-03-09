@@ -270,7 +270,13 @@ function Scene() {
 
 export default function Hero3D() {
   return (
-    <Canvas shadows dpr={[1, 2]} style={{ width: "100%", height: "100%", touchAction: "none" }}>
+    <Canvas
+      shadows
+      dpr={[1, 1.5]}
+      gl={{ antialias: true, powerPreference: "high-performance" }}
+      performance={{ min: 0.75 }}
+      style={{ width: "100%", height: "100%", touchAction: "none" }}
+    >
       <Scene />
     </Canvas>
   );

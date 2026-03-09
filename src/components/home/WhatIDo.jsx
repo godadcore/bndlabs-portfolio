@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import WhatIDo3D from "./WhatIDo3D";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
+
+const WhatIDo3D = lazy(() => import("./WhatIDo3D"));
 
 export default function WhatIDo({ onContactClick }) {
   const sectionRef = useRef(null);
@@ -51,7 +52,11 @@ export default function WhatIDo({ onContactClick }) {
         </div>
 
         <div className={`whatidoRight ${inView ? "in-view" : ""}`} aria-hidden="true">
-          <WhatIDo3D progress={ratio} />
+          {inView ? (
+            <Suspense fallback={null}>
+              <WhatIDo3D progress={ratio} />
+            </Suspense>
+          ) : null}
         </div>
       </div>
     </section>

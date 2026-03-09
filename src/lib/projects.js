@@ -508,6 +508,9 @@ function normalizeProject(raw) {
   };
 }
 
+let cachedProjects = null;
+let cachedProjectMap = null;
+
 /**
  * Load all project JSON files.
  * Vite bundles these at build time while Decap CMS edits the source JSON.
@@ -515,6 +518,8 @@ function normalizeProject(raw) {
  * @returns {Project[]}
  */
 export function getAllProjects() {
+  if (cachedProjects) return cachedProjects;
+
   const modules = import.meta.glob("../content/projects/*.json", {
     eager: true,
     import: "default",
@@ -540,14 +545,24 @@ export function getAllProjects() {
     return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
   });
 
-  return items;
+  cachedProjects = items;
+  cachedProjectMap = new Map(
+    items.flatMap((project) => [
+      [project.slug, project],
+      [project.id, project],
+    ])
+  );
+
+  return cachedProjects;
 }
 
 export function getProjectBySlug(projectSlug) {
   const normalized = safeLowerSlug(projectSlug);
-  return getAllProjects().find(
-    (project) => project.slug === normalized || project.id === normalized
-  );
+  if (!cachedProjects || !cachedProjectMap) {
+    getAllProjects();
+  }
+
+  return cachedProjectMap?.get(normalized);
 }
 
 export function formatProjectDate(iso) {

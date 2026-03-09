@@ -25,40 +25,8 @@ export default function SelectedWork({ scrollRootRef }) {
     );
     io.observe(section);
 
-    // ✅ parallax on featured image (safe, no crashes)
-    const img = section.querySelector(".featuredCard .workCard__image img");
-    const onScroll = () => {
-      if (!img) return;
-      const minimizeMotion = window.matchMedia("(max-width: 768px)").matches;
-
-      if (minimizeMotion) {
-        img.style.transform = "translateY(0) scale(1)";
-        return;
-      }
-
-      const rootRect = root.getBoundingClientRect();
-      const rect = section.getBoundingClientRect();
-
-      // progress: 0 when section just enters, 1 when it's well inside view
-      const start = rootRect.top + rootRect.height * 0.90;
-      const end = rootRect.top + rootRect.height * 0.20;
-
-      const t = (start - rect.top) / (start - end);
-      const p = Math.max(0, Math.min(1, t));
-
-      const scale = 1.08 - p * 0.08;
-      const y = 22 - p * 22;
-
-      img.style.transform = `translateY(${y}px) scale(${scale})`;
-    };
-
-    root.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-
     return () => {
       io.disconnect();
-      root.removeEventListener("scroll", onScroll);
-      if (img) img.style.transform = "";
     };
   }, [scrollRootRef]);
 
