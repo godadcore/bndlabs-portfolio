@@ -514,7 +514,7 @@ export default function Contact() {
                       <span className="contactSuccessIcon">
                         <IconCheck width="22" height="22" />
                       </span>
-                      <p>Message sent successfully. I'll get back to you soon.</p>
+                      <p>Message sent successfully. Check your email for the auto-reply while I review your message.</p>
                     </div>
                   ) : (
                     <form onSubmit={handleSubmit}>
