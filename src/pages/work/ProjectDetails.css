@@ -1254,6 +1254,31 @@
 }
 
 @media (max-width: 640px) {
+  .projectDetailsPage .pd-reveal {
+    --pd-reveal-offset: 18px;
+    --pd-reveal-scale: 0.996;
+    filter: blur(4px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      filter 0.4s ease;
+    transition-delay: calc(var(--pd-motion-order, 0) * 28ms);
+  }
+
+  .projectDetailsPage .pd-reveal--soft,
+  .projectDetailsPage .pd-reveal--card,
+  .projectDetailsPage .pd-reveal--panel {
+    --pd-reveal-offset: 14px;
+  }
+
+  .projectDetailsPage .pd-reveal--hero:not(.is-inview) {
+    transform: translate3d(0, 14px, 0) scale(0.998);
+  }
+
+  .projectDetailsPage .pd-parallax {
+    transition-duration: 0.22s;
+  }
+
   .projectDetailsPage .pd-hero-left {
     padding: 28px 24px;
   }

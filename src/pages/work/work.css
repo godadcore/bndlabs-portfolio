@@ -484,6 +484,33 @@
   }
 }
 
+@media (max-width: 768px) {
+  .workPage .workMotionScope .workReveal {
+    transform: translate3d(0, 14px, 0) scale(0.996);
+    filter: blur(4px);
+    transition:
+      transform 0.46s cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 0.36s ease,
+      filter 0.36s ease;
+  }
+
+  .workPage .workMotionScope .workReveal--soft {
+    transform: translate3d(0, 10px, 0);
+  }
+
+  .workPage .workMotionScope .workReveal--lift {
+    transform: translate3d(0, 18px, 0) scale(0.998);
+  }
+
+  .workPage .workMotionScope .workReveal--card {
+    transition-delay: calc(var(--reveal-order, 0) * 26ms);
+  }
+
+  .workPage .workGridCard.workParallax .workCard__image img {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 .workPage .homeFooter {
   padding-top: 14px;
 }

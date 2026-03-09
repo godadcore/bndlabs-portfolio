@@ -12,8 +12,10 @@ export default function WhatIDo() {
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        setInView(entry.isIntersecting && entry.intersectionRatio > 0.2);
-        setRatio(entry.intersectionRatio || 0);
+        if (!entry.isIntersecting || entry.intersectionRatio <= 0.2) return;
+        setInView(true);
+        setRatio(1);
+        io.disconnect();
       },
       { threshold: [0, 0.15, 0.35, 0.55, 0.75, 1] }
     );

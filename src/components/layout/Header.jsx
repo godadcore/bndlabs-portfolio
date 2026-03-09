@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SOCIAL_LINKS } from "../../lib/site";
+import { SITE_NAME, SOCIAL_LINKS } from "../../lib/site";
 import BrandMark from "./BrandMark";
 
 export default function Header({ active = "" }) {
@@ -43,7 +43,7 @@ export default function Header({ active = "" }) {
         >
           <BrandMark className="logo-mark" />
           <span className="logo-text">
-            GETBNDLABS<span className="dot">.</span>
+            {SITE_NAME}<span className="dot">.</span>
           </span>
         </a>
 

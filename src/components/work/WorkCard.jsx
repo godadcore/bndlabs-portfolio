@@ -84,6 +84,7 @@ export default function WorkCard({
               src={imageSrc}
               alt={title ? `${title} UI UX design project by Bodunde Emmanuel` : "UI UX design project by Bodunde Emmanuel"}
               loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : undefined}
               decoding="async"
               draggable={false}
             />

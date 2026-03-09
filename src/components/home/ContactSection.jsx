@@ -15,7 +15,9 @@ export default function ContactSection({ scrollRootRef }) {
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        section.classList.toggle("is-inview", entry.isIntersecting);
+        if (!entry.isIntersecting) return;
+        section.classList.add("is-inview");
+        io.unobserve(entry.target);
       },
       { root, threshold: 0.35, rootMargin: "-5% 0px -20% 0px" }
     );

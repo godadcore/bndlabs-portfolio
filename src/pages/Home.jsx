@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Hero3D from "../components/home/Hero3D";
 import WhatIDo from "../components/home/WhatIDo";
 import SelectedWork from "../components/work/SelectedWork";
 import Services from "../components/home/Services";
@@ -8,7 +7,9 @@ import ContactSection from "../components/home/ContactSection";
 import Footer from "../components/layout/Footer";
 import BrandMark from "../components/layout/BrandMark";
 import Seo from "../components/seo/Seo";
-import { BASE_KEYWORDS, SOCIAL_LINKS } from "../lib/site";
+import { BASE_KEYWORDS, SITE_NAME, SOCIAL_LINKS } from "../lib/site";
+
+const Hero3D = lazy(() => import("../components/home/Hero3D"));
 
 export default function Home() {
   const navigate = useNavigate();
@@ -66,7 +67,7 @@ export default function Home() {
   return (
     <main className="page">
       <Seo
-        title="Bodunde Emmanuel – UI/UX Designer & Product Designer | BNDLabs"
+        title={`Bodunde Emmanuel - UI/UX Designer & Product Designer | ${SITE_NAME}`}
         description="Portfolio of Bodunde Emmanuel, a UI/UX designer, product designer and frontend designer creating modern digital experiences, interfaces and brand systems."
         keywords={[
           ...BASE_KEYWORDS,
@@ -75,7 +76,7 @@ export default function Home() {
           "brand systems designer",
         ]}
         canonicalPath="/"
-        imageAlt="BNDLabs home page preview for Bodunde Emmanuel"
+        imageAlt={`${SITE_NAME} home page preview for Bodunde Emmanuel`}
       />
 
       <section className="hero" aria-label="Fixed card">
@@ -96,7 +97,7 @@ export default function Home() {
                 >
                   <BrandMark className="logo-mark" />
                   <span className="logo-text">
-                    GETBNDLABS<span className="dot">.</span>
+                    {SITE_NAME}<span className="dot">.</span>
                   </span>
                 </a>
 
@@ -208,7 +209,9 @@ export default function Home() {
               </div>
 
               <div className="hero3d" aria-hidden="false">
-                <Hero3D />
+                <Suspense fallback={null}>
+                  <Hero3D />
+                </Suspense>
               </div>
             </div>
           </section>

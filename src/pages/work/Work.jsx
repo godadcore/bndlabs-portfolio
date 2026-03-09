@@ -5,7 +5,7 @@ import Footer from "../../components/layout/Footer";
 import WorkCard from "../../components/work/WorkCard";
 import Seo from "../../components/seo/Seo";
 import { getAllProjects } from "../../lib/projects";
-import { BASE_KEYWORDS } from "../../lib/site";
+import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
 import "./work.css";
 
 const DRAG_THRESHOLD = 50;
@@ -141,6 +141,7 @@ export default function Work() {
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) return undefined;
+    const mobileMotionQuery = window.matchMedia("(max-width: 768px)");
 
     const parallaxCards = Array.from(scope.querySelectorAll(".workGridCard.workParallax"));
     if (!parallaxCards.length) return undefined;
@@ -148,10 +149,16 @@ export default function Work() {
     let rafId = 0;
 
     const update = () => {
+      const minimizeMotion = mobileMotionQuery.matches;
       const rootRect = root.getBoundingClientRect();
       const viewportCenter = rootRect.top + rootRect.height / 2;
 
       parallaxCards.forEach((card) => {
+        if (minimizeMotion) {
+          card.style.setProperty("--work-parallax-y", "0px");
+          return;
+        }
+
         const rect = card.getBoundingClientRect();
         const cardCenter = rect.top + rect.height / 2;
         const normalizedDistance = (cardCenter - viewportCenter) / rootRect.height;
@@ -347,7 +354,7 @@ export default function Work() {
   return (
     <div className="page workPage">
       <Seo
-        title="Selected Work & UI/UX Projects | BNDLabs"
+        title={`Selected Work & UI/UX Projects | ${SITE_NAME}`}
         description="Explore selected UI/UX, product design, brand, and frontend projects by Bodunde Emmanuel, a digital product designer in Lagos, Nigeria."
         keywords={[
           ...BASE_KEYWORDS,
@@ -357,7 +364,7 @@ export default function Work() {
           "digital product designer portfolio",
         ]}
         canonicalPath="/work"
-        imageAlt="Selected work page preview for BNDLabs"
+        imageAlt={`Selected work page preview for ${SITE_NAME}`}
       />
 
       <div className="hero">

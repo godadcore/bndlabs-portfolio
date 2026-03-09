@@ -3,7 +3,7 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
-import { BASE_KEYWORDS, CONTACT_EMAIL, SOCIAL_LINKS } from "../lib/site";
+import { BASE_KEYWORDS, CONTACT_EMAIL, SITE_NAME, SOCIAL_LINKS } from "../lib/site";
 import "./contact.css";
 
 const FORMSPREE_ENDPOINT = import.meta.env.VITE_FORMSPREE_ENDPOINT || "";
@@ -291,6 +291,7 @@ export default function Contact() {
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) return;
+    const mobileMotionQuery = window.matchMedia("(max-width: 768px)");
 
     const parallaxTargets = Array.from(scope.querySelectorAll(".contactParallax"));
     if (!parallaxTargets.length) return;
@@ -298,10 +299,16 @@ export default function Contact() {
     let rafId = 0;
 
     const update = () => {
+      const minimizeMotion = mobileMotionQuery.matches;
       const rootRect = root.getBoundingClientRect();
       const viewportCenter = rootRect.top + rootRect.height / 2;
 
       parallaxTargets.forEach((item) => {
+        if (minimizeMotion) {
+          item.style.setProperty("--contact-parallax-y", "0px");
+          return;
+        }
+
         const rect = item.getBoundingClientRect();
         const itemCenter = rect.top + rect.height / 2;
         const normalizedDistance = (itemCenter - viewportCenter) / rootRect.height;
@@ -392,7 +399,7 @@ export default function Contact() {
   return (
     <main className="page contactPage">
       <Seo
-        title="Contact Bodunde Emmanuel | UI/UX Designer in Lagos, Nigeria | BNDLabs"
+        title={`Contact Bodunde Emmanuel | UI/UX Designer in Lagos, Nigeria | ${SITE_NAME}`}
         description="Contact Bodunde Emmanuel for UI/UX design, product design, frontend design, and brand systems. Based in Lagos, Nigeria and available for selected projects."
         keywords={[
           ...BASE_KEYWORDS,
@@ -401,7 +408,7 @@ export default function Contact() {
           "contact frontend designer Lagos",
         ]}
         canonicalPath="/contact"
-        imageAlt="Contact page preview for BNDLabs"
+        imageAlt={`Contact page preview for ${SITE_NAME}`}
       />
 
       <section className="hero aboutCard" aria-label="Contact hero">
@@ -626,7 +633,7 @@ export default function Contact() {
     <span className="contactCheckCustom">
       {form.subscribe && <IconCheck width="11" height="11" className="checkIcon" />}
     </span>
-    Subscribe to occasional Getbndlabs updates.
+    Subscribe to occasional {SITE_NAME} updates.
   </label>
 
   <span className={`contactSubscribeState ${form.subscribe ? "is-active" : ""}`}>

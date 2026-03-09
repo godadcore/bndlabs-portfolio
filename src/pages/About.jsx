@@ -17,7 +17,7 @@ import ProcessIconTwo from "../components/about/ProcessIconTwo";
 import ProcessIconThree from "../components/about/ProcessIconThree";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
-import { BASE_KEYWORDS } from "../lib/site";
+import { BASE_KEYWORDS, SITE_NAME } from "../lib/site";
 
 function CountUp({ to = 0, suffix = "+", duration = 1400, startWhen = false }) {
   const [value, setValue] = useState(0);
@@ -149,7 +149,7 @@ export default function About() {
   return (
     <main className="page aboutPage">
       <Seo
-        title="About Bodunde Emmanuel | UI/UX Designer in Lagos, Nigeria | BNDLabs"
+        title={`About Bodunde Emmanuel | UI/UX Designer in Lagos, Nigeria | ${SITE_NAME}`}
         description="Learn more about Bodunde Emmanuel, a UI/UX designer, product designer and frontend designer in Lagos, Nigeria creating thoughtful digital experiences and brand systems."
         keywords={[
           ...BASE_KEYWORDS,
@@ -158,7 +158,7 @@ export default function About() {
           "frontend designer Nigeria",
         ]}
         canonicalPath="/about"
-        imageAlt="About BNDLabs portfolio preview for Bodunde Emmanuel"
+        imageAlt={`About ${SITE_NAME} portfolio preview for Bodunde Emmanuel`}
       />
 
       <section className="hero aboutCard" aria-label="About card">

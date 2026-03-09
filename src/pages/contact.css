@@ -836,6 +836,34 @@
   }
 }
 
+@media (max-width: 768px) {
+  .contactPage .contactMotionScope .contactReveal {
+    transform: translate3d(0, 14px, 0) scale(0.996);
+    filter: blur(4px);
+    transition:
+      transform 0.46s cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 0.36s ease,
+      filter 0.36s ease;
+  }
+
+  .contactPage .contactMotionScope .contactReveal--soft {
+    transform: translate3d(0, 10px, 0);
+  }
+
+  .contactPage .contactMotionScope .contactReveal--lift {
+    transform: translate3d(0, 18px, 0) scale(0.998);
+  }
+
+  .contactPage .contactMotionScope .contactReveal--card {
+    transition-delay: calc(var(--reveal-order, 0) * 26ms);
+  }
+
+  .contactPage .contactParallax {
+    transform: none;
+    transition-duration: 0.2s;
+  }
+}
+
 @media (max-width: 1200px) {
   .contactPage .aboutHeroShell {
     padding-top: 42px;

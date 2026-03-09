@@ -7,6 +7,7 @@ import Seo from "../../components/seo/Seo";
 import { getAllProjects, getProjectBySlug } from "../../lib/projects";
 import {
   BASE_KEYWORDS,
+  SITE_NAME,
   buildProjectSeoDescription,
   buildProjectSeoKeywords,
 } from "../../lib/site";
@@ -31,7 +32,7 @@ function OneImg({ src, alt }) {
 
 function PersonaAvatar({ persona }) {
   if (persona?.image) {
-    return <img src={persona.image} alt={persona.name} />;
+    return <img src={persona.image} alt={persona.name} loading="lazy" decoding="async" />;
   }
 
   return (
@@ -84,7 +85,7 @@ export default function ProjectDetails() {
     });
 
     return () => observer.disconnect();
-  }, [project?.id]);
+  }, [project]);
 
   useEffect(() => {
     if (!project) return undefined;
@@ -98,14 +99,23 @@ export default function ProjectDetails() {
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) return undefined;
+    const mobileMotionQuery = window.matchMedia("(max-width: 768px)");
 
     let rafId = 0;
 
     const update = () => {
+      const minimizeMotion = mobileMotionQuery.matches;
       const rootRect = root.getBoundingClientRect();
       const viewportCenter = rootRect.top + rootRect.height / 2;
 
       targets.forEach((target) => {
+        if (minimizeMotion) {
+          target.style.setProperty("--pd-parallax-y", "0px");
+          target.style.setProperty("--pd-parallax-rotate", "0deg");
+          target.style.setProperty("--pd-parallax-scale", "1");
+          return;
+        }
+
         const rect = target.getBoundingClientRect();
         const targetCenter = rect.top + rect.height / 2;
         const normalizedDistance = (targetCenter - viewportCenter) / rootRect.height;
@@ -143,18 +153,18 @@ export default function ProjectDetails() {
         target.style.removeProperty("--pd-parallax-scale");
       });
     };
-  }, [project?.id]);
+  }, [project]);
 
   if (!project) {
     return (
       <main className="page projectDetailsPage">
         <Seo
-          title="Project Not Found | BNDLabs"
-          description="The requested project case study could not be found on the BNDLabs portfolio."
+          title={`Project Not Found | ${SITE_NAME}`}
+          description={`The requested project case study could not be found on the ${SITE_NAME} portfolio.`}
           keywords={[...BASE_KEYWORDS, "project case study"]}
           canonicalPath={`/work/${slug || ""}`}
           robots="noindex, nofollow"
-          imageAlt="Project not found page preview for BNDLabs"
+          imageAlt={`Project not found page preview for ${SITE_NAME}`}
         />
 
         <section className="hero aboutCard" aria-label="Project details page">
@@ -203,7 +213,7 @@ export default function ProjectDetails() {
   return (
     <main className="page projectDetailsPage">
       <Seo
-        title={`${project.title} Case Study | UI/UX Project by Bodunde Emmanuel | BNDLabs`}
+        title={`${project.title} Case Study | UI/UX Project by Bodunde Emmanuel | ${SITE_NAME}`}
         description={seoDescription}
         keywords={seoKeywords}
         canonicalPath={`/work/${project.slug}`}
@@ -751,7 +761,7 @@ export default function ProjectDetails() {
                       <div className="projectMoreWorksGrid">
                         {moreWorks.map((item, index) => (
                           <div className="projectMoreWorksItem" key={item.id}>
-                            <WorkCard project={item} priority={index === 0} />
+                            <WorkCard project={item} priority={index === 0} fullCardLink />
                           </div>
                         ))}
                       </div>

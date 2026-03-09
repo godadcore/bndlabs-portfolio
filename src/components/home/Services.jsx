@@ -50,7 +50,9 @@ export default function Services({ scrollRootRef }) {
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        section.classList.toggle("is-inview", entry.isIntersecting);
+        if (!entry.isIntersecting) return;
+        section.classList.add("is-inview");
+        io.unobserve(entry.target);
       },
       { root, threshold: 0.3, rootMargin: "-5% 0px -20% 0px" }
     );
@@ -77,7 +79,13 @@ export default function Services({ scrollRootRef }) {
             <article className="serviceCard" role="listitem" key={s.no}>
               <div className="serviceTop">
                 <span className="serviceIcon" aria-hidden="true">
-                  <img src={s.icon} alt={`${s.title} service icon`} className="serviceIconImg" />
+                  <img
+                    src={s.icon}
+                    alt={`${s.title} service icon`}
+                    className="serviceIconImg"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </span>
                 <p className="serviceDesc">{s.desc}</p>
               </div>

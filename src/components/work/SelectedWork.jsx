@@ -17,7 +17,9 @@ export default function SelectedWork({ scrollRootRef }) {
     // ✅ reveal in-view
     const io = new IntersectionObserver(
       ([entry]) => {
-        section.classList.toggle("is-inview", entry.isIntersecting);
+        if (!entry.isIntersecting) return;
+        section.classList.add("is-inview");
+        io.unobserve(entry.target);
       },
       { root, threshold: 0.35 }
     );
@@ -27,6 +29,12 @@ export default function SelectedWork({ scrollRootRef }) {
     const img = section.querySelector(".featuredCard .workCard__image img");
     const onScroll = () => {
       if (!img) return;
+      const minimizeMotion = window.matchMedia("(max-width: 768px)").matches;
+
+      if (minimizeMotion) {
+        img.style.transform = "translateY(0) scale(1)";
+        return;
+      }
 
       const rootRect = root.getBoundingClientRect();
       const rect = section.getBoundingClientRect();
@@ -50,6 +58,7 @@ export default function SelectedWork({ scrollRootRef }) {
     return () => {
       io.disconnect();
       root.removeEventListener("scroll", onScroll);
+      if (img) img.style.transform = "";
     };
   }, [scrollRootRef]);
 

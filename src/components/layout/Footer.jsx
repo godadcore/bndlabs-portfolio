@@ -1,5 +1,5 @@
 // src/components/layout/Footer.jsx
-import { CONTACT_EMAIL, SOCIAL_LINKS } from "../../lib/site";
+import { CONTACT_EMAIL, SITE_NAME, SOCIAL_LINKS } from "../../lib/site";
 import BrandMark from "./BrandMark";
 
 export default function Footer() {
@@ -12,11 +12,16 @@ export default function Footer() {
           <div className="footerLogoSlot" aria-hidden="true">
             <BrandMark className="footerLogoMark" />
           </div>
-          <span className="footerText">GETBNDLABS<span className="dot">.</span></span>
+          <span className="footerText">
+            {SITE_NAME}
+            <span className="dot">.</span>
+          </span>
         </div>
 
         <p className="footerCopy">
-          <span className="footerLegal">© {year} GetBndLabs. All rights reserved.</span>
+          <span className="footerLegal">
+            {"\u00A9"} {year} {SITE_NAME}. All rights reserved.
+          </span>
           <span className="footerContactRow">
             <a className="footerEmail" href={`mailto:${CONTACT_EMAIL}`}>
               {CONTACT_EMAIL}
