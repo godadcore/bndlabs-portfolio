@@ -4,13 +4,9 @@ import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
 import usePullToRefresh from "../hooks/usePullToRefresh";
+import { makeContactPayload, submitContactForm } from "../lib/contactForm";
 import { BASE_KEYWORDS, CONTACT_EMAIL, SITE_NAME, SOCIAL_LINKS } from "../lib/site";
 import "./contact.css";
-
-const FORMSPREE_ENDPOINT = import.meta.env.VITE_FORMSPREE_ENDPOINT || "";
-const hasFormEndpoint = Boolean(
-  FORMSPREE_ENDPOINT && !FORMSPREE_ENDPOINT.includes("YOUR_FORM_ID")
-);
 
 const SERVICES = [
   "UI/UX Design",
@@ -244,7 +240,7 @@ export default function Contact() {
   usePullToRefresh(scrollRootRef);
 
   const publicEmail = CONTACT_EMAIL;
-  const publicPhone = "+234 000 000 0000";
+  const publicPhone = "+234 905 232 1666";
   const publicLocation = "Lagos, Nigeria";
 
   const canSubmit = useMemo(() => {
@@ -351,38 +347,13 @@ export default function Contact() {
     e.preventDefault();
     if (!canSubmit || status === "sending") return;
 
-    if (!hasFormEndpoint) {
-      setErrorMessage("Form is not configured yet. Please email me directly.");
-      setStatus("error");
-      return;
-    }
-
     setErrorMessage("");
     setStatus("sending");
 
     try {
-      const res = await fetch(FORMSPREE_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          subject: form.subject || "New contact message",
-          message: form.message,
-          subscribe: form.subscribe,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setErrorMessage(data?.errors?.[0]?.message || "Something went wrong. Please try again.");
-        setStatus("error");
-        return;
-      }
+      await submitContactForm(
+        makeContactPayload(form, "contact-page")
+      );
 
       setForm({
         firstName: "",
@@ -393,8 +364,8 @@ export default function Contact() {
         subscribe: false,
       });
       setStatus("success");
-    } catch {
-      setErrorMessage("Network error. Please try again.");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Network error. Please try again.");
       setStatus("error");
     }
   };
