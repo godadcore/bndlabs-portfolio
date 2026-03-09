@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
+import BrandMark from "../components/layout/BrandMark";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
 import usePullToRefresh from "../hooks/usePullToRefresh";
@@ -170,10 +171,26 @@ function IconLinkedIn(props) {
   );
 }
 
+function IconX(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M18.9 3H22l-6.77 7.75L23.2 21H16.9l-4.94-6.49L6.3 21H3.2l7.25-8.28L.8 3H7.3l4.47 5.9L18.9 3Zm-1.09 16.12h1.72L6.37 4.79H4.52l13.29 14.33Z" />
+    </svg>
+  );
+}
+
 function IconWhatsApp(props) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
       <path d="M20.52 3.48A11.8 11.8 0 0 0 12.06 0C5.53 0 .2 5.33.2 11.86c0 2.1.55 4.14 1.6 5.94L0 24l6.39-1.68a11.8 11.8 0 0 0 5.67 1.45h.01c6.53 0 11.86-5.33 11.86-11.86 0-3.17-1.23-6.15-3.41-8.43ZM12.07 21.74a9.8 9.8 0 0 1-5-1.37l-.36-.21-3.79 1 1.01-3.69-.23-.38a9.77 9.77 0 0 1-1.5-5.23c0-5.42 4.41-9.83 9.84-9.83 2.63 0 5.09 1.02 6.94 2.88a9.76 9.76 0 0 1 2.88 6.94c0 5.42-4.41 9.83-9.8 9.89Zm5.39-7.35c-.29-.14-1.7-.84-1.97-.93-.26-.1-.45-.14-.64.14-.19.29-.74.93-.9 1.12-.17.19-.34.22-.63.07-.29-.14-1.22-.45-2.32-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.12-.6.13-.13.29-.34.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.55-.88-2.12-.23-.55-.47-.48-.64-.49h-.55c-.19 0-.5.07-.76.36-.26.29-1 1-.1 2.43.9 1.43 1.28 2.72 2.84 4 1.56 1.28 3.07 1.68 4.17 1.87 1.1.19 2.1.17 2.89.1.88-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33Z" />
+    </svg>
+  );
+}
+
+function IconTikTok(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M14.56 2c.32 1.85 1.46 3.83 3.94 5.08v2.82a8.2 8.2 0 0 1-3.71-1.04v6.02c0 3.95-2.82 6.62-6.56 6.62A6.24 6.24 0 0 1 2 15.25c0-3.51 2.75-6.3 6.46-6.3.35 0 .7.03 1.04.1v3.22a3.4 3.4 0 0 0-.98-.14c-1.8 0-3.08 1.34-3.08 3.09 0 1.9 1.47 3.06 2.98 3.06 1.45 0 2.98-.9 2.98-3.18V2h3.16Z" />
     </svg>
   );
 }
@@ -221,6 +238,39 @@ const PROCESS_ICONS = {
   design: IconDesign,
   deliver: IconDeliver,
 };
+
+const CONTACT_SOCIALS = [
+  {
+    label: "WhatsApp",
+    href: SOCIAL_LINKS.whatsapp,
+    icon: IconWhatsApp,
+    className: "social-whatsapp",
+  },
+  {
+    label: "X",
+    href: SOCIAL_LINKS.x,
+    icon: IconX,
+    className: "social-x",
+  },
+  {
+    label: "Instagram",
+    href: SOCIAL_LINKS.instagram,
+    icon: IconInstagram,
+    className: "social-instagram",
+  },
+  {
+    label: "LinkedIn",
+    href: SOCIAL_LINKS.linkedin,
+    icon: IconLinkedIn,
+    className: "social-linkedin",
+  },
+  {
+    label: "TikTok",
+    href: SOCIAL_LINKS.tiktok,
+    icon: IconTikTok,
+    className: "social-tiktok",
+  },
+].filter((item) => item.href);
 
 export default function Contact() {
   const [form, setForm] = useState({
@@ -471,26 +521,26 @@ export default function Contact() {
                     </li>
                   </ul>
 
-                  <div className="contactSocials">
-  <a
-    href={SOCIAL_LINKS.linkedin}
-    target="_blank"
-    rel="noreferrer noopener"
-    className="contactSocialBtn social-linkedin"
-  >
-    <IconLinkedIn width="15" height="15" />
-    LinkedIn
-  </a>
+                  <div className="contactSocials" aria-label="Social links">
+                    {CONTACT_SOCIALS.map((item) => {
+                      const SocialIcon = item.icon;
 
-  <a
-    href={SOCIAL_LINKS.whatsapp}
-    target="_blank"
-    rel="noreferrer noopener"
-    className="contactSocialBtn social-whatsapp"
-  >
-    <IconWhatsApp width="15" height="15" />
-    WhatsApp
-                    </a>
+                      return (
+                        <a
+                          key={item.label}
+                          href={item.href}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className={`contactSocialBtn ${item.className}`}
+                          aria-label={`Visit ${item.label}`}
+                        >
+                          <span className="contactSocialIconWrap" aria-hidden="true">
+                            <SocialIcon width="15" height="15" />
+                          </span>
+                          <span className="contactSocialLabel">{item.label}</span>
+                        </a>
+                      );
+                    })}
                   </div>
 
                   <div className="contactFloatingIcons" aria-hidden="true">
@@ -507,7 +557,16 @@ export default function Contact() {
                 </div>
 
                 <div className="contactRight">
-                  <h3 className="contactFormTitle">Get in touch</h3>
+                  <div className="contactFormHeader">
+                    <div className="contactFormBrand">
+                      <BrandMark className="contactFormBrandMark" title={`${SITE_NAME} logo`} />
+                      <span className="contactFormBrandText">
+                        {SITE_NAME}
+                        <span>.</span>
+                      </span>
+                    </div>
+                    <h3 className="contactFormTitle">Get in touch</h3>
+                  </div>
 
                   {status === "success" ? (
                     <div className="contactSuccess">
@@ -517,7 +576,7 @@ export default function Contact() {
                       <p>Message sent successfully. Check your email for the auto-reply while I review your message.</p>
                     </div>
                   ) : (
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} className="contactForm">
                       <div className="contactRow">
                         <div className="contactField">
                           <span className="fieldIcon">
