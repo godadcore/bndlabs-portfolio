@@ -509,15 +509,16 @@ export default function Contact() {
                 <div className="contactRight">
                   <h3 className="contactFormTitle">Get in touch</h3>
 
-                  {status === "success" ? (
+                  {status === "success" && (
                     <div className="contactSuccess">
                       <span className="contactSuccessIcon">
                         <IconCheck width="22" height="22" />
                       </span>
                       <p>Message sent successfully. Check your email for the auto-reply while I review your message.</p>
                     </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="contactForm">
+                  )}
+
+                  <form onSubmit={handleSubmit} className="contactForm">
                       <div className="contactRow">
                         <div className="contactField">
                           <span className="fieldIcon">
@@ -622,8 +623,7 @@ export default function Contact() {
                       {status === "error" && (
                         <p className="contactError">{errorMessage || "Something went wrong. Please try again."}</p>
                       )}
-                    </form>
-                  )}
+                  </form>
                 </div>
               </div>
             </div>
