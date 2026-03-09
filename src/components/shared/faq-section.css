@@ -172,3 +172,53 @@
     font-size: 32px;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .faqEyebrow,
+  .faqTitle em {
+    color: var(--accent);
+  }
+
+  .faqTitle,
+  .faqQ {
+    color: var(--text-primary);
+  }
+
+  .faqSubtext {
+    color: var(--text-muted);
+  }
+
+  .faqCta {
+    background: linear-gradient(180deg, var(--accent-hover) 0%, var(--accent) 100%);
+    box-shadow: 0 14px 32px rgba(var(--accent-rgb), 0.24);
+  }
+
+  .faqCta:hover {
+    box-shadow: 0 20px 42px rgba(var(--accent-rgb), 0.32);
+  }
+
+  .faqItem {
+    border-color: var(--border-subtle);
+    background: rgba(var(--surface-rgb), 0.68);
+  }
+
+  .faqItem:hover,
+  .faqItem.is-open {
+    border-color: var(--border-accent-soft);
+    background: rgba(var(--surface-rgb), 0.9);
+    box-shadow: 0 10px 32px rgba(var(--accent-rgb), 0.08);
+  }
+
+  .faqChevron {
+    background: var(--accent-faint);
+    color: var(--accent);
+  }
+
+  .faqItem.is-open .faqChevron {
+    background: var(--accent);
+  }
+
+  .faqA {
+    color: var(--text-secondary);
+  }
+}

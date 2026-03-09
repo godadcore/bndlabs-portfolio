@@ -27,14 +27,14 @@
 .projectDetailsPage .aboutStickyHeader {
   position: relative;
   z-index: 30;
-  background: #fff;
+  background: var(--surface-main);
 }
 
 .projectDetailsPage .aboutStickyHeader .aboutTopbar {
   width: 100%;
   margin: 0;
   padding: 0;
-  background: #fff;
+  background: var(--surface-main);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,7 +138,7 @@
   overflow: hidden;
   border: 1px solid var(--pd-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.96)),
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0.98), rgba(var(--surface-rgb), 0.96)),
     var(--pd-surface-soft);
   box-shadow:
     0 2px 8px rgba(7, 12, 18, 0.05),
@@ -305,7 +305,7 @@
 .projectDetailsPage .pd-hero-dots {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(11, 11, 13, 0.07) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.07) 1px, transparent 1px);
   background-size: 24px 24px;
   opacity: 0.7;
   pointer-events: none;
@@ -396,7 +396,7 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.22)),
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0.02), rgba(var(--surface-rgb), 0.22)),
     radial-gradient(circle at 16% 18%, rgba(var(--pd-accent-rgb), 0.16), transparent 34%);
   pointer-events: none;
 }
@@ -1162,7 +1162,7 @@
     position: relative;
     top: auto;
     z-index: 50;
-    background: #fff;
+    background: var(--surface-main);
     border-bottom: 0;
   }
 
@@ -1339,5 +1339,157 @@
 
   .projectDetailsPage .projectMoreWorksCard {
     padding: 24px 18px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .projectDetailsPage {
+    --pd-ink: var(--text-primary);
+    --pd-ink-2: var(--text-secondary);
+    --pd-muted: var(--text-muted);
+    --pd-border: var(--border-regular);
+    --pd-dash: var(--border-regular);
+    --pd-surface: var(--surface-main);
+    --pd-surface-soft: var(--surface-soft);
+    --pd-surface-soft-2: var(--surface-soft-2);
+    --pd-accent-rgb: var(--accent-rgb);
+  }
+
+  .projectDetailsPage .projectBackBtn {
+    border-color: var(--border-regular);
+    background: rgba(var(--surface-rgb), 0.86);
+    color: var(--text-secondary);
+  }
+
+  .projectDetailsPage .projectBackBtn:hover {
+    border-color: var(--border-strong);
+    background: rgba(var(--surface-rgb), 0.96);
+  }
+
+  .projectDetailsPage .projectCase,
+  .projectDetailsPage .projectEmptyState {
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.22),
+      0 24px 68px rgba(0, 0, 0, 0.28);
+  }
+
+  .projectDetailsPage .projectImageFallback {
+    background:
+      radial-gradient(circle at 20% 20%, rgba(var(--pd-accent-rgb), 0.16), transparent 28%),
+      var(--card-image-bg-alt);
+  }
+
+  .projectDetailsPage .pd-hero {
+    background:
+      linear-gradient(
+        135deg,
+        rgba(var(--surface-soft-2-rgb), 0.96) 0%,
+        rgba(var(--surface-soft-rgb), 0.98) 55%,
+        rgba(var(--surface-rgb), 0.96) 100%
+      );
+  }
+
+  .projectDetailsPage .pd-brand-icon {
+    background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
+  }
+
+  .projectDetailsPage .pd-brand-name {
+    color: var(--text-muted);
+  }
+
+  .projectDetailsPage .pd-hero-right {
+    background:
+      linear-gradient(180deg, rgba(var(--surface-rgb), 0.1), rgba(var(--surface-rgb), 0.18)),
+      var(--surface-soft-2);
+  }
+
+  .projectDetailsPage .pd-gray {
+    background:
+      linear-gradient(180deg, rgba(var(--surface-soft-2-rgb), 0.9), rgba(var(--surface-rgb), 0.96));
+  }
+
+  .projectDetailsPage .pd-ey {
+    color: var(--text-subtle);
+  }
+
+  .projectDetailsPage .pd-cn {
+    border-color: var(--border-strong);
+    background: rgba(var(--surface-rgb), 0.88);
+  }
+
+  .projectDetailsPage .pd-persona {
+    background: rgba(var(--surface-rgb), 0.84);
+  }
+
+  .projectDetailsPage .pd-p-left {
+    background: linear-gradient(180deg, rgba(var(--surface-soft-2-rgb), 0.78), rgba(var(--surface-rgb), 0.92));
+  }
+
+  .projectDetailsPage .pd-p-av,
+  .projectDetailsPage .pd-img,
+  .projectDetailsPage .pd-strip-thumb {
+    background: var(--surface-soft-2);
+    color: var(--text-subtle);
+  }
+
+  .projectDetailsPage .pd-tab {
+    background: var(--text-faint);
+  }
+
+  .projectDetailsPage .pd-phone {
+    border-color: var(--border-strong);
+    background: var(--surface-main);
+    box-shadow: 0 20px 52px rgba(0, 0, 0, 0.28);
+  }
+
+  .projectDetailsPage .pd-phone-notch {
+    background: var(--neutral-solid);
+  }
+
+  .projectDetailsPage .pd-phone-screen {
+    background: var(--surface-soft);
+  }
+
+  .projectDetailsPage .projectMoreWorksCard {
+    background:
+      radial-gradient(900px 280px at 50% -8%, rgba(var(--pd-accent-rgb), 0.1), transparent 70%),
+      linear-gradient(180deg, rgba(var(--surface-rgb), 0.98), rgba(var(--surface-soft-rgb), 0.96)),
+      var(--pd-surface);
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.22),
+      0 24px 68px rgba(0, 0, 0, 0.28);
+  }
+
+  .projectDetailsPage .projectMoreWorksGrid .workCard {
+    background: var(--surface-elevated);
+    box-shadow: var(--shadow-card);
+  }
+
+  .projectDetailsPage .projectMoreWorksGrid .workCard:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .projectDetailsPage .projectMoreWorksGrid .workCard__image {
+    background: var(--card-image-bg-alt);
+  }
+
+  .projectDetailsPage .projectMoreWorksGrid .workCard__footer {
+    background: var(--surface-elevated);
+  }
+
+  .projectDetailsPage .projectMoreWorksGrid .workCard__title {
+    color: var(--text-primary);
+  }
+
+  .projectDetailsPage .projectMoreWorksGrid .workCard__task {
+    color: var(--text-muted);
+  }
+
+  .projectDetailsPage .projectMoreWorksBtn:hover {
+    background: var(--accent-hover);
+  }
+
+  .projectDetailsPage .projectMoreWorksBtn:focus-visible {
+    outline-color: var(--focus-ring);
   }
 }

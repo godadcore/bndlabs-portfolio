@@ -1,57 +1,47 @@
-import React, { forwardRef, useMemo, useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { ContactShadows, Environment, Float, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import usePrefersDarkMode from "../../hooks/usePrefersDarkMode";
 
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
 const range = (v, a, b) => clamp01((v - a) / (b - a));
 
-const PinkWhiteBox = forwardRef(function PinkWhiteBox(props, ref) {
-  const [pink, white] = useMemo(() => {
-    const pinkMat = new THREE.MeshStandardMaterial({
-      color: "#f2b3d6",
-      roughness: 0.55,
-      metalness: 0.05,
-    });
-    const whiteMat = new THREE.MeshStandardMaterial({
-      color: "#ffffff",
-      roughness: 0.35,
-      metalness: 0.05,
-    });
-    return [pinkMat, whiteMat];
-  }, []);
+const PinkWhiteBox = forwardRef(function PinkWhiteBox({ prefersDark = false, ...props }, ref) {
+  const pinkColor = prefersDark ? "#dfb4c8" : "#f2b3d6";
+  const whiteColor = prefersDark ? "#eef2f8" : "#ffffff";
 
   return (
     <mesh ref={ref} castShadow receiveShadow {...props}>
       <boxGeometry args={[1, 1, 1]} />
-      <primitive object={pink} attach="material-0" />
-      <primitive object={pink} attach="material-1" />
-      <primitive object={white} attach="material-2" />
-      <primitive object={white} attach="material-3" />
-      <primitive object={white} attach="material-4" />
-      <primitive object={white} attach="material-5" />
+      <meshStandardMaterial attach="material-0" color={pinkColor} roughness={0.55} metalness={0.05} />
+      <meshStandardMaterial attach="material-1" color={pinkColor} roughness={0.55} metalness={0.05} />
+      <meshStandardMaterial attach="material-2" color={whiteColor} roughness={0.35} metalness={0.05} />
+      <meshStandardMaterial attach="material-3" color={whiteColor} roughness={0.35} metalness={0.05} />
+      <meshStandardMaterial attach="material-4" color={whiteColor} roughness={0.35} metalness={0.05} />
+      <meshStandardMaterial attach="material-5" color={whiteColor} roughness={0.35} metalness={0.05} />
     </mesh>
   );
 });
 
-const GlossyWhiteBox = forwardRef(function GlossyWhiteBox(props, ref) {
+const GlossyWhiteBox = forwardRef(function GlossyWhiteBox({ prefersDark = false, ...props }, ref) {
   return (
     <mesh ref={ref} castShadow receiveShadow {...props}>
       <boxGeometry args={[0.55, 0.55, 0.55]} />
       <meshPhysicalMaterial
-        color="#ffffff"
+        color={prefersDark ? "#eef2f8" : "#ffffff"}
         roughness={0.15}
         metalness={0}
         clearcoat={1}
         clearcoatRoughness={0.2}
         reflectivity={0.6}
-        envMapIntensity={0.9}
+        envMapIntensity={prefersDark ? 0.7 : 0.9}
       />
     </mesh>
   );
 });
 
-function Scene({ progress = 0 }) {
+function Scene({ progress = 0, prefersDark = false }) {
   const group = useRef(null);
   const pinkBox = useRef(null);
   const w1 = useRef(null);
@@ -115,20 +105,23 @@ function Scene({ progress = 0 }) {
       <group ref={group} position={[0, 0, 3.5]}>
         <Float speed={1.2} rotationIntensity={0.35} floatIntensity={0.25}>
           <group>
-            <PinkWhiteBox ref={pinkBox} position={[0.2, 0.0, 0]} />
-            <GlossyWhiteBox ref={w1} position={[-1.35, -0.75, -0.35]} />
-            <GlossyWhiteBox ref={w2} position={[1.15, -0.25, -0.15]} />
-            <GlossyWhiteBox ref={w3} position={[-0.35, 0.85, -0.25]} />
+            <PinkWhiteBox ref={pinkBox} position={[0.2, 0.0, 0]} prefersDark={prefersDark} />
+            <GlossyWhiteBox ref={w1} position={[-1.35, -0.75, -0.35]} prefersDark={prefersDark} />
+            <GlossyWhiteBox ref={w2} position={[1.15, -0.25, -0.15]} prefersDark={prefersDark} />
+            <GlossyWhiteBox ref={w3} position={[-0.35, 0.85, -0.25]} prefersDark={prefersDark} />
           </group>
         </Float>
       </group>
 
-      <ContactShadows position={[0, -1.2, 0]} opacity={0.4} blur={2.3} far={8} />
+      <ContactShadows position={[0, -1.2, 0]} opacity={prefersDark ? 0.52 : 0.4} blur={2.3} far={8} />
     </>
   );
 }
 
 export default function WhatIDo3D({ progress = 0 }) {
+  const prefersDarkMode = usePrefersDarkMode();
+  const backgroundColor = prefersDarkMode ? "#1B212C" : "#ffffff";
+
   return (
     <div className="whatido3d">
       <Canvas
@@ -138,7 +131,7 @@ export default function WhatIDo3D({ progress = 0 }) {
         gl={{ antialias: true, powerPreference: "high-performance" }}
         performance={{ min: 0.75 }}
       >
-        <color attach="background" args={["#ffffff"]} />
+        <color attach="background" args={[backgroundColor]} />
         <OrbitControls
           enablePan={false}
           enableZoom={false}
@@ -148,7 +141,7 @@ export default function WhatIDo3D({ progress = 0 }) {
           minPolarAngle={Math.PI / 3.2}
           maxPolarAngle={Math.PI / 2.05}
         />
-        <Scene progress={progress} />
+        <Scene progress={progress} prefersDark={prefersDarkMode} />
       </Canvas>
     </div>
   );

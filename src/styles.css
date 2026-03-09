@@ -1,4 +1,5 @@
 :root{
+  color-scheme: light;
   --ink:#0b0b0d;
   --muted: rgba(11,11,13,.70);
   --spillMobile: 10%;
@@ -53,6 +54,155 @@
   --make:  #5b49f1;
   --solve: #e9b2c5;
   --swColLeft: 240px;
+  --bg-canvas: #ffffff;
+  --bg-canvas-rgb: 255, 255, 255;
+  --surface-main: #ffffff;
+  --surface-rgb: 255, 255, 255;
+  --surface-soft: #faf9ff;
+  --surface-soft-rgb: 250, 249, 255;
+  --surface-soft-2: #f4f2ff;
+  --surface-soft-2-rgb: 244, 242, 255;
+  --surface-elevated: #fcfcfc;
+  --surface-elevated-rgb: 252, 252, 252;
+  --surface-glass: rgba(255,255,255,.75);
+  --surface-glass-strong: rgba(255,255,255,.92);
+  --surface-glass-soft: rgba(255,255,255,.68);
+  --canvas-panel: #f7f7f9;
+  --canvas-panel-rgb: 247, 247, 249;
+  --input-bg: rgba(255,255,255,.74);
+  --input-bg-strong: rgba(255,255,255,.96);
+  --input-rgb: 255, 255, 255;
+  --text-primary: #0b0b0d;
+  --text-rgb: 11, 11, 13;
+  --text-secondary: rgba(11,11,13,.78);
+  --text-muted: rgba(11,11,13,.62);
+  --text-muted-2: rgba(11,11,13,.55);
+  --text-subtle: rgba(11,11,13,.42);
+  --text-faint: rgba(11,11,13,.35);
+  --border-subtle: rgba(11,11,13,.08);
+  --border-regular: rgba(11,11,13,.12);
+  --border-strong: rgba(11,11,13,.20);
+  --border-accent-soft: rgba(106,88,255,.22);
+  --accent: #6a58ff;
+  --accent-rgb: 106, 88, 255;
+  --accent-soft: rgba(106,88,255,.12);
+  --accent-faint: rgba(106,88,255,.08);
+  --accent-border: rgba(106,88,255,.22);
+  --accent-hover: #5d4cf2;
+  --accent-active: #4f40dc;
+  --focus-ring: #8f82ff;
+  --neutral-solid: #111111;
+  --card-arrow-bg: #111111;
+  --card-arrow-border: rgba(0,0,0,.09);
+  --card-arrow-color: #ffffff;
+  --shadow-hero: 0 26px 80px rgba(16, 20, 40, 0.16);
+  --shadow-card:
+    0 2px 8px rgba(7, 12, 18, 0.05),
+    0 18px 52px rgba(7, 12, 18, 0.11),
+    0 0 0 1px rgba(9, 12, 16, 0.08);
+  --shadow-card-hover:
+    0 3px 12px rgba(7, 12, 18, 0.07),
+    0 24px 60px rgba(7, 12, 18, 0.14),
+    0 0 0 1px rgba(9, 12, 16, 0.10);
+  --dropdown-bg: #ffffff;
+  --dropdown-link: #333333;
+  --dropdown-hover-bg: #f3f1ff;
+  --dropdown-shadow: 0 16px 48px rgba(0,0,0,0.22);
+  --grid-line: rgba(11,11,13,.06);
+  --hero-right-bg:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,1) 0%,
+      rgba(255,255,255,1) 55%,
+      color-mix(in srgb, var(--panel) 10%, transparent) 70%,
+      color-mix(in srgb, var(--panel) 35%, transparent) 100%
+    );
+  --hero-right-shine: linear-gradient(135deg, transparent 0 55%, rgba(255,255,255,.18) 55% 100%);
+  --hero-right-lines: linear-gradient(to bottom, rgba(255,255,255,.08) 1px, transparent 1px) 0 0 / 100% 56px;
+  --card-image-bg: linear-gradient(135deg, #eef2f0 0%, #e7efeb 52%, #dee9f1 100%);
+  --card-image-bg-alt: linear-gradient(135deg, #f2f0ff 0%, #ece8ff 52%, #e7ebff 100%);
+  --canvas-3d: #ffffff;
+  --canvas-3d-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --ink:#f5f7fb;
+    --muted: rgba(245,247,251,.78);
+    --panel:#6f5cff;
+    --panel2:#5e4de8;
+    --think:#f5f7fb;
+    --make:#836fff;
+    --solve:#e8c1d0;
+    --bg-canvas: #0e1118;
+    --bg-canvas-rgb: 14, 17, 24;
+    --surface-main: #161b24;
+    --surface-rgb: 22, 27, 36;
+    --surface-soft: #1b212c;
+    --surface-soft-rgb: 27, 33, 44;
+    --surface-soft-2: #202734;
+    --surface-soft-2-rgb: 32, 39, 52;
+    --surface-elevated: #1a202b;
+    --surface-elevated-rgb: 26, 32, 43;
+    --surface-glass: rgba(22,27,36,.78);
+    --surface-glass-strong: rgba(27,33,44,.92);
+    --surface-glass-soft: rgba(27,33,44,.76);
+    --canvas-panel: #111620;
+    --canvas-panel-rgb: 17, 22, 32;
+    --input-bg: rgba(27,33,44,.88);
+    --input-bg-strong: rgba(27,33,44,.96);
+    --input-rgb: 27, 33, 44;
+    --text-primary: #f5f7fb;
+    --text-rgb: 245, 247, 251;
+    --text-secondary: rgba(245,247,251,.82);
+    --text-muted: #9ca3b8;
+    --text-muted-2: rgba(156,163,184,.82);
+    --text-subtle: rgba(156,163,184,.68);
+    --text-faint: rgba(156,163,184,.56);
+    --border-subtle: #2a3140;
+    --border-regular: #2a3140;
+    --border-strong: #3a4254;
+    --border-accent-soft: rgba(111,92,255,.30);
+    --accent: #6f5cff;
+    --accent-rgb: 111, 92, 255;
+    --accent-soft: rgba(111,92,255,.18);
+    --accent-faint: rgba(111,92,255,.14);
+    --accent-border: rgba(111,92,255,.30);
+    --accent-hover: #836fff;
+    --accent-active: #5e4de8;
+    --focus-ring: #9d91ff;
+    --neutral-solid: #0e1118;
+    --card-arrow-bg: #6f5cff;
+    --card-arrow-border: rgba(111,92,255,.24);
+    --card-arrow-color: #ffffff;
+    --shadow-hero: 0 26px 80px rgba(0, 0, 0, 0.38);
+    --shadow-card:
+      0 12px 36px rgba(0, 0, 0, 0.34),
+      0 0 0 1px rgba(42, 49, 64, 0.9);
+    --shadow-card-hover:
+      0 18px 44px rgba(0, 0, 0, 0.42),
+      0 0 0 1px rgba(58, 66, 84, 1);
+    --dropdown-bg: #161b24;
+    --dropdown-link: #f5f7fb;
+    --dropdown-hover-bg: rgba(111,92,255,.16);
+    --dropdown-shadow: 0 20px 48px rgba(0,0,0,.42);
+    --grid-line: rgba(245,247,251,.06);
+    --hero-right-bg:
+      linear-gradient(
+        to bottom,
+        rgba(22,27,36,1) 0%,
+        rgba(22,27,36,1) 55%,
+        rgba(111,92,255,.12) 72%,
+        rgba(111,92,255,.24) 100%
+      );
+    --hero-right-shine: linear-gradient(135deg, transparent 0 55%, rgba(245,247,251,.04) 55% 100%);
+    --hero-right-lines: linear-gradient(to bottom, rgba(245,247,251,.06) 1px, transparent 1px) 0 0 / 100% 56px;
+    --card-image-bg: linear-gradient(135deg, #1e2531 0%, #1b2330 52%, #232c38 100%);
+    --card-image-bg-alt: linear-gradient(135deg, #221f3d 0%, #1d2132 52%, #1f2a3b 100%);
+    --canvas-3d: #1b212c;
+    --canvas-3d-rgb: 27, 33, 44;
+  }
 }
 
 *{ box-sizing:border-box; margin:0; padding:0; }
@@ -60,7 +210,7 @@ html,body{ height:100%; }
 
 body{
   font-family: var(--fontMain);
-  background:#fff;
+  background: var(--bg-canvas);
   color: var(--ink);
 }
 
@@ -102,8 +252,8 @@ body{
   height: calc(100dvh - (clamp(14px, 2.6vw, 34px) * 2));
   border-radius: clamp(20px, 2.4vw, 34px);
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 26px 80px rgba(16, 20, 40, 0.16);
+  background: var(--surface-main);
+  box-shadow: var(--shadow-hero);
 }
 
 .left{
@@ -597,6 +747,295 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 @media (max-width: 720px){
   .servicesCards{ grid-template-columns: 1fr; }
   .contactRow{ grid-template-columns: 1fr; }
+}
+
+@media (prefers-color-scheme: dark){
+  body{
+    background: var(--bg-canvas);
+    color: var(--text-primary);
+  }
+
+  .btnGhost{
+    border-color: var(--border-regular);
+    background: var(--surface-glass);
+    color: var(--text-secondary);
+  }
+
+  .btnGhost:hover{
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+  }
+
+  .pill{
+    border-color: var(--border-subtle);
+    background: rgba(var(--surface-rgb), 0.78);
+    color: var(--text-secondary);
+  }
+
+  .page,
+  .hero,
+  .whatidoSection{
+    background: var(--surface-main);
+  }
+
+  .left::after{
+    background: linear-gradient(to bottom right, var(--grid-line) 1px, transparent 1px) 0 0 / 170px 170px;
+    opacity: .28;
+  }
+
+  .social-link{
+    color: var(--text-muted);
+  }
+
+  .social-link:hover{
+    color: var(--text-primary);
+  }
+
+  .byline-rule{
+    background: var(--accent);
+  }
+
+  .byline-name{
+    color: var(--accent-hover);
+  }
+
+  .scroll-circle{
+    background: rgba(var(--surface-soft-rgb), 0.92);
+    border-color: var(--border-accent-soft);
+  }
+
+  .scroll-btn:hover .scroll-circle{
+    background: rgba(var(--surface-soft-2-rgb), 0.98);
+  }
+
+  .scroll-circle svg{
+    stroke: var(--accent-hover);
+  }
+
+  .scroll-label{
+    color: var(--text-muted);
+  }
+
+  .right{
+    background: var(--hero-right-bg);
+  }
+
+  .right::before{
+    background: var(--hero-right-shine);
+  }
+
+  .right::after{
+    background: var(--hero-right-lines);
+  }
+
+  .dropdown{
+    background: var(--dropdown-bg);
+    box-shadow: var(--dropdown-shadow);
+    border: 1px solid var(--border-regular);
+  }
+
+  .dropdown a{
+    color: var(--dropdown-link);
+  }
+
+  .dropdown a:hover,
+  .dropdown a.is-active-link{
+    background: var(--dropdown-hover-bg);
+    color: var(--accent-hover);
+  }
+
+  .next{
+    background: var(--canvas-panel);
+  }
+
+  .whatidoSubtext,
+  .servicesTitle,
+  .contactSub,
+  .aboutDesc,
+  .aboutProcessText,
+  .aboutStepContent p{
+    color: var(--text-muted);
+  }
+
+  .whatidoBtn,
+  .aboutProcessBtn{
+    border-color: rgba(var(--surface-rgb), 0.12);
+    background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+    box-shadow: 0 16px 32px rgba(var(--accent-rgb), 0.28), inset 0 1px 0 rgba(255,255,255,0.16);
+  }
+
+  .whatidoBtn:hover,
+  .aboutProcessBtn:hover{
+    box-shadow: 0 18px 36px rgba(var(--accent-rgb), 0.34), inset 0 1px 0 rgba(255,255,255,0.16);
+  }
+
+  .whatidoRight{
+    background: linear-gradient(160deg, var(--surface-main) 0%, var(--surface-soft) 100%);
+  }
+
+  .wCube{
+    background: var(--surface-main);
+    box-shadow: 0 30px 70px rgba(0,0,0,.24);
+  }
+
+  .pill--primary,
+  .btnPurple,
+  .tagPrimary{
+    background: var(--accent-soft) !important;
+    border-color: var(--border-accent-soft) !important;
+    color: var(--accent-hover) !important;
+  }
+
+  .pill--ghost,
+  .tagSecondary{
+    background: rgba(var(--surface-rgb), 0.72) !important;
+    border-color: var(--border-regular) !important;
+    color: var(--text-secondary) !important;
+  }
+
+  .pill--outline,
+  .btnOutlinePurple{
+    border-color: var(--border-accent-soft);
+    color: var(--accent-hover);
+  }
+
+  .btnOutlinePurple:hover{
+    background: var(--accent-faint);
+  }
+
+  .serviceCard{
+    background: rgba(var(--surface-rgb), 0.92);
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-card);
+  }
+
+  .serviceIcon{
+    color: var(--accent-hover);
+    background: var(--accent-soft);
+    border-color: var(--border-accent-soft);
+  }
+
+  .serviceDesc{
+    color: var(--text-muted);
+  }
+
+  .serviceName{
+    color: var(--text-primary);
+  }
+
+  .serviceNo{
+    color: var(--text-subtle);
+  }
+
+  .contactShell{
+    border-color: var(--border-subtle);
+    box-shadow: 0 26px 90px rgba(0,0,0,.24);
+    background:
+      radial-gradient(900px 380px at 92% 16%, rgba(var(--accent-rgb), .12), transparent 62%),
+      linear-gradient(90deg, rgba(var(--surface-rgb), .96) 0%, rgba(var(--surface-soft-rgb), .96) 58%, rgba(var(--surface-soft-2-rgb), .96) 100%);
+  }
+
+  .contactTitle,
+  .aboutTitle,
+  .aboutExperienceTitle,
+  .aboutCompany,
+  .aboutProcessTitle,
+  .aboutStepContent h3,
+  .aboutStatsRow .statItem h2{
+    color: var(--text-primary);
+  }
+
+  .field input,
+  .field textarea{
+    background: var(--input-bg);
+    color: var(--text-primary);
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder{
+    color: var(--text-faint);
+  }
+
+  .contactBtn{
+    background: rgba(var(--surface-soft-rgb), 0.92);
+    color: var(--text-secondary);
+  }
+
+  .contactBtn:hover{
+    background: var(--accent-soft);
+  }
+
+  .contactStatus.isOk{
+    color: var(--text-muted);
+  }
+
+  .aboutStickyHeader,
+  .aboutStickyHeader .aboutTopbar{
+    background: var(--surface-main);
+  }
+
+  .whoAmI{
+    color: var(--text-subtle);
+  }
+
+  .aboutVideoWrap{
+    box-shadow: 0 18px 60px rgba(0,0,0,.26), 0 4px 20px rgba(0,0,0,.18);
+  }
+
+  .toolFrame.dark{
+    background: var(--surface-soft);
+    border-color: var(--border-subtle);
+    box-shadow: 0 8px 22px rgba(0,0,0,.24);
+  }
+
+  .toolFrame.blue{
+    background: linear-gradient(135deg, var(--surface-soft), rgba(var(--accent-rgb), 0.6));
+    border-color: rgba(var(--accent-rgb), 0.22);
+    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.24);
+  }
+
+  .toolFrame.outline{
+    background: rgba(var(--surface-rgb), 0.82);
+    border-color: var(--border-subtle);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+  }
+
+  .aboutStatsRow .statItem p,
+  .aboutRole,
+  .aboutExperienceYears{
+    color: var(--text-muted);
+  }
+
+  .aboutExperiencePill,
+  .aboutProcessKicker{
+    background: rgba(var(--surface-rgb), 0.82);
+    border-color: var(--border-subtle);
+    color: var(--text-secondary);
+  }
+
+  .aboutExperienceRow{
+    border-bottom-color: var(--border-regular);
+  }
+
+  .aboutGalleryCard{
+    background: var(--surface-soft);
+    box-shadow: 0 18px 48px rgba(0,0,0,.22), 0 3px 14px rgba(0,0,0,.16);
+  }
+
+  .aboutProcessHighlight{
+    background: var(--accent);
+  }
+
+  .aboutStepCard{
+    border-color: var(--border-strong);
+    background: rgba(var(--surface-rgb), 0.16);
+  }
+
+  .aboutStepBadge{
+    background: var(--surface-soft-2);
+    color: var(--text-primary);
+    border: 1px solid var(--border-regular);
+  }
 }
 
 @media (max-width: 640px){
