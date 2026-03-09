@@ -44,6 +44,26 @@
     <meta name="twitter:image" content="https://getbndlabs.com/og-image.jpg" />
     <meta name="twitter:image:src" content="https://getbndlabs.com/og-image.jpg" />
     <meta name="twitter:image:alt" content="Bndlabs portfolio preview for Bodunde Emmanuel" />
+    <script>
+      (function () {
+        var hash = window.location.hash || "";
+        var identityTokens = [
+          "#invite_token=",
+          "#recovery_token=",
+          "#confirmation_token=",
+          "#email_change_token=",
+        ];
+
+        var shouldForwardToAdmin = identityTokens.some(function (token) {
+          return hash.indexOf(token) === 0;
+        });
+
+        if (!shouldForwardToAdmin) return;
+        if (window.location.pathname.indexOf("/admin") === 0) return;
+
+        window.location.replace("/admin/" + hash);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
