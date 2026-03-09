@@ -100,6 +100,7 @@ export default function Seo({
     upsertMeta('meta[property="og:title"]', { property: "og:title", content: title });
     upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
     upsertMeta('meta[property="og:image"]', { property: "og:image", content: ogImage });
+    upsertMeta('meta[property="og:image:url"]', { property: "og:image:url", content: ogImage });
     upsertMeta('meta[property="og:image:secure_url"]', { property: "og:image:secure_url", content: ogImage });
     upsertMeta('meta[property="og:image:type"]', {
       property: "og:image:type",
@@ -117,11 +118,14 @@ export default function Seo({
     upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
     upsertMeta('meta[property="og:type"]', { property: "og:type", content: type });
     upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: SITE_NAME });
+    upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: "en_US" });
 
     upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary_large_image" });
     upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: title });
     upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: description });
+    upsertMeta('meta[name="twitter:url"]', { name: "twitter:url", content: canonicalUrl });
     upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: ogImage });
+    upsertMeta('meta[name="twitter:image:src"]', { name: "twitter:image:src", content: ogImage });
     upsertMeta('meta[name="twitter:image:alt"]', { name: "twitter:image:alt", content: imageAlt });
 
     upsertLink('link[rel="canonical"]', { rel: "canonical", href: canonicalUrl });

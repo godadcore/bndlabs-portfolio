@@ -1,10 +1,14 @@
 backend:
-  # Placeholder backend. Configure later (git-gateway / github / gitlab).
   name: git-gateway
   branch: main
 
+publish_mode: editorial_workflow
+
 media_folder: "public/uploads"
 public_folder: "/uploads"
+
+editor:
+  preview: false
 
 collections:
   - name: "projects"

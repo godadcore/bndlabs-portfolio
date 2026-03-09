@@ -5,11 +5,11 @@ export const PERSON_TITLE = "UI/UX Designer";
 export const CONTACT_EMAIL = "hello@getbndlabs.com";
 export const LOCATION_LABEL = "Lagos, Nigeria";
 export const DEFAULT_ROBOTS = "index, follow, max-image-preview:large";
-export const DEFAULT_OG_IMAGE_PATH = "/og-image.png";
+export const DEFAULT_OG_IMAGE_PATH = "/og-image.jpg";
 export const DEFAULT_OG_IMAGE_ALT = `${SITE_NAME} portfolio preview for ${PERSON_NAME}`;
-export const DEFAULT_OG_IMAGE_TYPE = "image/png";
-export const DEFAULT_OG_IMAGE_WIDTH = 3300;
-export const DEFAULT_OG_IMAGE_HEIGHT = 1941;
+export const DEFAULT_OG_IMAGE_TYPE = "image/jpeg";
+export const DEFAULT_OG_IMAGE_WIDTH = 1200;
+export const DEFAULT_OG_IMAGE_HEIGHT = 630;
 
 // Replace these with exact public profile URLs for stronger sameAs signals.
 export const SOCIAL_LINKS = {
