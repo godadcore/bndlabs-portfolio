@@ -13,115 +13,106 @@ editor:
 collections:
   - name: "projects"
     label: "Projects"
+    label_singular: "Project"
     folder: "src/content/projects"
     create: true
     format: "json"
     extension: "json"
     slug: "{{slug}}"
+    identifier_field: "slug"
+    summary: "{{title}} | {{client}} | {{status}}"
+    sortable_fields: ["date", "title", "client", "industry", "status"]
+    search_fields: ["title", "slug", "subtitle", "description", "goal", "solution", "discovery", "client", "industry", "tasks", "tags"]
     fields:
-      - { label: "ID", name: "id", widget: "string", hint: "Stable project id for CMS and routing." }
-      - { label: "Slug", name: "slug", widget: "string", hint: "Used in route: /work/:slug" }
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
-      - { label: "Summary", name: "summary", widget: "text", required: false }
-      - { label: "Description", name: "description", widget: "text" }
-      - { label: "Category", name: "category", widget: "string", required: false }
-      - label: "Tasks"
-        name: "tasks"
+      - { label: "ID", name: "id", widget: "string", hint: "Unique project id used internally.", default: "atlas-analytics" }
+      - { label: "Slug", name: "slug", widget: "string", hint: "URL path used at /work/:slug.", default: "atlas-analytics" }
+      - { label: "Title", name: "title", widget: "string", default: "Atlas Analytics" }
+      - { label: "Subtitle", name: "subtitle", widget: "string", required: false, default: "Executive intelligence dashboard for growth teams." }
+      - { label: "Description", name: "description", widget: "text", hint: "Main overview text shown in the Project Overview section.", default: "Atlas Analytics centralizes product, sales, and marketing metrics in one focused command center for faster decisions." }
+      - { label: "Goal", name: "goal", widget: "text", required: false, hint: "Project goal shown in the overview and journey sections.", default: "Help growth teams understand performance quickly and act confidently from one clear dashboard experience." }
+      - { label: "Solution", name: "solution", widget: "text", required: false, hint: "High-level solution or approach used across the case study.", default: "A modular analytics workspace with stronger hierarchy, reusable chart patterns, and clearer task flows." }
+      - { label: "My Role", name: "my_role", widget: "string", required: false, default: "Lead Product Designer" }
+      - label: "Challenges"
+        name: "challenges"
         widget: "list"
-        required: false
-        field: { label: "Task", name: "task", widget: "string" }
-      - { label: "Tag 1", name: "tag1", widget: "string" }
-      - { label: "Tag 2", name: "tag2", widget: "string" }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Cover", name: "cover", widget: "image", required: false }
-      - { label: "Thumbnail", name: "thumbnail", widget: "image", required: false }
-      - { label: "Client", name: "client", widget: "string", required: false }
-      - { label: "Industry", name: "industry", widget: "string", required: false }
-      - label: "Status"
-        name: "status"
-        widget: "select"
-        default: "published"
-        options: ["draft", "published", "archived"]
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Overview", name: "overview", widget: "text", required: false }
-      - { label: "Problem", name: "problem", widget: "text", required: false }
-      - { label: "Solution", name: "solution", widget: "text", required: false }
-      - { label: "Result", name: "result", widget: "text", required: false }
-      - label: "Highlights"
-        name: "highlights"
-        widget: "list"
+        hint: "Pain points or challenges faced. These map to the User Research pain-point cards."
         required: false
         fields:
-          - { label: "Label", name: "label", widget: "string" }
-          - { label: "Value", name: "value", widget: "string" }
+          - { label: "Title", name: "title", widget: "string", default: "Scattered reporting" }
+          - { label: "Text", name: "text", widget: "text", default: "Teams were switching between tools to answer simple questions, which slowed down decision-making." }
+      - { label: "Discovery", name: "discovery", widget: "text", required: false, hint: "Research/discovery summary shown before deeper research sections.", default: "Discovery focused on dashboard audits, workflow interviews, and mapping how growth teams currently read and share performance data." }
       - label: "Process"
         name: "process"
-        widget: "list"
-        required: false
-        fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Description", name: "description", widget: "text" }
-      - label: "Sections"
-        name: "sections"
-        widget: "list"
-        required: false
-        fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Body", name: "body", widget: "text" }
-          - { label: "Image", name: "image", widget: "image", required: false }
-      - label: "Gallery"
-        name: "gallery"
-        widget: "list"
-        required: false
-        fields:
-          - { label: "Image", name: "src", widget: "image" }
-          - { label: "Alt text", name: "alt", widget: "string", required: false }
-      - label: "Next steps"
-        name: "nextSteps"
-        widget: "list"
-        required: false
-        field: { label: "Step", name: "step", widget: "string" }
-      - label: "Case Study"
-        name: "caseStudy"
         widget: "object"
-        required: false
-        collapsed: true
+        hint: "Project Details sections for structure, design, delivery, integration, process steps, and next steps."
         fields:
-          - { label: "Brand name", name: "brandName", widget: "string", required: false }
-          - { label: "Region", name: "region", widget: "string", required: false }
-          - { label: "Year override", name: "year", widget: "string", required: false, hint: "Optional override. Otherwise derived from Date." }
-          - { label: "Hero image override", name: "heroImage", widget: "image", required: false }
-          - { label: "Overview intro", name: "overviewIntro", widget: "text", required: false }
-          - { label: "Goal", name: "goal", widget: "text", required: false }
-          - { label: "My role", name: "myRole", widget: "string", required: false }
-          - label: "Responsibilities"
-            name: "responsibilities"
-            widget: "list"
-            required: false
-            field: { label: "Responsibility", name: "responsibility", widget: "string" }
-          - { label: "Research intro", name: "researchIntro", widget: "text", required: false }
-          - label: "Pain points"
-            name: "painPoints"
-            widget: "list"
-            required: false
+          - label: "Structure"
+            name: "structure"
+            widget: "object"
             fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Text", name: "text", widget: "text" }
-          - label: "Personas"
-            name: "personas"
+              - { label: "Intro", name: "intro", widget: "text", required: false, default: "The structure phase simplified information hierarchy, clarified priorities, and mapped the product into a cleaner decision-making flow." }
+              - { label: "Image", name: "image", widget: "image", required: false, hint: "Used in the app map / structure area." }
+          - label: "Design"
+            name: "design"
+            widget: "object"
+            fields:
+              - { label: "Intro", name: "intro", widget: "text", required: false, default: "The design phase translated the structure into a consistent UI system with clearer data states, stronger hierarchy, and refined interactions." }
+              - { label: "Image", name: "image", widget: "image", required: false, hint: "Optional image for digital wireframes or early design." }
+              - { label: "Overview Image", name: "overview_image", widget: "image", required: false, hint: "Main mockup overview image." }
+              - label: "Screens"
+                name: "screens"
+                widget: "list"
+                required: false
+                hint: "Individual mockup screens shown in the screen strip."
+                fields:
+                  - { label: "Image", name: "src", widget: "image" }
+                  - { label: "Label", name: "label", widget: "string", required: false, default: "Screen 01" }
+          - label: "Delivery"
+            name: "delivery"
+            widget: "object"
+            fields:
+              - { label: "Intro", name: "intro", widget: "text", required: false, default: "Delivery focused on a polished prototype, responsive behavior guidance, and an implementation-ready handoff for engineering." }
+              - { label: "Prototype Screen", name: "prototype_screen", widget: "image", required: false }
+              - label: "Bullets"
+                name: "bullets"
+                widget: "list"
+                required: false
+                field: { label: "Bullet", name: "bullet", widget: "string" }
+          - { label: "Integration", name: "integration", widget: "text", required: false, hint: "Optional note about implementation, handoff, or integration.", default: "Integration documentation aligned design states, component behaviors, and responsive guidance for development." }
+          - label: "Steps"
+            name: "steps"
             widget: "list"
             required: false
+            hint: "High-level process steps used across overviews and fallbacks."
+            fields:
+              - { label: "Title", name: "title", widget: "string", default: "Structure" }
+              - { label: "Description", name: "description", widget: "text", default: "Clarified product hierarchy and content flow for the main journey." }
+          - label: "Next Steps"
+            name: "next_steps"
+            widget: "list"
+            required: false
+            field: { label: "Next Step", name: "next_step", widget: "string" }
+      - label: "User Research"
+        name: "user_research"
+        widget: "object"
+        hint: "Maps to user research, personas, journey map, and usability findings."
+        fields:
+          - { label: "Method", name: "method", widget: "text", required: false, default: "Research combined interviews, competitor benchmarking, journey mapping, and task-based reviews of the existing workflow." }
+          - label: "Persona"
+            name: "persona"
+            widget: "list"
+            required: false
+            hint: "Add one or more personas. These appear as persona tabs/cards."
             fields:
               - { label: "Image", name: "image", widget: "image", required: false }
-              - { label: "Name", name: "name", widget: "string" }
-              - { label: "Age", name: "age", widget: "string", required: false }
-              - { label: "Gender", name: "gender", widget: "string", required: false }
-              - { label: "Occupation", name: "occupation", widget: "string", required: false }
-              - { label: "Location", name: "location", widget: "string", required: false }
-              - { label: "Education", name: "education", widget: "string", required: false }
-              - { label: "Quote", name: "quote", widget: "text", required: false }
-              - { label: "Bio", name: "bio", widget: "text", required: false }
+              - { label: "Name", name: "name", widget: "string", default: "Maya Okafor" }
+              - { label: "Age", name: "age", widget: "string", required: false, default: "29" }
+              - { label: "Gender", name: "gender", widget: "string", required: false, default: "Female" }
+              - { label: "Occupation", name: "occupation", widget: "string", required: false, default: "Growth Analyst" }
+              - { label: "Location", name: "location", widget: "string", required: false, default: "Lagos, Nigeria" }
+              - { label: "Education", name: "education", widget: "string", required: false, default: "B.Sc. Economics" }
+              - { label: "Quote", name: "quote", widget: "text", required: false, default: "\"I need a dashboard that helps me spot movement fast without digging through several tools.\"" }
+              - { label: "Bio", name: "bio", widget: "text", required: false, default: "Maya tracks product and growth performance daily and needs a dashboard that is quick to scan, easy to explain, and reliable for reporting." }
               - label: "Goals"
                 name: "goals"
                 widget: "list"
@@ -132,43 +123,75 @@ collections:
                 widget: "list"
                 required: false
                 field: { label: "Frustration", name: "frustration", widget: "string" }
-          - { label: "Journey goal", name: "journeyGoal", widget: "text", required: false }
-          - { label: "Journey map image", name: "journeyMapImage", widget: "image", required: false }
-          - { label: "Wireframes intro", name: "wireframesIntro", widget: "text", required: false }
-          - { label: "App map description", name: "appmapDesc", widget: "text", required: false }
-          - { label: "App map image", name: "appmapImage", widget: "image", required: false }
-          - { label: "Digital wireframes description", name: "digitalWireDesc", widget: "text", required: false }
-          - { label: "Digital wireframes image", name: "digitalWireImage", widget: "image", required: false }
-          - { label: "Usability intro", name: "usabilityIntro", widget: "text", required: false }
-          - label: "Usability findings"
-            name: "usabilityFindings"
+          - label: "Journey Mapping"
+            name: "journey_mapping"
+            widget: "object"
+            fields:
+              - { label: "Goal", name: "goal", widget: "text", required: false, default: "Review campaign and product performance quickly, then share confident insights with stakeholders." }
+              - { label: "Image", name: "image", widget: "image", required: false }
+          - label: "Findings"
+            name: "findings"
             widget: "list"
             required: false
+            hint: "Usability findings cards shown in the research section."
             fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Text", name: "text", widget: "text" }
-          - { label: "Design intro", name: "designIntro", widget: "text", required: false }
-          - { label: "Mockups description", name: "mockupsDesc", widget: "text", required: false }
-          - { label: "Mockup overview image", name: "mockupOverviewImage", widget: "image", required: false }
-          - label: "Mockup screens"
-            name: "mockupScreens"
+              - { label: "Title", name: "title", widget: "string", default: "Users needed stronger visual guidance" }
+              - { label: "Text", name: "text", widget: "text", default: "Important actions and states were not obvious enough, which slowed decision-making." }
+      - label: "Outcomes"
+        name: "outcomes"
+        widget: "object"
+        hint: "Maps to the final outcome section."
+        fields:
+          - { label: "Intro", name: "intro", widget: "text", required: false, default: "The final direction created a clearer, faster, and more scalable analytics experience for product and growth teams." }
+          - { label: "Impact", name: "impact", widget: "text", required: false, default: "Usability feedback showed stronger confidence, easier scanning, and faster completion of key reporting tasks." }
+          - { label: "Learned", name: "learned", widget: "text", required: false, default: "The project reinforced the value of treating structure, visual design, and handoff clarity as one connected system." }
+      - label: "Images"
+        name: "images"
+        widget: "object"
+        hint: "Core media for Work cards and Project Details."
+        fields:
+          - { label: "Cover", name: "cover", widget: "image", required: false }
+          - { label: "Thumbnail", name: "thumbnail", widget: "image", required: false }
+          - label: "Gallery"
+            name: "gallery"
             widget: "list"
             required: false
             fields:
               - { label: "Image", name: "src", widget: "image" }
-              - { label: "Label", name: "label", widget: "string", required: false }
-          - { label: "Prototype description", name: "protoDesc", widget: "text", required: false }
-          - { label: "Prototype screen image", name: "protoScreenImage", widget: "image", required: false }
-          - label: "Prototype bullets"
-            name: "protoList"
-            widget: "list"
-            required: false
-            field: { label: "Bullet", name: "bullet", widget: "string" }
-          - { label: "Outcome intro", name: "outcomeIntro", widget: "text", required: false }
-          - { label: "Impact", name: "impact", widget: "text", required: false }
-          - { label: "What I learned", name: "learned", widget: "text", required: false }
-          - label: "Case study next steps"
-            name: "nextSteps"
-            widget: "list"
-            required: false
-            field: { label: "Step", name: "step", widget: "string" }
+              - { label: "Alt Text", name: "alt", widget: "string", required: false, default: "Project gallery image" }
+      - label: "Tasks"
+        name: "tasks"
+        widget: "list"
+        required: false
+        hint: "Services or roles shown in Work cards and project metadata."
+        field: { label: "Task", name: "task", widget: "string" }
+      - label: "Tags"
+        name: "tags"
+        widget: "list"
+        required: false
+        hint: "Keywords used for filtering, SEO, and card metadata fallbacks."
+        field: { label: "Tag", name: "tag", widget: "string" }
+      - { label: "Client", name: "client", widget: "string", required: false, default: "Atlas Labs" }
+      - { label: "Industry", name: "industry", widget: "string", required: false, default: "Data & Analytics" }
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        default: "published"
+        options: ["draft", "published", "archived"]
+      - { label: "Date", name: "date", widget: "datetime" }
+
+  - name: "site_settings"
+    label: "Site Settings"
+    delete: false
+    files:
+      - name: "social_contact"
+        label: "Social & Contact"
+        file: "src/content/site/settings.json"
+        fields:
+          - { label: "Email", name: "email", widget: "string", default: "hello@getbndlabs.com" }
+          - { label: "Behance", name: "behance", widget: "string", default: "https://www.behance.net/bodundeemmanuel" }
+          - { label: "X", name: "x", widget: "string", default: "https://x.com/Bndlabs" }
+          - { label: "Instagram", name: "instagram", widget: "string", default: "https://www.instagram.com/bndlabs" }
+          - { label: "WhatsApp Number", name: "whatsapp_number", widget: "string", default: "09052321666" }
+          - { label: "LinkedIn", name: "linkedin", widget: "string", default: "https://www.linkedin.com/in/bodundeemmanuel" }
+          - { label: "TikTok", name: "tiktok", widget: "string", default: "https://www.tiktok.com/@bndlabs" }

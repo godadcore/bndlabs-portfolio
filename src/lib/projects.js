@@ -86,7 +86,13 @@ function firstHighlightValue(items, matcher) {
 }
 
 function normalizeTextCards(value, fallbackItems) {
-  const items = toObjectArray(value)
+  const source = Array.isArray(value)
+    ? value
+    : value && typeof value === "object"
+      ? [value]
+      : [];
+
+  const items = source
     .map((item, index) => ({
       title: firstString(item?.title, item?.label, fallbackItems[index]?.title, `Item ${index + 1}`),
       text: firstString(
@@ -182,7 +188,13 @@ function createFallbackPersona({ title, industry, region, description, goal, pro
 }
 
 function normalizePersonas(value, fallbackPersona) {
-  const items = toObjectArray(value)
+  const source = Array.isArray(value)
+    ? value
+    : value && typeof value === "object"
+      ? [value]
+      : [];
+
+  const items = source
     .map((item) => ({
       image: firstString(item?.image, item?.avatar),
       name: firstString(item?.name, item?.title),
@@ -210,11 +222,21 @@ function normalizePersonas(value, fallbackPersona) {
 
 function normalizeMockupScreens(value, fallbackImages) {
   const labels = ["Screen 01", "Screen 02", "Screen 03", "Screen 04", "Screen 05"];
-  const items = toObjectArray(value)
-    .map((item, index) => ({
-      src: firstString(item?.src, item?.image, item?.url, fallbackImages[index]),
-      label: firstString(item?.label, item?.title, labels[index] || `Screen ${index + 1}`),
-    }))
+  const source = Array.isArray(value) ? value : [];
+  const items = source
+    .map((item, index) => {
+      if (typeof item === "string") {
+        return {
+          src: firstString(item, fallbackImages[index]),
+          label: labels[index] || `Screen ${index + 1}`,
+        };
+      }
+
+      return {
+        src: firstString(item?.src, item?.image, item?.url, fallbackImages[index]),
+        label: firstString(item?.label, item?.title, labels[index] || `Screen ${index + 1}`),
+      };
+    })
     .filter((item) => item.src);
 
   if (items.length) return items;
@@ -225,8 +247,51 @@ function normalizeMockupScreens(value, fallbackImages) {
   }));
 }
 
+function normalizeGalleryItems(value, title) {
+  const source = Array.isArray(value) ? value : [];
+
+  return source
+    .map((item, index) => {
+      if (typeof item === "string") {
+        return {
+          src: firstString(item),
+          alt: `${title} gallery image ${index + 1}`,
+        };
+      }
+
+      return {
+        src: firstString(item?.src, item?.image, item?.url),
+        alt: firstString(item?.alt, `${title} gallery image ${index + 1}`),
+      };
+    })
+    .filter((item) => item.src);
+}
+
 function normalizeCaseStudy(raw, project) {
   const caseStudyRaw = raw?.caseStudy || {};
+  const processRoot = raw?.process && typeof raw.process === "object" && !Array.isArray(raw.process)
+    ? raw.process
+    : {};
+  const userResearchRaw = raw?.user_research && typeof raw.user_research === "object"
+    ? raw.user_research
+    : {};
+  const outcomesRaw = raw?.outcomes && typeof raw.outcomes === "object"
+    ? raw.outcomes
+    : {};
+  const structureSection = processRoot?.structure && typeof processRoot.structure === "object"
+    ? processRoot.structure
+    : {};
+  const designSection = processRoot?.design && typeof processRoot.design === "object"
+    ? processRoot.design
+    : {};
+  const deliverySection = processRoot?.delivery && typeof processRoot.delivery === "object"
+    ? processRoot.delivery
+    : {};
+  const journeyMapping = userResearchRaw?.journey_mapping && typeof userResearchRaw.journey_mapping === "object"
+    ? userResearchRaw.journey_mapping
+    : {};
+  const personaSource = userResearchRaw?.persona || userResearchRaw?.personas || caseStudyRaw.personas;
+  const integrationNote = firstString(processRoot?.integration);
   const roleFromHighlights = firstHighlightValue(project.highlights, /role/i);
   const outcomeFromHighlights = firstHighlightValue(
     project.highlights,
@@ -234,16 +299,21 @@ function normalizeCaseStudy(raw, project) {
   );
   const fallbackImages = uniqueStrings([
     caseStudyRaw.heroImage,
+    raw?.images?.cover,
     project.cover,
     project.image,
     project.thumbnail,
+    structureSection?.image,
+    designSection?.image,
+    designSection?.overview_image,
+    deliverySection?.prototype_screen,
     ...project.sections.map((item) => item.image),
     ...project.gallery.map((item) => item.src),
   ]);
   const region = firstString(caseStudyRaw.region, raw?.region, raw?.location, "Global");
   const goal = firstString(
-    caseStudyRaw.goal,
     raw?.goal,
+    caseStudyRaw.goal,
     project.solution,
     "Create a clearer, more consistent experience that helps users complete their key tasks with less friction."
   );
@@ -262,7 +332,7 @@ function normalizeCaseStudy(raw, project) {
     problem: project.problem,
   });
   const painPoints = normalizeTextCards(
-    caseStudyRaw.painPoints,
+    raw?.challenges || caseStudyRaw.painPoints,
     buildFallbackPainPoints({
       title: project.title,
       industry: project.industry,
@@ -272,27 +342,30 @@ function normalizeCaseStudy(raw, project) {
     })
   );
   const usabilityFindings = normalizeTextCards(
-    caseStudyRaw.usabilityFindings,
+    userResearchRaw?.findings || caseStudyRaw.usabilityFindings,
     buildFallbackFindings({
       problem: project.problem,
       solution: project.solution,
       result: project.result,
     })
   );
-  const protoList = toStringArray(caseStudyRaw.protoList);
+  const protoList = toStringArray(deliverySection?.bullets || caseStudyRaw.protoList);
   const fallbackProtoList = protoList.length
     ? protoList
     : uniqueStrings([
         ...project.process.map((item) => item.description),
         ...project.nextSteps,
+        integrationNote,
       ]).slice(0, 4);
-  const nextSteps = toStringArray(caseStudyRaw.nextSteps);
+  const nextSteps = toStringArray(processRoot?.next_steps || caseStudyRaw.nextSteps);
   const learned = firstString(
+    outcomesRaw?.learned,
     caseStudyRaw.learned,
     raw?.learned,
     "The project reinforced how much stronger a product becomes when structure, testing, and visual refinement are treated as one connected system."
   );
   const impact = firstString(
+    outcomesRaw?.impact,
     caseStudyRaw.impact,
     outcomeFromHighlights,
     project.result,
@@ -305,6 +378,7 @@ function normalizeCaseStudy(raw, project) {
     year: firstString(caseStudyRaw.year, yearFromDate(project.date), "Recent"),
     heroImage: firstString(caseStudyRaw.heroImage, project.cover, project.image, fallbackImages[0]),
     overviewIntro: firstString(
+      raw?.description,
       caseStudyRaw.overviewIntro,
       raw?.overviewIntro,
       project.overview,
@@ -313,6 +387,7 @@ function normalizeCaseStudy(raw, project) {
     ),
     goal,
     myRole: firstString(
+      raw?.my_role,
       caseStudyRaw.myRole,
       raw?.myRole,
       raw?.role,
@@ -322,49 +397,64 @@ function normalizeCaseStudy(raw, project) {
     ),
     responsibilities: fallbackResponsibilities,
     researchIntro: firstString(
+      userResearchRaw?.method,
+      raw?.discovery,
       caseStudyRaw.researchIntro,
       raw?.researchIntro,
       `Research focused on understanding where the ${project.industry || "product"} experience created friction and what needed to change to make ${project.title} feel clearer, faster, and easier to trust.`
     ),
     painPoints,
-    personas: normalizePersonas(caseStudyRaw.personas, fallbackPersona),
-    journeyGoal: firstString(caseStudyRaw.journeyGoal, goal),
+    personas: normalizePersonas(personaSource, fallbackPersona),
+    journeyGoal: firstString(journeyMapping?.goal, caseStudyRaw.journeyGoal, goal),
     journeyMapImage: firstString(
+      journeyMapping?.image,
       caseStudyRaw.journeyMapImage,
       project.gallery[0]?.src,
+      structureSection?.image,
       project.sections[0]?.image,
       fallbackImages[0]
     ),
     wireframesIntro: firstString(
+      structureSection?.intro,
+      raw?.discovery,
       caseStudyRaw.wireframesIntro,
       raw?.wireframesIntro,
       `The early design phase translated research into a clearer structure, making it easier to define content hierarchy, core screens, and the overall product flow.`
     ),
     appmapDesc: firstString(
+      structureSection?.description,
+      structureSection?.intro,
       caseStudyRaw.appmapDesc,
       project.process[1]?.description,
       project.sections[0]?.body,
       "The app map clarified how users should move through the product and which screens needed to carry the most important information."
     ),
     appmapImage: firstString(
+      structureSection?.image,
       caseStudyRaw.appmapImage,
       project.sections[0]?.image,
       project.gallery[1]?.src,
       fallbackImages[0]
     ),
     digitalWireDesc: firstString(
+      designSection?.description,
+      designSection?.intro,
       caseStudyRaw.digitalWireDesc,
       project.sections[1]?.body,
       project.process[2]?.description,
+      integrationNote,
       "Digital wireframes translated the structure into a clearer interface and helped validate content priority before visual refinement."
     ),
     digitalWireImage: firstString(
+      designSection?.image,
       caseStudyRaw.digitalWireImage,
       project.sections[1]?.image,
       project.gallery[2]?.src,
       fallbackImages[0]
     ),
     usabilityIntro: firstString(
+      userResearchRaw?.method,
+      raw?.discovery,
       caseStudyRaw.usabilityIntro,
       raw?.usabilityIntro,
       project.result,
@@ -372,31 +462,39 @@ function normalizeCaseStudy(raw, project) {
     ),
     usabilityFindings,
     designIntro: firstString(
+      designSection?.intro,
       caseStudyRaw.designIntro,
       raw?.designIntro,
       project.solution,
       "The final design phase focused on refining hierarchy, strengthening consistency, and preparing the product for a polished handoff."
     ),
     mockupsDesc: firstString(
+      designSection?.mockups,
+      designSection?.intro,
       caseStudyRaw.mockupsDesc,
       project.sections[1]?.body,
       project.solution,
       "The mockups brought the structure to life with a more considered visual system, stronger hierarchy, and implementation-ready states."
     ),
     mockupOverviewImage: firstString(
+      designSection?.overview_image,
       caseStudyRaw.mockupOverviewImage,
       project.gallery[2]?.src,
       project.sections[2]?.image,
       fallbackImages[0]
     ),
-    mockupScreens: normalizeMockupScreens(caseStudyRaw.mockupScreens, fallbackImages),
+    mockupScreens: normalizeMockupScreens(designSection?.screens || caseStudyRaw.mockupScreens, fallbackImages),
     protoDesc: firstString(
+      deliverySection?.intro,
+      deliverySection?.description,
       caseStudyRaw.protoDesc,
       raw?.protoDesc,
+      integrationNote,
       project.result,
       "The high-fidelity prototype connected the main screens into a single flow so the final interactions could be reviewed more realistically."
     ),
     protoScreenImage: firstString(
+      deliverySection?.prototype_screen,
       caseStudyRaw.protoScreenImage,
       project.gallery[3]?.src,
       project.cover,
@@ -410,6 +508,8 @@ function normalizeCaseStudy(raw, project) {
           "Prepared a more consistent prototype for handoff and iteration.",
         ],
     outcomeIntro: firstString(
+      outcomesRaw?.intro,
+      raw?.outcomes,
       caseStudyRaw.outcomeIntro,
       raw?.outcomeIntro,
       project.result,
@@ -422,25 +522,36 @@ function normalizeCaseStudy(raw, project) {
 }
 
 function normalizeProject(raw) {
+  const processRoot = raw?.process && typeof raw.process === "object" && !Array.isArray(raw.process)
+    ? raw.process
+    : {};
+  const outcomesRaw = raw?.outcomes && typeof raw.outcomes === "object"
+    ? raw.outcomes
+    : {};
+  const imagesRaw = raw?.images && typeof raw.images === "object"
+    ? raw.images
+    : {};
   const slug = safeLowerSlug(raw?.slug || raw?.id || raw?.title);
   const id = safeLowerSlug(raw?.id || slug || raw?.title);
   const title = firstString(raw?.title, raw?.projectTitle);
 
   const tasks = toStringArray(raw?.tasks || raw?.services);
-  const category = firstString(raw?.category, tasks[0], raw?.tag1);
-  const tag1 = firstString(raw?.tag1, tasks[0], category);
-  const tag2 = firstString(raw?.tag2, tasks[1]);
-  const summary = firstString(raw?.summary, raw?.description);
+  const tags = toStringArray(raw?.tags);
+  const category = firstString(raw?.category, tags[0], tasks[0], raw?.tag1);
+  const tag1 = firstString(raw?.tag1, tags[0], tasks[0], category);
+  const tag2 = firstString(raw?.tag2, tags[1], tasks[1]);
+  const summary = firstString(raw?.summary, raw?.subtitle, raw?.description);
   const description = firstString(raw?.description, raw?.summary);
   const subtitle = firstString(raw?.subtitle);
   const placeholderImage = makePlaceholderImage(slug || id || title);
-  const image = firstString(raw?.image, raw?.cover, raw?.thumbnail, placeholderImage);
-  const cover = firstString(raw?.cover, image, raw?.thumbnail, placeholderImage);
-  const thumbnail = firstString(raw?.thumbnail, image, cover, placeholderImage);
-  const overview = firstString(raw?.overview, summary, description);
-  const problem = firstString(raw?.problem);
-  const solution = firstString(raw?.solution);
-  const result = firstString(raw?.result);
+  const image = firstString(raw?.image, imagesRaw?.cover, raw?.cover, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage);
+  const cover = firstString(imagesRaw?.cover, raw?.cover, image, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage);
+  const thumbnail = firstString(imagesRaw?.thumbnail, raw?.thumbnail, image, cover, placeholderImage);
+  const overview = firstString(raw?.overview, raw?.description, summary, description);
+  const firstChallenge = Array.isArray(raw?.challenges) ? raw.challenges[0] : null;
+  const problem = firstString(raw?.problem, firstChallenge?.text, firstChallenge?.description, raw?.challenges);
+  const solution = firstString(raw?.solution, processRoot?.integration);
+  const result = firstString(raw?.result, outcomesRaw?.intro, outcomesRaw?.impact);
 
   const highlights = toObjectArray(raw?.highlights)
     .map((item, index) => ({
@@ -449,7 +560,7 @@ function normalizeProject(raw) {
     }))
     .filter((item) => item.label && item.value);
 
-  const process = toObjectArray(raw?.process)
+  const process = toObjectArray(Array.isArray(raw?.process) ? raw.process : raw?.process?.steps)
     .map((item) => ({
       title: firstString(item?.title),
       description: firstString(item?.description, item?.text),
@@ -464,14 +575,9 @@ function normalizeProject(raw) {
     }))
     .filter((item) => item.title && item.body);
 
-  const gallery = toObjectArray(raw?.gallery)
-    .map((item, index) => ({
-      src: firstString(item?.src, item?.image, item?.url),
-      alt: firstString(item?.alt, `${title} gallery image ${index + 1}`),
-    }))
-    .filter((item) => item.src);
+  const gallery = normalizeGalleryItems(raw?.images?.gallery || raw?.gallery, title);
 
-  const nextSteps = toStringArray(raw?.nextSteps);
+  const nextSteps = toStringArray(raw?.process?.next_steps || raw?.nextSteps);
 
   const project = {
     id,
@@ -482,6 +588,7 @@ function normalizeProject(raw) {
     description,
     category,
     tasks: tasks.length ? tasks : [tag1, tag2].filter(Boolean),
+    tags,
     tag1,
     tag2,
     image,

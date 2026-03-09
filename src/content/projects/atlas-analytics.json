@@ -3,101 +3,175 @@
   "slug": "atlas-analytics",
   "title": "Atlas Analytics",
   "subtitle": "Executive intelligence dashboard for growth teams.",
-  "summary": "Atlas Analytics centralizes product, sales, and marketing metrics in one focused command center.",
-  "description": "Atlas Analytics is a dashboard concept built for fast reporting and clear decision-making. It combines visual summaries, drill-down tables, and reusable chart modules so teams can track growth without context switching.",
-  "category": "Dashboard Design",
+  "description": "Atlas Analytics centralizes product, sales, and marketing metrics in one focused command center so growth teams can review performance, spot movement faster, and share insight without switching between multiple tools.",
+  "goal": "Help growth teams understand performance quickly and act confidently from one clear analytics experience.",
+  "solution": "A modular analytics workspace with stronger hierarchy, reusable chart patterns, and clearer task flows across reporting, segmentation, and weekly review workflows.",
+  "my_role": "Lead Product Designer",
+  "challenges": [
+    {
+      "title": "Scattered reporting",
+      "text": "Teams were switching between tools to answer simple questions, which slowed down decisions and made weekly reviews inconsistent."
+    },
+    {
+      "title": "Weak hierarchy",
+      "text": "The original dashboard treated every metric with the same visual weight, so users struggled to identify the most important movement first."
+    },
+    {
+      "title": "Low confidence",
+      "text": "Data states, empty states, and drill-down patterns were inconsistent, reducing trust in the product and making the experience feel unfinished."
+    }
+  ],
+  "discovery": "Discovery focused on stakeholder interviews, workflow reviews, analytics dashboard audits, and mapping how growth teams currently collect and present performance insight.",
+  "process": {
+    "structure": {
+      "intro": "The structure phase simplified information architecture, grouped related reporting blocks, and created a clearer dashboard hierarchy for fast scanning.",
+      "image": "https://picsum.photos/seed/atlas-analytics-structure/1600/1000"
+    },
+    "design": {
+      "intro": "The design phase translated the structure into a reusable analytics UI system with clearer data states, stronger emphasis, and cleaner comparison patterns.",
+      "image": "https://picsum.photos/seed/atlas-analytics-design/1600/1000",
+      "overview_image": "https://picsum.photos/seed/atlas-analytics-mockup-overview/1600/1000",
+      "screens": [
+        {
+          "src": "https://picsum.photos/seed/atlas-analytics-screen-1/900/1400",
+          "label": "Screen 01"
+        },
+        {
+          "src": "https://picsum.photos/seed/atlas-analytics-screen-2/900/1400",
+          "label": "Screen 02"
+        },
+        {
+          "src": "https://picsum.photos/seed/atlas-analytics-screen-3/900/1400",
+          "label": "Screen 03"
+        },
+        {
+          "src": "https://picsum.photos/seed/atlas-analytics-screen-4/900/1400",
+          "label": "Screen 04"
+        },
+        {
+          "src": "https://picsum.photos/seed/atlas-analytics-screen-5/900/1400",
+          "label": "Screen 05"
+        }
+      ]
+    },
+    "delivery": {
+      "intro": "Delivery focused on a polished prototype, responsive behavior guidance, and a handoff package that made engineering integration easier and more predictable.",
+      "prototype_screen": "https://picsum.photos/seed/atlas-analytics-prototype/900/1400",
+      "bullets": [
+        "Clarified the entry point into the reporting journey.",
+        "Connected overview charts to deeper drill-down states.",
+        "Prepared a reusable component language for engineering handoff.",
+        "Documented responsive behavior for smaller breakpoints."
+      ]
+    },
+    "integration": "Integration notes aligned component behavior, responsive priorities, interaction states, and chart data patterns so development could scale the design system cleanly.",
+    "steps": [
+      {
+        "title": "Discover",
+        "description": "Mapped goals, reviewed workflow gaps, and aligned scope with product and growth stakeholders."
+      },
+      {
+        "title": "Structure",
+        "description": "Simplified the dashboard architecture and grouped information by decision-making priority."
+      },
+      {
+        "title": "Design",
+        "description": "Built high-fidelity screens and reusable analytics components with clearer hierarchy and data emphasis."
+      },
+      {
+        "title": "Delivery",
+        "description": "Prepared prototype flows, responsive notes, and implementation-ready assets for handoff."
+      }
+    ],
+    "next_steps": [
+      "Run another round of usability testing on updated dashboard flows.",
+      "Expand chart component states for filtering, empty data, and localization.",
+      "Add product analytics hooks to measure reporting completion and engagement."
+    ]
+  },
+  "user_research": {
+    "method": "Research combined stakeholder interviews, competitor benchmarking, task-based reviews of the old flow, and journey mapping around how teams review weekly performance.",
+    "persona": [
+      {
+        "image": "https://picsum.photos/seed/atlas-analytics-persona/400/400",
+        "name": "Maya Okafor",
+        "age": "29",
+        "gender": "Female",
+        "occupation": "Growth Analyst",
+        "location": "Lagos, Nigeria",
+        "education": "B.Sc. Economics",
+        "quote": "\"I need a dashboard that helps me spot movement fast without opening five different tools.\"",
+        "bio": "Maya works with product and marketing teams to monitor acquisition, activation, and conversion performance. She needs clarity at a glance and confidence when presenting numbers to leadership.",
+        "goals": [
+          "Understand key movement quickly.",
+          "Share confident updates with stakeholders.",
+          "Find the next action without extra digging."
+        ],
+        "frustrations": [
+          "Too many tools for one reporting cycle.",
+          "Important metrics do not stand out clearly.",
+          "Inconsistent drill-down and state handling."
+        ]
+      }
+    ],
+    "journey_mapping": {
+      "goal": "Review campaign and product performance quickly, then share confident insight with the wider team.",
+      "image": "https://picsum.photos/seed/atlas-analytics-journey/1600/1000"
+    },
+    "findings": [
+      {
+        "title": "Users needed stronger visual guidance",
+        "text": "The most important metrics and changes were not obvious enough, which slowed down dashboard scanning."
+      },
+      {
+        "title": "Simpler structure reduced hesitation",
+        "text": "Grouping reports by decision-making priority made it easier for users to move from summary to action."
+      },
+      {
+        "title": "Consistency increased trust",
+        "text": "Clearer states, reusable patterns, and more coherent drill-down behavior made the dashboard feel more reliable."
+      }
+    ]
+  },
+  "outcomes": {
+    "intro": "The final direction created a clearer, faster, and more scalable analytics experience for product and growth teams.",
+    "impact": "Usability feedback showed stronger confidence, easier scanning, and faster completion of key reporting tasks in prototype reviews.",
+    "learned": "The project reinforced the value of combining research clarity, visual hierarchy, and engineering-ready structure in one connected design workflow."
+  },
+  "images": {
+    "cover": "https://picsum.photos/seed/atlas-analytics-cover/1600/1000",
+    "thumbnail": "https://picsum.photos/seed/atlas-analytics-thumb/1200/900",
+    "gallery": [
+      {
+        "src": "https://picsum.photos/seed/atlas-analytics-gallery-1/1600/1000",
+        "alt": "Atlas Analytics gallery image 1"
+      },
+      {
+        "src": "https://picsum.photos/seed/atlas-analytics-gallery-2/1600/1000",
+        "alt": "Atlas Analytics gallery image 2"
+      },
+      {
+        "src": "https://picsum.photos/seed/atlas-analytics-gallery-3/1600/1000",
+        "alt": "Atlas Analytics gallery image 3"
+      },
+      {
+        "src": "https://picsum.photos/seed/atlas-analytics-gallery-4/1600/1000",
+        "alt": "Atlas Analytics gallery image 4"
+      }
+    ]
+  },
   "tasks": [
     "UI/UX Design",
     "Dashboard Design",
     "Frontend Development"
   ],
-  "tag1": "Dashboard Design",
-  "tag2": "Frontend Development",
-  "image": "https://picsum.photos/seed/atlas-analytics/1600/1000",
-  "cover": "https://picsum.photos/seed/atlas-analytics/1600/1000",
-  "thumbnail": "https://picsum.photos/seed/atlas-analytics/1600/1000",
+  "tags": [
+    "Dashboard Design",
+    "Analytics Platform",
+    "Design System"
+  ],
   "client": "Atlas Labs",
   "industry": "Data & Analytics",
   "status": "published",
-  "date": "2025-11-12",
-  "overview": "Atlas Analytics is a Dashboard Design case study focused on creating a clear, high-performing product experience aligned with business goals and user needs. The project combines visual polish, practical UX decisions, and implementation-ready structure for long-term scale.",
-  "problem": "The existing experience lacked a clear hierarchy, had inconsistent interaction patterns, and made it difficult for users to complete key actions confidently.",
-  "solution": "I redesigned the core flow using a modular UI system, simplified information architecture, and reusable patterns that improved clarity across every major touchpoint.",
-  "result": "The final direction delivered a cleaner, faster, and more consistent product foundation that is ready for engineering handoff and future CMS-driven content updates.",
-  "highlights": [
-    {
-      "label": "Timeline",
-      "value": "4 weeks"
-    },
-    {
-      "label": "Role",
-      "value": "Lead Designer"
-    },
-    {
-      "label": "Coverage",
-      "value": "14 key screens"
-    },
-    {
-      "label": "Outcome",
-      "value": "+22% engagement in usability tests"
-    }
-  ],
-  "process": [
-    {
-      "title": "Discover",
-      "description": "Mapped project goals, reviewed existing experience gaps, and aligned scope with client priorities and user expectations."
-    },
-    {
-      "title": "Structure",
-      "description": "Built a clear information hierarchy and wireframe direction to simplify navigation and reduce cognitive load."
-    },
-    {
-      "title": "Design",
-      "description": "Developed high-fidelity screens and reusable components with consistent spacing, typography, and interaction states."
-    },
-    {
-      "title": "Deliver",
-      "description": "Prepared design documentation, responsive behavior notes, and implementation-ready assets for smooth development handoff."
-    }
-  ],
-  "sections": [
-    {
-      "title": "Context and challenge",
-      "body": "Atlas Analytics needed a stronger product narrative and clearer user pathways. This section documents the initial friction points and the strategic decisions used to prioritize improvements.",
-      "image": "https://picsum.photos/seed/atlas-analytics-section-1/1600/1000"
-    },
-    {
-      "title": "Design approach",
-      "body": "The visual and interaction system was rebuilt around consistency, readability, and conversion-focused hierarchy. Components were designed to scale across future pages without losing cohesion.",
-      "image": "https://picsum.photos/seed/atlas-analytics-section-2/1600/1000"
-    },
-    {
-      "title": "Delivery and iteration",
-      "body": "After validating the new direction, refinements focused on responsiveness, edge states, and implementation details so the project remains maintainable as content and features expand.",
-      "image": "https://picsum.photos/seed/atlas-analytics-section-3/1600/1000"
-    }
-  ],
-  "gallery": [
-    {
-      "src": "https://picsum.photos/seed/atlas-analytics-gallery-1/1600/1000",
-      "alt": "Atlas Analytics gallery image 1"
-    },
-    {
-      "src": "https://picsum.photos/seed/atlas-analytics-gallery-2/1600/1000",
-      "alt": "Atlas Analytics gallery image 2"
-    },
-    {
-      "src": "https://picsum.photos/seed/atlas-analytics-gallery-3/1600/1000",
-      "alt": "Atlas Analytics gallery image 3"
-    },
-    {
-      "src": "https://picsum.photos/seed/atlas-analytics-gallery-4/1600/1000",
-      "alt": "Atlas Analytics gallery image 4"
-    }
-  ],
-  "nextSteps": [
-    "Run another round of usability testing on updated flows and collect task-completion feedback.",
-    "Expand the component set with additional states for edge cases and localization.",
-    "Integrate analytics hooks to measure conversion, drop-off, and engagement trends post-launch."
-  ]
+  "date": "2025-11-12"
 }
