@@ -518,7 +518,7 @@ export default function Contact() {
                     </div>
                   )}
 
-                  <form onSubmit={handleSubmit} className="contactForm">
+                  <form onSubmit={handleSubmit} className="contactPageForm">
                       <div className="contactRow">
                         <div className="contactField">
                           <span className="fieldIcon">

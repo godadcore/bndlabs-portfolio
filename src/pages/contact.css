@@ -567,7 +567,7 @@
   font-family: inherit;
 }
 
-.contactForm {
+.contactPageForm {
   display: flex;
   flex-direction: column;
   gap: 20px;
