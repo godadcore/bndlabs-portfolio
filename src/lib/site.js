@@ -42,16 +42,36 @@ function normalizeWhatsAppLink(value) {
   return `https://wa.me/${digits}`;
 }
 
-export const CONTACT_EMAIL = String(siteSettings?.email || "hello@getbndlabs.com").trim();
-export const WHATSAPP_NUMBER = String(siteSettings?.whatsapp_number || "").trim();
-export const SOCIAL_LINKS = {
-  linkedin: String(siteSettings?.linkedin || "").trim(),
-  x: String(siteSettings?.x || "").trim(),
-  behance: String(siteSettings?.behance || "").trim(),
-  instagram: String(siteSettings?.instagram || "").trim(),
-  tiktok: String(siteSettings?.tiktok || "").trim(),
-  whatsapp: normalizeWhatsAppLink(siteSettings?.whatsapp_number),
-};
+export function buildSiteSettings(value = {}) {
+  const defaults =
+    siteSettings && typeof siteSettings === "object"
+      ? siteSettings
+      : {};
+  const input = value && typeof value === "object" ? value : {};
+
+  return {
+    contactEmail: String(input?.email || defaults?.email || "hello@getbndlabs.com").trim(),
+    whatsappNumber: String(input?.whatsapp_number || defaults?.whatsapp_number || "").trim(),
+    socialLinks: {
+      linkedin: String(input?.linkedin || defaults?.linkedin || "").trim(),
+      x: String(input?.x || defaults?.x || "").trim(),
+      behance: String(input?.behance || defaults?.behance || "").trim(),
+      instagram: String(input?.instagram || defaults?.instagram || "").trim(),
+      tiktok: String(input?.tiktok || defaults?.tiktok || "").trim(),
+      whatsapp: normalizeWhatsAppLink(input?.whatsapp_number || defaults?.whatsapp_number),
+    },
+  };
+}
+
+export function getFallbackSiteSettings() {
+  return buildSiteSettings(siteSettings);
+}
+
+const fallbackSiteSettings = getFallbackSiteSettings();
+
+export const CONTACT_EMAIL = fallbackSiteSettings.contactEmail;
+export const WHATSAPP_NUMBER = fallbackSiteSettings.whatsappNumber;
+export const SOCIAL_LINKS = fallbackSiteSettings.socialLinks;
 
 export function absoluteUrl(path = "/") {
   return new URL(path, SITE_URL).toString();
@@ -67,7 +87,10 @@ export function keywordContent(keywords = []) {
   return uniqueStrings(Array.isArray(keywords) ? keywords : [keywords]).join(", ");
 }
 
-export function buildPersonSchema() {
+export function buildPersonSchema(siteData = fallbackSiteSettings) {
+  const contactEmail = siteData?.contactEmail || CONTACT_EMAIL;
+  const socialLinks = siteData?.socialLinks || SOCIAL_LINKS;
+
   return {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -79,7 +102,7 @@ export function buildPersonSchema() {
     jobTitle: PERSON_TITLE,
     description: "UI/UX designer and product designer creating digital experiences.",
     url: SITE_URL,
-    email: CONTACT_EMAIL,
+    email: contactEmail,
     image: absoluteUrl(DEFAULT_OG_IMAGE_PATH),
     address: {
       "@type": "PostalAddress",
@@ -88,11 +111,11 @@ export function buildPersonSchema() {
     },
     areaServed: ["Lagos", "Nigeria"],
     sameAs: uniqueStrings([
-      SOCIAL_LINKS.linkedin,
-      SOCIAL_LINKS.x,
-      SOCIAL_LINKS.behance,
-      SOCIAL_LINKS.instagram,
-      SOCIAL_LINKS.tiktok,
+      socialLinks.linkedin,
+      socialLinks.x,
+      socialLinks.behance,
+      socialLinks.instagram,
+      socialLinks.tiktok,
     ]),
   };
 }

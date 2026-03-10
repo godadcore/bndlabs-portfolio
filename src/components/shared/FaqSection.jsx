@@ -13,7 +13,7 @@ const DEFAULT_FAQS = [
   },
   {
     q: "Which industry are you best suited for?",
-    a: "I've worked across fintech, SaaS, e-commerce, and creative agencies. If your product lives on a screen and needs to feel exceptional, I'm a good fit.",
+    a: "I've worked across Startups, fintech, SaaS, e-commerce, and creative agencies. If your product lives on a screen and needs to feel exceptional, I'm a good fit.",
   },
   {
     q: "How does your process work with clients?",
@@ -90,16 +90,24 @@ export default function FaqSection({
                 itemClassName,
                 openFaq === index ? "is-open" : ""
               )}
-              onClick={() => setOpenFaq(openFaq === index ? null : index)}
               style={itemClassName ? { "--reveal-order": index + 1 } : undefined}
             >
-              <div className="faqItemHead">
+              <button
+                type="button"
+                className="faqItemHead"
+                onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                aria-expanded={openFaq === index}
+              >
                 <span className="faqQ">{item.q}</span>
                 <span className="faqChevron">
                   <IconChevron width="18" height="18" />
                 </span>
+              </button>
+              <div className="faqBody" aria-hidden={openFaq === index ? "false" : "true"}>
+                <div className="faqBodyInner">
+                  <p className="faqA">{item.a}</p>
+                </div>
               </div>
-              {openFaq === index ? <p className="faqA">{item.a}</p> : null}
             </div>
           ))}
         </div>

@@ -90,24 +90,19 @@ export default function About() {
   const experienceList = useMemo(
     () => [
       {
-        company: "Spotify",
-        role: "Lead Product Designer",
-        years: "2022 - Present",
+        company: "Trueminds Innovation Ltd",
+        role: "Intern (UI/UX Designer)",
+        years: "2026 - Present",
       },
       {
-        company: "Airbnb",
-        role: "Senior UI/UX Designer",
-        years: "2020 - 2022",
+        company: "Novavoyage",
+        role: "Remote (UI/UX Designer",
+        years: "2025",
       },
       {
-        company: "Microsoft",
-        role: "Product Designer",
-        years: "2018 - 2020",
-      },
-      {
-        company: "Google",
-        role: "UI/UX Designer",
-        years: "2016 - 2018",
+        company: "PawMart",
+        role: "Remote (UI/UX Designer",
+        years: "2025",
       },
     ],
     []
@@ -253,12 +248,12 @@ export default function About() {
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="statItem">
-                  <h2><CountUp to={10} startWhen={statsInView} /></h2>
+                  <h2><CountUp to={7} startWhen={statsInView} /></h2>
                   <p>Projects Completed</p>
                 </div>
 
                 <div className="statItem">
-                  <h2><CountUp to={4} startWhen={statsInView} /></h2>
+                  <h2><CountUp to={2} startWhen={statsInView} /></h2>
                   <p>Global Clients</p>
                 </div>
 

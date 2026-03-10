@@ -14,6 +14,7 @@ import {
   keywordContent,
   toAbsoluteAssetUrl,
 } from "../../lib/site";
+import { useSiteSettings } from "../../providers/siteSettingsContext.js";
 
 function upsertMeta(selector, attributes) {
   let element = document.head.querySelector(selector);
@@ -82,12 +83,13 @@ export default function Seo({
   schema,
 }) {
   const location = useLocation();
+  const siteSettings = useSiteSettings();
   const canonicalUrl = absoluteUrl(url || canonicalPath || location.pathname || "/");
   const ogImage = toAbsoluteAssetUrl(image);
   const defaultOgImage = toAbsoluteAssetUrl(DEFAULT_OG_IMAGE_PATH);
   const usesDefaultOgImage = ogImage === defaultOgImage;
   const metaKeywords = keywordContent(keywords);
-  const schemaValue = schema === null ? null : JSON.stringify(schema ?? buildPersonSchema());
+  const schemaValue = schema === null ? null : JSON.stringify(schema ?? buildPersonSchema(siteSettings));
 
   useEffect(() => {
     document.title = title;

@@ -1,14 +1,34 @@
 /* global process */
-
+import path from "node:path";
 import nodemailer from "nodemailer";
 
-const JSON_HEADERS = {
-  "Content-Type": "application/json",
-};
+const rootDir = process.cwd();
+const envFiles = [".env.local", ".env"];
+
+for (const envFile of envFiles) {
+  const envPath = path.join(rootDir, envFile);
+  try {
+    process.loadEnvFile?.(envPath);
+  } catch {
+    // Ignore missing local env files.
+  }
+}
 
 const BRAND_NAME = "Bndlabs";
 const BRAND_URL = "https://getbndlabs.com";
 const BRAND_LOGO_URL = `${BRAND_URL}/favicon.svg`;
+const JSON_HEADERS = {
+  "Content-Type": "application/json",
+  "Cache-Control": "no-store",
+};
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_NAME_LENGTH = 120;
+const MAX_SUBJECT_LENGTH = 160;
+const MAX_SOURCE_LENGTH = 80;
+const MAX_MESSAGE_LENGTH = 5000;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const rateLimitStore = new Map();
 
 const SOCIAL_LINKS = [
   {
@@ -52,28 +72,86 @@ function safeString(value) {
   return String(value ?? "").trim();
 }
 
-function json(statusCode, body) {
+function singleLine(value) {
+  return safeString(value).replace(/[\r\n]+/g, " ");
+}
+
+function truncate(value, maxLength) {
+  return safeString(value).slice(0, maxLength);
+}
+
+function firstEnvValue(...names) {
+  for (const name of names) {
+    const value = safeString(process.env[name]);
+    if (value) return value;
+  }
+
+  return "";
+}
+
+function parsePort(value, fallback) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function parseBoolean(value, fallback) {
+  const normalized = safeString(value).toLowerCase();
+
+  if (["true", "1", "yes", "on"].includes(normalized)) return true;
+  if (["false", "0", "no", "off"].includes(normalized)) return false;
+
+  return fallback;
+}
+
+function getMailConfig() {
+  const smtpHost = firstEnvValue("SMTP_HOST") || "smtp.zoho.com";
+  const smtpPort = parsePort(firstEnvValue("SMTP_PORT"), 465);
+  const smtpSecure = parseBoolean(firstEnvValue("SMTP_SECURE"), smtpPort === 465);
+  const smtpUser = firstEnvValue("SMTP_USER", "ZOHO_USER");
+  const smtpPass = firstEnvValue("SMTP_PASS", "ZOHO_PASS");
+  const contactToEmail = firstEnvValue("CONTACT_TO_EMAIL") || smtpUser;
+  const contactFromEmail = firstEnvValue("CONTACT_FROM_EMAIL") || smtpUser;
+  const autoReplySubject =
+    firstEnvValue("CONTACT_AUTO_REPLY_SUBJECT") || "Thanks for contacting BndLabs";
+
   return {
-    statusCode,
-    headers: JSON_HEADERS,
-    body: JSON.stringify(body),
+    smtpHost,
+    smtpPort,
+    smtpSecure,
+    smtpUser,
+    smtpPass,
+    contactToEmail,
+    contactFromEmail,
+    autoReplySubject,
   };
 }
 
-function parseBody(rawBody) {
-  try {
-    return JSON.parse(rawBody || "{}");
-  } catch {
-    return null;
+function sendJson(res, status, body) {
+  Object.entries(JSON_HEADERS).forEach(([key, value]) => res.setHeader(key, value));
+  res.status(status).json(body);
+}
+
+function parsePayload(body) {
+  if (!body) return null;
+
+  if (typeof body === "string") {
+    try {
+      return JSON.parse(body);
+    } catch {
+      return null;
+    }
   }
+
+  if (typeof body === "object") return body;
+  return null;
 }
 
 function normalizeName(payload) {
-  const explicitName = safeString(payload?.name);
+  const explicitName = singleLine(payload?.name);
   if (explicitName) return explicitName;
 
-  const firstName = safeString(payload?.firstName);
-  const lastName = safeString(payload?.lastName);
+  const firstName = singleLine(payload?.firstName);
+  const lastName = singleLine(payload?.lastName);
   return [firstName, lastName].filter(Boolean).join(" ");
 }
 
@@ -254,46 +332,143 @@ function buildAutoReplyText({ firstName, name, message }) {
   ].join("\n");
 }
 
-export async function handler(event) {
-  if (event.httpMethod !== "POST") {
-    return json(405, { error: "Method Not Allowed" });
+function getClientIp(req) {
+  const forwardedFor = safeString(req?.headers?.["x-forwarded-for"] || req?.headers?.["X-Forwarded-For"]);
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0].trim();
   }
 
-  const payload = parseBody(event.body);
-  if (!payload) {
-    return json(400, { error: "Invalid JSON payload." });
+  return safeString(req?.socket?.remoteAddress || req?.connection?.remoteAddress || "unknown");
+}
+
+function pruneRateLimitStore(now) {
+  for (const [ip, timestamps] of rateLimitStore.entries()) {
+    const freshTimestamps = timestamps.filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS);
+    if (freshTimestamps.length) {
+      rateLimitStore.set(ip, freshTimestamps);
+    } else {
+      rateLimitStore.delete(ip);
+    }
+  }
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  pruneRateLimitStore(now);
+
+  const timestamps = rateLimitStore.get(ip) || [];
+  const freshTimestamps = timestamps.filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS);
+
+  if (freshTimestamps.length >= RATE_LIMIT_MAX_REQUESTS) {
+    rateLimitStore.set(ip, freshTimestamps);
+    return true;
   }
 
-  const name = normalizeName(payload);
-  const firstName = safeString(payload?.firstName) || safeString(name.split(" ")[0]);
-  const email = safeString(payload?.email);
-  const subject = safeString(payload?.subject) || "New contact message";
-  const message = safeString(payload?.message);
-  const source = safeString(payload?.source) || "website";
+  freshTimestamps.push(now);
+  rateLimitStore.set(ip, freshTimestamps);
+  return false;
+}
+
+function validatePayload(payload) {
+  const rawMessage = safeString(payload?.message);
+  const name = truncate(normalizeName(payload), MAX_NAME_LENGTH);
+  const firstName = truncate(singleLine(payload?.firstName) || singleLine(name.split(" ")[0]), MAX_NAME_LENGTH);
+  const email = singleLine(payload?.email).toLowerCase();
+  const subject = truncate(singleLine(payload?.subject) || "New contact message", MAX_SUBJECT_LENGTH);
+  const message = truncate(rawMessage, MAX_MESSAGE_LENGTH);
+  const source = truncate(singleLine(payload?.source) || "website", MAX_SOURCE_LENGTH);
   const subscribe = Boolean(payload?.subscribe);
+  const honeypot = singleLine(payload?.company || payload?.website || payload?.fax || payload?.botField);
+
+  if (honeypot) {
+    return { ignored: true };
+  }
 
   if (!name || !email || !message) {
-    return json(400, { error: "All fields required" });
+    return { error: "All fields required" };
   }
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email)) {
-    return json(400, { error: "Please enter a valid email address." });
+  if (!EMAIL_PATTERN.test(email)) {
+    return { error: "Please enter a valid email address." };
   }
 
-  const zohoUser = safeString(process.env.ZOHO_USER || process.env.CONTACT_TO_EMAIL || "hello@getbndlabs.com");
-  const zohoPass = safeString(process.env.ZOHO_PASS);
-  const autoReplyText = `Hi ${firstName || name}, thank you for reaching out! I received your message and will respond shortly.`;
+  if (rawMessage.length > MAX_MESSAGE_LENGTH) {
+    return { error: "Message is too long. Please keep it under 5000 characters." };
+  }
+
+  return {
+    value: {
+      name,
+      firstName,
+      email,
+      subject,
+      message,
+      source,
+      subscribe,
+    },
+  };
+}
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    sendJson(res, 405, { error: "Method Not Allowed" });
+    return;
+  }
+
+  const clientIp = getClientIp(req);
+  if (isRateLimited(clientIp)) {
+    sendJson(res, 429, {
+      error: "Too many requests. Please wait a few minutes and try again.",
+    });
+    return;
+  }
+
+  const payload = parsePayload(req.body);
+  if (!payload) {
+    sendJson(res, 400, { error: "Invalid JSON payload." });
+    return;
+  }
+
+  const validation = validatePayload(payload);
+  if (validation.ignored) {
+    sendJson(res, 200, { ok: true, ignored: true });
+    return;
+  }
+
+  if (validation.error) {
+    sendJson(res, 400, { error: validation.error });
+    return;
+  }
+
+  const { name, firstName, email, subject, message, source, subscribe } = validation.value;
+  const {
+    smtpHost,
+    smtpPort,
+    smtpSecure,
+    smtpUser,
+    smtpPass,
+    contactToEmail,
+    contactFromEmail,
+    autoReplySubject,
+  } = getMailConfig();
+
+  if (!smtpUser || !smtpPass || !contactToEmail || !contactFromEmail) {
+    console.error("CONTACT_API_CONFIG_ERROR", {
+      missingSmtpUser: !smtpUser,
+      missingSmtpPass: !smtpPass,
+      missingContactToEmail: !contactToEmail,
+      missingContactFromEmail: !contactFromEmail,
+    });
+    sendJson(res, 500, {
+      error: "Email service is not configured. Please try again later.",
+    });
+    return;
+  }
+
   const ownerSubject = `New Message from ${name} via BndLabs Contact Form`;
-
-  const ownerHtml = buildOwnerEmailHtml({
-    name,
-    email,
-    message,
-    subject,
-    source,
-    subscribe,
-  });
+  const autoReplyText = `Hi ${firstName || name}, thank you for reaching out! I received your message and will respond shortly.`;
+  const ownerHtml = buildOwnerEmailHtml({ name, email, message });
   const ownerText = buildOwnerEmailText({
     name,
     email,
@@ -305,68 +480,53 @@ export async function handler(event) {
   const autoReplyHtml = buildAutoReplyHtml({ firstName, name, email, message });
   const autoReplyTextBody = buildAutoReplyText({ firstName, name, message });
 
-  if (!zohoUser || !zohoPass) {
-    console.log("CONTACT_MESSAGE_LOG", {
-      to: zohoUser,
-      subject: ownerSubject,
-      name,
-      email,
-      source,
-      subscribe,
-      message,
-    });
-    console.log("CONTACT_AUTOREPLY_LOG", {
-      to: email,
-      subject: "Thanks for contacting BndLabs",
-      body: autoReplyTextBody,
-    });
-
-    return json(200, {
-      ok: true,
-      mode: "log",
-      message: "Message received successfully.",
-      autoReply: autoReplyText,
-    });
-  }
-
   const transporter = nodemailer.createTransport({
-    host: "smtp.zoho.com",
-    port: 465,
-    secure: true,
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpSecure,
     auth: {
-      user: zohoUser,
-      pass: zohoPass,
+      user: smtpUser,
+      pass: smtpPass,
     },
   });
 
   try {
     await Promise.all([
       transporter.sendMail({
-        from: `"BndLabs Contact" <${zohoUser}>`,
-        to: zohoUser,
+        from: contactFromEmail,
+        to: contactToEmail,
         replyTo: email,
         subject: ownerSubject,
         text: ownerText,
         html: ownerHtml,
       }),
       transporter.sendMail({
-        from: `"BndLabs" <${zohoUser}>`,
+        from: contactFromEmail,
         to: email,
-        subject: "Thanks for contacting BndLabs",
+        replyTo: contactToEmail,
+        subject: autoReplySubject,
         text: autoReplyTextBody,
         html: autoReplyHtml,
       }),
     ]);
 
-    return json(200, {
+    sendJson(res, 200, {
       ok: true,
       mode: "email",
       message: "Message sent successfully",
       autoReply: autoReplyText,
     });
   } catch (error) {
-    console.error("CONTACT_FUNCTION_ERROR", error);
-    return json(500, {
+    console.error("CONTACT_API_ERROR", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      name,
+      email,
+      source,
+      subscribe,
+      clientIp,
+    });
+    sendJson(res, 500, {
       error: "Unable to send your message right now. Please try again shortly.",
     });
   }

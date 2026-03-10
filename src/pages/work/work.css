@@ -756,6 +756,10 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  .workPage .logo-text {
+    color: var(--text-primary);
+  }
+
   .workPage .workHeroTitleClean,
   .workPage .workCarouselNavBtn,
   .workPage .workCard__title,

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SITE_NAME, SOCIAL_LINKS } from "../../lib/site";
+import { SITE_NAME } from "../../lib/site";
+import { useSiteSettings } from "../../providers/siteSettingsContext.js";
 import BrandMark from "./BrandMark";
 
 export default function Header({ active = "" }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { socialLinks } = useSiteSettings();
 
   const mobileWrapRef = useRef(null);
   const desktopWrapRef = useRef(null);
@@ -51,7 +53,7 @@ export default function Header({ active = "" }) {
           <nav className="social aboutDesktopSocial" aria-label="Social links">
             <a
               className="social-link"
-              href={SOCIAL_LINKS.behance}
+              href={socialLinks.behance}
               aria-label="Behance"
               target="_blank"
               rel="noreferrer noopener"
@@ -66,7 +68,7 @@ export default function Header({ active = "" }) {
 
             <a
               className="social-link"
-              href={SOCIAL_LINKS.instagram}
+              href={socialLinks.instagram}
               aria-label="Instagram"
               target="_blank"
               rel="noreferrer noopener"

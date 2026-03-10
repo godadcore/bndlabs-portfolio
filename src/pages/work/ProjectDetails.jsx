@@ -5,7 +5,12 @@ import Footer from "../../components/layout/Footer";
 import WorkCard from "../../components/work/WorkCard";
 import Seo from "../../components/seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
-import { getAllProjects, getProjectBySlug } from "../../lib/projects";
+import {
+  getInitialProjectBySlug,
+  getInitialProjects,
+  loadAllProjects,
+  loadProjectBySlug,
+} from "../../lib/projectData";
 import {
   BASE_KEYWORDS,
   SITE_NAME,
@@ -45,12 +50,38 @@ function PersonaAvatar({ persona }) {
 
 export default function ProjectDetails() {
   const { slug } = useParams();
-  const project = getProjectBySlug(slug);
+  return <ProjectDetailsContent key={slug || "project"} slug={slug || ""} />;
+}
+
+function ProjectDetailsContent({ slug }) {
+  const fallbackProject = getInitialProjectBySlug(slug);
+  const [project, setProject] = useState(fallbackProject || null);
+  const [projects, setProjects] = useState(() => getInitialProjects());
+  const [isProjectLoading, setIsProjectLoading] = useState(() => !fallbackProject);
   const [personaIndex, setPersonaIndex] = useState(0);
   const scrollRootRef = useRef(null);
   const motionScopeRef = useRef(null);
 
   usePullToRefresh(scrollRootRef);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    Promise.all([loadAllProjects(), loadProjectBySlug(slug)]).then(
+      ([loadedProjects, loadedProject]) => {
+        if (!isMounted) return;
+        if (Array.isArray(loadedProjects) && loadedProjects.length) {
+          setProjects(loadedProjects);
+        }
+        setProject(loadedProject || fallbackProject || null);
+        setIsProjectLoading(false);
+      }
+    );
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fallbackProject, slug]);
 
   useEffect(() => {
     if (!project) return undefined;
@@ -158,6 +189,30 @@ export default function ProjectDetails() {
     };
   }, [project]);
 
+  if (!project && isProjectLoading) {
+    return (
+      <main className="page projectDetailsPage">
+        <section className="hero aboutCard" aria-label="Project details page">
+          <div className="cardScroll" ref={scrollRootRef}>
+            <section className="aboutHeroShell" id="top">
+              <div className="aboutShell">
+                <div className="aboutStickyHeader">
+                  <Header active="work" />
+                </div>
+              </div>
+            </section>
+
+            <section className="projectDetailsSection" aria-label="Project details body">
+              <div className="projectDetailsInner" />
+            </section>
+
+            <Footer />
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   if (!project) {
     return (
       <main className="page projectDetailsPage">
@@ -185,7 +240,7 @@ export default function ProjectDetails() {
                 <article className="projectEmptyState">
                   <h1>Project not found</h1>
                   <p>
-                    This project slug does not exist yet. Add it in
+                    This project slug does not exist yet. Add it in Sanity or in
                     {" "}
                     <code>src/content/projects</code>
                     {" "}
@@ -207,7 +262,7 @@ export default function ProjectDetails() {
 
   const d = project.caseStudy;
   const activePersona = d.personas[personaIndex] || d.personas[0];
-  const moreWorks = getAllProjects()
+  const moreWorks = projects
     .filter((item) => item.slug !== project.slug && item.id !== project.id)
     .slice(0, 3);
   const seoDescription = buildProjectSeoDescription(project);

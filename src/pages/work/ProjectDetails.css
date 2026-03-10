@@ -972,12 +972,14 @@
 
 .projectDetailsPage .projectMoreWorksGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 18px;
+  align-items: stretch;
 }
 
 .projectDetailsPage .projectMoreWorksItem {
   min-width: 0;
+  display: flex;
 }
 
 .projectDetailsPage .projectMoreWorksGrid .workCard {
@@ -996,6 +998,7 @@
     transform 0.18s ease,
     box-shadow 0.18s ease,
     filter 0.18s ease;
+  height: 100%;
 }
 
 .projectDetailsPage .projectMoreWorksGrid .workCard:hover {
@@ -1448,6 +1451,15 @@
 
   .projectDetailsPage .pd-phone-screen {
     background: var(--surface-soft);
+  }
+
+  .projectDetailsPage .pd-next-item {
+    border-color: var(--border-regular);
+    background: rgba(var(--surface-rgb), 0.9);
+  }
+
+  .projectDetailsPage .pd-next-txt {
+    color: var(--text-primary);
   }
 
   .projectDetailsPage .projectMoreWorksCard {

@@ -1,13 +1,26 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
-import { getAllProjects } from "../../lib/projects";
+import { useEffect, useRef, useState } from "react";
+import { getInitialProjects, loadAllProjects } from "../../lib/projectData";
 import WorkCard from "./WorkCard";
 import "./selected-work.css";
 
 export default function SelectedWork({ scrollRootRef }) {
-  const projects = getAllProjects();
+  const [projects, setProjects] = useState(() => getInitialProjects());
   const latest = projects.slice(0, 3);
   const sectionRef = useRef(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    loadAllProjects().then((loadedProjects) => {
+      if (!isMounted || !Array.isArray(loadedProjects) || !loadedProjects.length) return;
+      setProjects(loadedProjects);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const root = scrollRootRef?.current;      // ✅ your .cardScroll

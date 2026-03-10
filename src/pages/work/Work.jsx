@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import WorkCard from "../../components/work/WorkCard";
 import Seo from "../../components/seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
-import { getAllProjects } from "../../lib/projects";
+import { getInitialProjects, loadAllProjects, sortProjectsNewestFirst } from "../../lib/projectData";
 import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
 import "./work.css";
 
@@ -16,28 +16,6 @@ const MOBILE_GRID_BREAKPOINT = 767;
 const DESKTOP_INITIAL_VISIBLE_COUNT = 5;
 const MOBILE_INITIAL_VISIBLE_COUNT = 4;
 const LOAD_MORE_STEP = 3;
-
-function isValidProjectDate(date) {
-  const d = new Date(date);
-  return !Number.isNaN(d.getTime());
-}
-
-function sortProjectsNewestFirst(items) {
-  return [...items].sort((a, b) => {
-    const aHasDate = isValidProjectDate(a?.date);
-    const bHasDate = isValidProjectDate(b?.date);
-
-    if (aHasDate && bHasDate) {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }
-    if (aHasDate && !bHasDate) return -1;
-    if (!aHasDate && bHasDate) return 1;
-
-    return String(a?.title || "").localeCompare(String(b?.title || ""), undefined, {
-      sensitivity: "base",
-    });
-  });
-}
 
 function shuffleProjects(items) {
   const copy = [...items];
@@ -66,9 +44,8 @@ const ChevronRight = () => (
 
 export default function Work() {
   const navigate = useNavigate();
-  const orderedProjects = useMemo(
-    () => sortProjectsNewestFirst(getAllProjects()),
-    []
+  const [orderedProjects, setOrderedProjects] = useState(() =>
+    sortProjectsNewestFirst(getInitialProjects())
   );
   const featuredProjects = useMemo(
     () => shuffleProjects(orderedProjects).slice(0, FEATURED_COUNT),
@@ -92,6 +69,19 @@ export default function Work() {
   const motionScopeRef = useRef(null);
 
   usePullToRefresh(scrollRootRef);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    loadAllProjects().then((loadedProjects) => {
+      if (!isMounted || !Array.isArray(loadedProjects) || !loadedProjects.length) return;
+      setOrderedProjects(sortProjectsNewestFirst(loadedProjects));
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const isMobile = vw <= 640;
   const isTablet = vw > 640 && vw <= 980;
@@ -525,13 +515,13 @@ export default function Work() {
                         design partner, I&apos;ll help you shape a clear product direction and bring
                         it to life.
                       </p>
-                      <a
-                        href="/contact"
+                      <Link
+                        to="/contact"
                         className="workFinalCtaBtn workReveal workReveal--soft"
                         style={{ "--reveal-order": 2 }}
                       >
                         Start a project
-                      </a>
+                      </Link>
                     </div>
                   </section>
                 </div>

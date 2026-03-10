@@ -5,7 +5,8 @@ import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
 import usePullToRefresh from "../hooks/usePullToRefresh";
 import { makeContactPayload, submitContactForm } from "../lib/contactForm";
-import { BASE_KEYWORDS, CONTACT_EMAIL, SITE_NAME, SOCIAL_LINKS } from "../lib/site";
+import { BASE_KEYWORDS, SITE_NAME } from "../lib/site";
+import { useSiteSettings } from "../providers/siteSettingsContext.js";
 import "./contact.css";
 
 const SERVICES = [
@@ -236,10 +237,11 @@ export default function Contact() {
   const [errorMessage, setErrorMessage] = useState("");
   const scrollRootRef = useRef(null);
   const motionScopeRef = useRef(null);
+  const { contactEmail, socialLinks } = useSiteSettings();
 
   usePullToRefresh(scrollRootRef);
 
-  const publicEmail = CONTACT_EMAIL;
+  const publicEmail = contactEmail;
   const publicPhone = "+234 905 232 1666";
   const publicLocation = "Lagos, Nigeria";
 
@@ -409,7 +411,7 @@ export default function Contact() {
                   Tell me about your product, website, or idea. If you need a UI/UX designer in Lagos, Nigeria, I&apos;ll review it and get back to you with the right next step.
                 </p>
                <p className="contactMeta">
-  <span className="contactMetaPill">Average response time: within 6 hours</span>
+  <span className="contactMetaPill">Average response time: within 1 hours</span>
 </p>
               </div>
 
@@ -473,7 +475,7 @@ export default function Contact() {
 
                   <div className="contactSocials">
                     <a
-                      href={SOCIAL_LINKS.linkedin}
+                      href={socialLinks.linkedin}
                       target="_blank"
                       rel="noreferrer noopener"
                       className="contactSocialBtn social-linkedin"
@@ -483,7 +485,7 @@ export default function Contact() {
                     </a>
 
                     <a
-                      href={SOCIAL_LINKS.whatsapp}
+                      href={socialLinks.whatsapp}
                       target="_blank"
                       rel="noreferrer noopener"
                       className="contactSocialBtn social-whatsapp"
@@ -666,7 +668,6 @@ export default function Contact() {
           <FaqSection
             sectionClassName="contactReveal contactReveal--soft"
             leftClassName="contactReveal contactReveal--soft"
-            itemClassName="contactReveal contactReveal--card"
           />
           </div>
 

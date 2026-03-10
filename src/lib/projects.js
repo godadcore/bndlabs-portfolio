@@ -33,7 +33,12 @@
  */
 
 export function safeLowerSlug(value) {
-  return String(value || "")
+  const normalizedValue =
+    value && typeof value === "object"
+      ? value.current || value.slug || ""
+      : value;
+
+  return String(normalizedValue || "")
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9-]+/g, "-")
@@ -521,7 +526,7 @@ function normalizeCaseStudy(raw, project) {
   };
 }
 
-function normalizeProject(raw) {
+export function normalizeProject(raw) {
   const processRoot = raw?.process && typeof raw.process === "object" && !Array.isArray(raw.process)
     ? raw.process
     : {};
@@ -582,6 +587,8 @@ function normalizeProject(raw) {
   const project = {
     id,
     slug,
+    createdAt: firstString(raw?._createdAt, raw?.createdAt),
+    updatedAt: firstString(raw?._updatedAt, raw?.updatedAt),
     title,
     subtitle,
     summary,

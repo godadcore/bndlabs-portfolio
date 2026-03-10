@@ -6,9 +6,59 @@
     <meta name="robots" content="noindex,nofollow" />
     <base href="/admin/" />
     <title>Bndlabs CMS</title>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+      window.CMS_MANUAL_INIT = true;
+    </script>
   </head>
   <body>
+    <script src="https://unpkg.com/js-yaml@4/dist/js-yaml.min.js"></script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script>
+      (async function initCms() {
+        try {
+          const response = await fetch("/admin/config.yml", {
+            credentials: "same-origin",
+            cache: "no-store",
+          });
+
+          if (!response.ok) {
+            throw new Error(`Unable to load /admin/config.yml (${response.status})`);
+          }
+
+          const rawConfig = await response.text();
+          const config = window.jsyaml.load(rawConfig) || {};
+          const backend = config.backend || {};
+          const init = window.initCMS || window.CMS?.init;
+
+          if (typeof init !== "function") {
+            throw new Error("Decap CMS failed to initialize.");
+          }
+
+          init({
+            load_config_file: false,
+            config: {
+              ...config,
+              backend: {
+                ...backend,
+                base_url: window.location.origin,
+                auth_endpoint: String(backend.auth_endpoint || "api/decap/auth").replace(/^\/+/, ""),
+                site_domain: window.location.hostname,
+              },
+            },
+          });
+        } catch (error) {
+          console.error("CMS_INIT_ERROR", error);
+          document.body.innerHTML = `
+            <pre style="margin:0;padding:24px;font:14px/1.7 monospace;white-space:pre-wrap;">
+Unable to load the CMS.
+
+Check that /admin/config.yml is available and the CMS auth endpoints are configured correctly.
+
+${String(error instanceof Error ? error.message : error)}
+            </pre>
+          `;
+        }
+      })();
+    </script>
   </body>
 </html>
