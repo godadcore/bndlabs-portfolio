@@ -619,6 +619,17 @@ export const projectType = defineType({
       title: 'Date',
       type: 'datetime',
     }),
+    defineField({
+  name: 'liveProjectUrl',
+  title: 'Live Project URL',
+  type: 'url',
+  description: 'Paste the live project link here. Button will only show if this is filled in.',
+  validation: (Rule) =>
+    Rule.uri({
+      allowRelative: false,
+      scheme: ['https', 'http'],
+    }),
+}),
   ],
   preview: {
     select: {
