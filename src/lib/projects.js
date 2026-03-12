@@ -614,6 +614,7 @@ export function normalizeProject(raw) {
     sections,
     gallery,
     nextSteps,
+    liveProjectUrl: firstString(raw?.liveProjectUrl), // ← ADD THIS
   };
 
   return {
