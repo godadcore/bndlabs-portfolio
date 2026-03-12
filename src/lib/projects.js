@@ -614,7 +614,7 @@ export function normalizeProject(raw) {
     sections,
     gallery,
     nextSteps,
-    liveProjectUrl: firstString(raw?.liveProjectUrl), // ← ADD THIS
+    liveProjectUrl: firstString(raw?.liveProjectUrl), // ← NEW: passes live URL from Sanity/CMS
   };
 
   return {
