@@ -1,4 +1,8 @@
 import { safeLowerSlug } from "./projects.js";
+import { sanitizeUrl } from "./urlSecurity.js";
+
+let cachedRemotePostsPromise = null;
+const POSTS_API_PATH = "/api/sanity/posts";
 
 export const BLOG_POST = {
   slug: "why-i-keep-interfaces-simple",
@@ -70,6 +74,15 @@ function stripHtml(value) {
     .trim();
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function slugifyHeading(value, fallback = "section") {
   const slug = safeLowerSlug(value);
   return slug || fallback;
@@ -94,14 +107,16 @@ function formatParagraphHtml(value) {
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
-    .map((paragraph) => `<p>${paragraph}</p>`)
+    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
     .join("");
 }
 
 function normalizeImageEntry(item, index) {
   if (!item || typeof item !== "object") return null;
 
-  const url = firstString(item.url, item.src, item.image);
+  const url = sanitizeUrl(firstString(item.url, item.src, item.image), {
+    allowRelative: true,
+  });
   if (!url) return null;
 
   return {
@@ -183,7 +198,9 @@ function normalizeContentBlock(block, index) {
     const images = Array.isArray(block.images)
       ? block.images.map(normalizeImageEntry).filter(Boolean)
       : [];
-    const singleUrl = firstString(block.url, block.src, block.image);
+    const singleUrl = sanitizeUrl(firstString(block.url, block.src, block.image), {
+      allowRelative: true,
+    });
 
     if (!images.length && !singleUrl) return null;
 
@@ -203,7 +220,9 @@ function normalizeContentBlock(block, index) {
   }
 
   if (type === "gif") {
-    const url = firstString(block.url, block.src, block.image);
+    const url = sanitizeUrl(firstString(block.url, block.src, block.image), {
+      allowRelative: true,
+    });
     if (!url) return null;
 
     return {
@@ -216,7 +235,9 @@ function normalizeContentBlock(block, index) {
   }
 
   if (type === "video") {
-    const url = firstString(block.url, block.src);
+    const url = sanitizeUrl(firstString(block.url, block.src), {
+      allowRelative: true,
+    });
     if (!url) return null;
 
     return {
@@ -254,7 +275,9 @@ function normalizeContentBlock(block, index) {
   }
 
   if (type === "audio") {
-    const url = firstString(block.url, block.src);
+    const url = sanitizeUrl(firstString(block.url, block.src), {
+      allowRelative: true,
+    });
     if (!url) return null;
 
     return {
@@ -291,7 +314,9 @@ function normalizeAuthor(author) {
   return {
     name,
     initials: firstString(author?.initials, toInitials(name)),
-    avatarUrl: firstString(author?.avatar_url, author?.avatarUrl),
+    avatarUrl: sanitizeUrl(firstString(author?.avatar_url, author?.avatarUrl), {
+      allowRelative: true,
+    }),
   };
 }
 
@@ -301,6 +326,9 @@ export function normalizePostSummary(raw) {
   const thumbnail = firstString(
     raw?.thumb_url,
     raw?.thumbnail,
+    raw?.mainImage?.url,
+    raw?.image?.url,
+    raw?.heroImage?.url,
     raw?.image,
     raw?.cover_image_url,
     raw?.coverImageUrl
@@ -320,8 +348,8 @@ export function normalizePostSummary(raw) {
     title,
     description: excerpt,
     excerpt,
-    image: thumbnail,
-    thumbnail,
+    image: sanitizeUrl(thumbnail, { allowRelative: true }),
+    thumbnail: sanitizeUrl(thumbnail, { allowRelative: true }),
     href: slug ? `/blog/${slug}` : "/blog",
     date: firstString(raw?.date, raw?._createdAt),
     readTime: firstString(raw?.read_time, raw?.readTime, "5 min read"),
@@ -367,23 +395,128 @@ export function normalizePost(raw) {
     contentBlocks,
     headings,
     nextPost,
-    updatedAt: firstString(raw?._updatedAt, raw?.updatedAt, raw?.date),
+    createdAt: firstString(raw?._createdAt, raw?.createdAt, raw?.date),
+    updatedAt: firstString(raw?._updatedAt, raw?.updatedAt, raw?._createdAt, raw?.date),
   };
 }
 
 const NORMALIZED_BLOG_POST = normalizePost(BLOG_POST);
+const FALLBACK_POSTS = [NORMALIZED_BLOG_POST];
+let cachedPostsSnapshot = FALLBACK_POSTS;
 
-export const BLOG_POSTS = [normalizePostSummary(BLOG_POST)];
+function isValidPostDate(value) {
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime());
+}
+
+function postSortTimestamp(post) {
+  const candidates = [post?.date, post?.createdAt, post?.updatedAt];
+  const firstValidDate = candidates.find((value) => isValidPostDate(value));
+  return firstValidDate ? new Date(firstValidDate).getTime() : null;
+}
+
+export function sortPostsNewestFirst(items) {
+  return [...items].sort((a, b) => {
+    const aTimestamp = postSortTimestamp(a);
+    const bTimestamp = postSortTimestamp(b);
+
+    if (aTimestamp && bTimestamp) {
+      return bTimestamp - aTimestamp;
+    }
+    if (aTimestamp && !bTimestamp) return -1;
+    if (!aTimestamp && bTimestamp) return 1;
+
+    return String(a?.title || "").localeCompare(String(b?.title || ""), undefined, {
+      sensitivity: "base",
+    });
+  });
+}
+
+function getFallbackPosts() {
+  return sortPostsNewestFirst(FALLBACK_POSTS);
+}
+
+async function fetchPostsPayload() {
+  const response = await fetch(POSTS_API_PATH, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Sanity posts API returned ${response.status}`);
+  }
+
+  return response.json();
+}
+
+async function fetchPostsFromSanity() {
+  const payload = await fetchPostsPayload();
+  const rawPosts = Array.isArray(payload?.posts) ? payload.posts : [];
+  const normalizedPosts = rawPosts
+    .filter(Boolean)
+    .map((post) => normalizePost(post))
+    .filter((post) => post?.title && post?.slug && post?.id);
+
+  if (!normalizedPosts.length) {
+    console.warn("SANITY_POSTS_EMPTY", {
+      reason: "empty_or_unusable_response",
+      source: payload?.source || "unknown",
+    });
+    return cachedPostsSnapshot.length ? cachedPostsSnapshot : getFallbackPosts();
+  }
+
+  cachedPostsSnapshot = sortPostsNewestFirst(normalizedPosts);
+  return cachedPostsSnapshot;
+}
+
+export const BLOG_POSTS = getFallbackPosts().map((post) => normalizePostSummary(post));
 
 export function getInitialPosts() {
-  return BLOG_POSTS;
+  return cachedPostsSnapshot;
 }
 
 export function getPostBySlug(slug) {
   const normalizedSlug = safeLowerSlug(slug);
   if (!normalizedSlug) return null;
 
-  return NORMALIZED_BLOG_POST.slug === normalizedSlug ? NORMALIZED_BLOG_POST : null;
+  return (
+    cachedPostsSnapshot.find(
+      (post) => post.slug === normalizedSlug || post.id === normalizedSlug
+    ) || null
+  );
+}
+
+export async function loadAllPosts(options = {}) {
+  const forceRefresh = options?.force === true;
+
+  if (!cachedRemotePostsPromise || forceRefresh) {
+    cachedRemotePostsPromise = fetchPostsFromSanity().catch((error) => {
+      console.error("SANITY_POSTS_FETCH_ERROR", {
+        message: error instanceof Error ? error.message : String(error),
+      });
+      cachedPostsSnapshot = getFallbackPosts();
+      return cachedPostsSnapshot;
+    });
+  }
+
+  return cachedRemotePostsPromise;
+}
+
+export async function loadPostBySlug(slug, options = {}) {
+  const normalizedSlug = safeLowerSlug(slug);
+  if (!normalizedSlug) return null;
+
+  const posts = await loadAllPosts(options);
+  return (
+    posts.find((post) => post.slug === normalizedSlug || post.id === normalizedSlug) ||
+    getPostBySlug(normalizedSlug)
+  );
+}
+
+export function resetBlogDataCache() {
+  cachedRemotePostsPromise = null;
+  cachedPostsSnapshot = getFallbackPosts();
 }
 
 export function formatBlogDate(value) {

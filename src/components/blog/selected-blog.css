@@ -12,6 +12,12 @@
 
 .selectedBlogSection .workCard__task {
   max-width: 38ch;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.selectedBlogSection .blogCard__button {
+  width: fit-content;
 }
 
 @media (max-width: 980px) {

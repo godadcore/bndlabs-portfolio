@@ -48,6 +48,236 @@ const mediaArrayField = (name: string, title: string) =>
     ],
   })
 
+const tableRowsField = defineField({
+  name: 'rows',
+  title: 'Rows',
+  type: 'array',
+  of: [
+    defineField({
+      name: 'tableRow',
+      title: 'Row',
+      type: 'object',
+      fields: [stringListField('cells', 'Cell Values')],
+      preview: {
+        select: {
+          title: 'cells.0',
+        },
+        prepare({title}) {
+          return {
+            title: title || 'Table row',
+          }
+        },
+      },
+    }),
+  ],
+})
+
+const storySectionType = defineField({
+  name: 'storySection',
+  title: 'Image Section',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Heading',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'body',
+      title: 'Short Paragraph',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'image',
+      options: {hotspot: true},
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'alt',
+      title: 'Alt Text',
+      type: 'string',
+    }),
+    defineField({
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      media: 'image',
+    },
+  },
+})
+
+const frameGroupSectionType = defineField({
+  name: 'frameGroupSection',
+  title: 'Grouped Frames',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Heading',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'body',
+      title: 'Short Paragraph',
+      type: 'text',
+      rows: 4,
+    }),
+    mediaArrayField('frames', 'Frames'),
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      media: 'frames.0.image',
+    },
+  },
+})
+
+const videoSectionType = defineField({
+  name: 'videoSection',
+  title: 'Video Section',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Heading',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'body',
+      title: 'Short Paragraph',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'video',
+      title: 'Video File',
+      type: 'file',
+      options: {
+        accept: 'video/*',
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'poster',
+      title: 'Poster Image',
+      type: 'image',
+      options: {hotspot: true},
+    }),
+    defineField({
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'caption',
+      media: 'poster',
+    },
+    prepare({title, subtitle, media}) {
+      return {
+        title,
+        subtitle: subtitle || 'Video section',
+        media,
+      }
+    },
+  },
+})
+
+const audioSectionType = defineField({
+  name: 'audioSection',
+  title: 'Voice Note Section',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Heading',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'body',
+      title: 'Short Paragraph',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'audio',
+      title: 'Audio File',
+      type: 'file',
+      options: {
+        accept: 'audio/*',
+      },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'caption',
+    },
+    prepare({title, subtitle}) {
+      return {
+        title,
+        subtitle: subtitle || 'Voice note section',
+      }
+    },
+  },
+})
+
+const tableSectionType = defineField({
+  name: 'tableSection',
+  title: 'Table Section',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Heading',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'body',
+      title: 'Short Paragraph',
+      type: 'text',
+      rows: 4,
+    }),
+    stringListField('columns', 'Column Headers'),
+    tableRowsField,
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'columns.0',
+    },
+    prepare({title, subtitle}) {
+      return {
+        title,
+        subtitle: subtitle ? `Starts with ${subtitle}` : 'Table section',
+      }
+    },
+  },
+})
+
 export const caseStudyType = defineType({
   name: 'caseStudy',
   title: 'Case Studies',
@@ -131,6 +361,24 @@ export const caseStudyType = defineType({
       options: {hotspot: true},
       validation: (Rule) => Rule.required(),
     }),
+    mediaArrayField(
+      'images',
+      'Project Images',
+    ),
+    defineField({
+      name: 'sections',
+      title: 'Project Sections',
+      type: 'array',
+      description:
+        'Flexible storytelling blocks. Reorder freely to control how the case study appears on the frontend.',
+      of: [
+        storySectionType,
+        frameGroupSectionType,
+        videoSectionType,
+        audioSectionType,
+        tableSectionType,
+      ],
+    }),
     defineField({
       name: 'overview',
       title: 'Overview',
@@ -176,6 +424,55 @@ export const caseStudyType = defineType({
     stringListField('role', 'Role'),
     stringListField('tools', 'Tools'),
     stringListField('timeline', 'Timeline'),
+    defineField({
+      name: 'objectives',
+      title: 'Problem & Goal Items',
+      type: 'array',
+      of: [
+        defineField({
+          name: 'objective',
+          title: 'Objective',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Short Label',
+              type: 'string',
+            }),
+            defineField({
+              name: 'text',
+              title: 'Objective Text',
+              type: 'text',
+              rows: 3,
+            }),
+            defineField({
+              name: 'status',
+              title: 'Status',
+              type: 'string',
+              initialValue: 'Completed',
+              options: {
+                list: [
+                  {title: 'Completed', value: 'Completed'},
+                  {title: 'In Progress', value: 'In Progress'},
+                ],
+              },
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              subtitle: 'status',
+            },
+            prepare({title, subtitle}) {
+              return {
+                title: title || 'Objective',
+                subtitle: subtitle || 'Completed',
+              }
+            },
+          },
+        }),
+      ],
+    }),
     mediaArrayField('researchImages', 'Research Images'),
     mediaArrayField('wireframeImages', 'Wireframe Images'),
     mediaArrayField('prototypeImages', 'Prototype Images'),
@@ -211,6 +508,37 @@ export const caseStudyType = defineType({
       ],
     }),
     mediaArrayField('finalGallery', 'Final Gallery'),
+    stringListField('nextSteps', 'Next Steps'),
+    stringListField('tasks', 'Tasks'),
+    stringListField('tags', 'Tags'),
+    defineField({
+      name: 'client',
+      title: 'Client',
+      type: 'string',
+    }),
+    defineField({
+      name: 'industry',
+      title: 'Industry',
+      type: 'string',
+    }),
+    defineField({
+      name: 'date',
+      title: 'Legacy Date',
+      type: 'datetime',
+      description: 'Optional alias kept for imported legacy project data.',
+    }),
+    defineField({
+      name: 'liveProjectUrl',
+      title: 'Legacy Live Project URL',
+      type: 'url',
+      description:
+        'Optional alias kept for imported legacy project data. Prefer Visit Website URL for new case studies.',
+      validation: (Rule) =>
+        Rule.uri({
+          allowRelative: false,
+          scheme: ['https', 'http'],
+        }),
+    }),
   ],
   preview: {
     select: {

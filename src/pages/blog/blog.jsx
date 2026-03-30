@@ -1,23 +1,36 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import BlogCard from "../../components/blog/BlogCard";
 import Seo from "../../components/seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
-import { getInitialPosts } from "../../lib/blogData";
+import { getInitialPosts, loadAllPosts } from "../../lib/blogData";
 import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
 import "../work/work.css";
 import "./blog.css";
 
 export default function Blog() {
-  const posts = getInitialPosts();
+  const [posts, setPosts] = useState(() => getInitialPosts());
   const scrollRootRef = useRef(null);
   const motionScopeRef = useRef(null);
   const featuredPost = posts[0] || null;
   const gridPosts = featuredPost ? posts.slice(1) : posts;
 
   usePullToRefresh(scrollRootRef);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    loadAllPosts().then((loadedPosts) => {
+      if (!isMounted || !Array.isArray(loadedPosts)) return;
+      setPosts(loadedPosts);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const root = scrollRootRef.current;

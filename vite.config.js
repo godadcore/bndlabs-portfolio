@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import contactHandler from "./api/contact.js";
 import decapAuthHandler from "./api/decap/auth.js";
 import decapCallbackHandler from "./api/decap/callback.js";
+import sanityPostsHandler from "./api/sanity/posts.js";
 import sanityProjectsHandler from "./api/sanity/projects.js";
 import sanitySiteSettingsHandler from "./api/sanity/site-settings.js";
 
@@ -93,6 +94,7 @@ function vercelApiBridge() {
     ["/api/contact", contactHandler],
     ["/api/decap/auth", decapAuthHandler],
     ["/api/decap/callback", decapCallbackHandler],
+    ["/api/sanity/posts", sanityPostsHandler],
     ["/api/sanity/projects", sanityProjectsHandler],
     ["/api/sanity/site-settings", sanitySiteSettingsHandler],
   ]);

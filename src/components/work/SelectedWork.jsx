@@ -12,7 +12,7 @@ export default function SelectedWork({ scrollRootRef }) {
   useEffect(() => {
     let isMounted = true;
 
-    loadAllProjects({ force: true }).then((loadedProjects) => {
+    loadAllProjects().then((loadedProjects) => {
       if (!isMounted || !Array.isArray(loadedProjects)) return;
       setProjects(loadedProjects);
     });
@@ -23,11 +23,19 @@ export default function SelectedWork({ scrollRootRef }) {
   }, []);
 
   useEffect(() => {
-    const root = scrollRootRef?.current;      // ✅ your .cardScroll
+    const root = scrollRootRef?.current;
     const section = sectionRef.current;
-    if (!root || !section) return;
+    if (!section) return undefined;
 
-    // ✅ reveal in-view
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion || !root || typeof IntersectionObserver !== "function") {
+      section.classList.add("is-inview");
+      section.classList.remove("is-observing");
+      return undefined;
+    }
+
+    section.classList.add("is-observing");
+
     const io = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
@@ -39,6 +47,7 @@ export default function SelectedWork({ scrollRootRef }) {
     io.observe(section);
 
     return () => {
+      section.classList.remove("is-observing");
       io.disconnect();
     };
   }, [scrollRootRef]);
@@ -50,10 +59,11 @@ export default function SelectedWork({ scrollRootRef }) {
   return (
     <section className="selectedWorkSection" ref={sectionRef}>
       <div className="selectedWorkLayout">
-        {/* LEFT TEXT COLUMN */}
         <div className="selectedWorkLeft">
           <h2 className="selectedWorkTitle">
-            Selected<br />work
+            Selected
+            <br />
+            work
           </h2>
 
           <Link to="/work" className="whatidoBtn">
@@ -61,7 +71,6 @@ export default function SelectedWork({ scrollRootRef }) {
           </Link>
         </div>
 
-        {/* RIGHT CARD AREA */}
         <div className="selectedWorkRight">
           <div className="featuredCard">
             <WorkCard project={featured} featured />

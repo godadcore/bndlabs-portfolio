@@ -11,8 +11,9 @@ import Footer from "../../components/layout/Footer";
 import Header from "../../components/layout/Header";
 import Seo from "../../components/seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
-import { formatBlogDate, getPostBySlug } from "../../lib/blogData";
+import { formatBlogDate, getPostBySlug, loadPostBySlug } from "../../lib/blogData";
 import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
+import { sanitizeUrl } from "../../lib/urlSecurity";
 import "./blog-post.css";
 
 function AuthorAvatar({ author }) {
@@ -30,7 +31,91 @@ function AuthorAvatar({ author }) {
 function TextBlock({ block }) {
   if (!block?.html) return null;
 
-  return <div className="blogPostText" dangerouslySetInnerHTML={{ __html: block.html }} />;
+  const sanitizedHtml = sanitizeHtmlFragment(block.html);
+  if (!sanitizedHtml) return null;
+
+  return <div className="blogPostText" dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+}
+
+function sanitizeHtmlFragment(value) {
+  const rawHtml = String(value ?? "").trim();
+  if (!rawHtml) return "";
+
+  if (typeof window === "undefined" || typeof DOMParser === "undefined") {
+    return rawHtml.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+  }
+
+  const allowedTags = new Set([
+    "a",
+    "b",
+    "blockquote",
+    "br",
+    "code",
+    "em",
+    "i",
+    "li",
+    "ol",
+    "p",
+    "strong",
+    "u",
+    "ul",
+  ]);
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<body>${rawHtml}</body>`, "text/html");
+
+  const sanitizeNode = (node) => {
+    if (node.nodeType === window.Node.TEXT_NODE) {
+      return doc.createTextNode(node.textContent || "");
+    }
+
+    if (node.nodeType !== window.Node.ELEMENT_NODE) {
+      return null;
+    }
+
+    const tagName = node.nodeName.toLowerCase();
+    const childNodes = Array.from(node.childNodes)
+      .map(sanitizeNode)
+      .filter(Boolean);
+
+    if (!allowedTags.has(tagName)) {
+      const fragment = doc.createDocumentFragment();
+      childNodes.forEach((childNode) => fragment.appendChild(childNode));
+      return fragment;
+    }
+
+    const sanitizedElement = doc.createElement(tagName);
+
+    if (tagName === "a") {
+      const safeHref = sanitizeUrl(node.getAttribute("href"), {
+        allowRelative: true,
+        allowedProtocols: ["http:", "https:", "mailto:", "tel:"],
+      });
+
+      if (!safeHref) {
+        const fragment = doc.createDocumentFragment();
+        childNodes.forEach((childNode) => fragment.appendChild(childNode));
+        return fragment;
+      }
+
+      sanitizedElement.setAttribute("href", safeHref);
+
+      if (/^https?:/i.test(safeHref)) {
+        sanitizedElement.setAttribute("target", "_blank");
+        sanitizedElement.setAttribute("rel", "noreferrer noopener");
+      }
+    }
+
+    childNodes.forEach((childNode) => sanitizedElement.appendChild(childNode));
+    return sanitizedElement;
+  };
+
+  const wrapper = doc.createElement("div");
+  Array.from(doc.body.childNodes)
+    .map(sanitizeNode)
+    .filter(Boolean)
+    .forEach((node) => wrapper.appendChild(node));
+
+  return wrapper.innerHTML.trim();
 }
 
 function renderBlock(block, index) {
@@ -77,11 +162,29 @@ export default function BlogPost() {
 }
 
 function BlogPostContent({ slug }) {
-  const post = getPostBySlug(slug);
+  const initialPost = getPostBySlug(slug);
+  const [post, setPost] = useState(() => initialPost);
+  const [isLoading, setIsLoading] = useState(() => !initialPost);
   const [activeHeading, setActiveHeading] = useState("");
   const scrollRootRef = useRef(null);
 
   usePullToRefresh(scrollRootRef);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+    setPost(getPostBySlug(slug));
+
+    loadPostBySlug(slug).then((loadedPost) => {
+      if (!isMounted) return;
+      setPost(loadedPost);
+      setIsLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [slug]);
 
   useEffect(() => {
     setActiveHeading(post?.headings?.[0]?.id || "");
@@ -188,8 +291,12 @@ function BlogPostContent({ slug }) {
 
                   {!post || !hasContent ? (
                     <div className="blogPostEmptyState">
-                      <h1>No content yet</h1>
-                      <p>No content yet - start adding blocks in your CMS.</p>
+                      <h1>{isLoading ? "Loading post" : "No content yet"}</h1>
+                      <p>
+                        {isLoading
+                          ? "Fetching the latest blog content from Sanity."
+                          : "No content yet - start adding blocks in your CMS."}
+                      </p>
                     </div>
                   ) : null}
                 </article>

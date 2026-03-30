@@ -47,17 +47,24 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
 }
 
 .featuredCard {
   width: 100%;
+  min-width: 0;
 }
 
 .twoCards {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+  align-items: stretch;
+}
+
+.twoCards > * {
+  min-width: 0;
 }
 
 .selectedWorkSection .workCard {
@@ -173,7 +180,7 @@
   margin-top: 2px;
 }
 
-.selectedWorkSection .workCard {
+.selectedWorkSection.is-observing .workCard {
   opacity: 0;
   transform: translateY(26px) scale(0.985);
   filter: blur(6px);
@@ -181,21 +188,21 @@
   will-change: transform, opacity;
 }
 
-.selectedWorkSection.is-inview .workCard {
+.selectedWorkSection.is-observing.is-inview .workCard {
   opacity: 1;
   transform: translateY(0) scale(1);
   filter: blur(0);
 }
 
-.selectedWorkSection.is-inview .featuredCard .workCard {
+.selectedWorkSection.is-observing.is-inview .featuredCard .workCard {
   transition-delay: 0.06s;
 }
 
-.selectedWorkSection.is-inview .twoCards .workCard:nth-child(1) {
+.selectedWorkSection.is-observing.is-inview .twoCards .workCard:nth-child(1) {
   transition-delay: 0.16s;
 }
 
-.selectedWorkSection.is-inview .twoCards .workCard:nth-child(2) {
+.selectedWorkSection.is-observing.is-inview .twoCards .workCard:nth-child(2) {
   transition-delay: 0.26s;
 }
 

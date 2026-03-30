@@ -1,6 +1,8 @@
 // Single source of truth for Projects.
 // Decap CMS writes JSON files into src/content/projects/.
 
+import { sanitizeExternalUrl, sanitizeUrl } from "./urlSecurity.js";
+
 /**
  * @typedef {Object} Project
  * @property {string} id
@@ -26,10 +28,11 @@
  * @property {string} result
  * @property {{label: string, value: string}[]} highlights
  * @property {{title: string, description: string}[]} process
- * @property {{title: string, body: string, image: string}[]} sections
+ * @property {Array<Object>} sections
  * @property {{src: string, alt: string}[]} gallery
  * @property {string[]} nextSteps
  * @property {{enabled: boolean, text: string, url: string}} liveProject
+ * @property {string} liveProjectUrl
  * @property {Object} caseStudy
  */
 
@@ -89,6 +92,10 @@ function toBoolean(value, fallback = false) {
   if (normalized === "true") return true;
   if (normalized === "false") return false;
   return fallback;
+}
+
+function sanitizeMediaUrl(value) {
+  return sanitizeUrl(value, { allowRelative: true });
 }
 
 function makePlaceholderImage(seed) {
@@ -243,13 +250,15 @@ function normalizeMockupScreens(value, fallbackImages) {
     .map((item, index) => {
       if (typeof item === "string") {
         return {
-          src: firstString(item, fallbackImages[index]),
+          src: sanitizeMediaUrl(firstString(item, fallbackImages[index])),
           label: labels[index] || `Screen ${index + 1}`,
         };
       }
 
       return {
-        src: firstString(item?.src, item?.image, item?.url, fallbackImages[index]),
+        src: sanitizeMediaUrl(
+          firstString(item?.src, item?.image, item?.url, fallbackImages[index])
+        ),
         label: firstString(item?.label, item?.title, labels[index] || `Screen ${index + 1}`),
       };
     })
@@ -258,7 +267,7 @@ function normalizeMockupScreens(value, fallbackImages) {
   if (items.length) return items;
 
   return fallbackImages.slice(0, 5).map((src, index) => ({
-    src,
+    src: sanitizeMediaUrl(src),
     label: labels[index] || `Screen ${index + 1}`,
   }));
 }
@@ -270,13 +279,13 @@ function normalizeGalleryItems(value, title) {
     .map((item, index) => {
       if (typeof item === "string") {
         return {
-          src: firstString(item),
+          src: sanitizeMediaUrl(firstString(item)),
           alt: `${title} gallery image ${index + 1}`,
         };
       }
 
       return {
-        src: firstString(item?.src, item?.image, item?.url),
+        src: sanitizeMediaUrl(firstString(item?.src, item?.image, item?.url)),
         alt: firstString(item?.alt, `${title} gallery image ${index + 1}`),
       };
     })
@@ -306,13 +315,21 @@ function normalizeSanityImage(value, fallbackAlt = "") {
 
   if (typeof value === "string") {
     return {
-      src: firstString(value),
+      src: sanitizeMediaUrl(firstString(value)),
       alt: firstString(fallbackAlt),
       caption: "",
     };
   }
 
-  const src = firstString(value?.url, value?.src, value?.asset?.url, value?.image?.url, value?.image?.asset?.url);
+  const src = sanitizeMediaUrl(
+    firstString(
+      value?.url,
+      value?.src,
+      value?.asset?.url,
+      value?.image?.url,
+      value?.image?.asset?.url
+    )
+  );
   if (!src) return null;
 
   return {
@@ -361,13 +378,435 @@ function normalizeCaseStudyResults(value) {
     .filter((item) => item.metric && item.description);
 }
 
-function buildWhatsAppUrl(number) {
+function normalizeCaseStudyObjectives(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => ({
+      title: firstString(item?.title, item?.label),
+      text: firstString(item?.text, item?.description),
+      status: firstString(item?.status),
+    }))
+    .filter((item) => item.text);
+}
+
+function normalizeSanityFile(value) {
+  if (!value) return null;
+
+  const src = sanitizeMediaUrl(
+    firstString(value?.url, value?.src, value?.asset?.url, value)
+  );
+
+  if (!src) return null;
+
+  return {
+    src,
+    alt: firstString(value?.alt),
+    caption: firstString(value?.caption),
+  };
+}
+
+function normalizeTableRows(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((row) => {
+      if (Array.isArray(row)) {
+        return row.map((cell) => String(cell ?? "").trim());
+      }
+
+      if (row && typeof row === "object") {
+        const cells = Array.isArray(row.cells)
+          ? row.cells
+          : Array.isArray(row.columns)
+            ? row.columns
+            : [];
+
+        return cells.map((cell) => String(cell ?? "").trim());
+      }
+
+      return [];
+    })
+    .filter((row) => row.some(Boolean));
+}
+
+function createCaseStudySectionId(value, fallback) {
+  return safeLowerSlug(value) || fallback;
+}
+
+function createStorySection({ id, heading, text, image }) {
+  if (!image?.src && !heading && !text) return null;
+
+  return {
+    id,
+    type: "story",
+    heading,
+    text,
+    image: image?.src ? image : null,
+  };
+}
+
+function createFramesSection({ id, heading, text, frames }) {
+  const normalizedFrames = Array.isArray(frames) ? frames.filter((item) => item?.src) : [];
+  if (!normalizedFrames.length) return null;
+
+  return {
+    id,
+    type: "frames",
+    heading,
+    text,
+    frames: normalizedFrames,
+  };
+}
+
+function createVideoSection({ id, heading, text, video, poster }) {
+  if (!video?.src) return null;
+
+  return {
+    id,
+    type: "video",
+    heading,
+    text,
+    video,
+    poster: poster?.src ? poster : null,
+  };
+}
+
+function createAudioSection({ id, heading, text, audio }) {
+  if (!audio?.src) return null;
+
+  return {
+    id,
+    type: "audio",
+    heading,
+    text,
+    audio,
+  };
+}
+
+function createTableSection({ id, heading, text, columns, rows }) {
+  const normalizedColumns = toStringArray(columns);
+  const normalizedRows = normalizeTableRows(rows);
+
+  if (!normalizedColumns.length && !normalizedRows.length) return null;
+
+  return {
+    id,
+    type: "table",
+    heading,
+    text,
+    table: {
+      columns: normalizedColumns,
+      rows: normalizedRows,
+    },
+  };
+}
+
+function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
+  if (!section || typeof section !== "object") return null;
+
+  const heading = firstString(section?.heading, section?.title, `Section ${index + 1}`);
+  const text = firstString(section?.body, section?.description, section?.text);
+  const id = createCaseStudySectionId(
+    section?._key || heading || `${projectTitle}-section-${index + 1}`,
+    `section-${index + 1}`
+  );
+
+  if (
+    section?._type === "tableSection" ||
+    Array.isArray(section?.columns) ||
+    Array.isArray(section?.rows)
+  ) {
+    return createTableSection({
+      id,
+      heading,
+      text,
+      columns: section?.columns || section?.headers,
+      rows: section?.rows,
+    });
+  }
+
+  if (section?._type === "audioSection" || section?.audio || section?.audioUrl) {
+    const audio = normalizeSanityFile(section?.audio || section?.audioUrl);
+    return createAudioSection({
+      id,
+      heading,
+      text,
+      audio: audio
+        ? {
+            ...audio,
+            caption: firstString(section?.caption, audio.caption),
+          }
+        : null,
+    });
+  }
+
+  if (section?._type === "videoSection" || section?.video || section?.videoUrl) {
+    const video = normalizeSanityFile(section?.video || section?.videoUrl);
+    return createVideoSection({
+      id,
+      heading,
+      text,
+      video: video
+        ? {
+            ...video,
+            caption: firstString(section?.caption, video.caption),
+          }
+        : null,
+      poster: normalizeSanityImage(section?.poster),
+    });
+  }
+
+  const frames = normalizeSanityImageArray(
+    section?.frames || section?.images,
+    heading || projectTitle,
+    "Frame"
+  );
+
+  if (section?._type === "frameGroupSection" || frames.length > 1) {
+    return createFramesSection({
+      id,
+      heading,
+      text,
+      frames,
+    });
+  }
+
+  const image = normalizeSanityImage(
+    section?.image || (frames.length === 1 ? frames[0] : null),
+    `${heading || projectTitle} image`
+  );
+
+  return createStorySection({
+    id,
+    heading,
+    text,
+    image,
+  });
+}
+
+function buildCaseStudyInfoRows({
+  role = [],
+  tools = [],
+  timeline = [],
+  category = "",
+  client = "",
+  industry = "",
+  status = "",
+}) {
+  return [
+    ["Role", toStringArray(role).join(", ")],
+    ["Tools", toStringArray(tools).join(", ")],
+    ["Duration", toStringArray(timeline).join(", ")],
+    ["Platform", firstString(category, industry)],
+    ["Client", firstString(client)],
+    ["Status", firstString(status)],
+  ].filter(([, value]) => value);
+}
+
+function buildCaseStudySummaryTableSection(details) {
+  const rows = buildCaseStudyInfoRows(details);
+  if (!rows.length) return null;
+
+  return createTableSection({
+    id: "project-details",
+    heading: "Project details",
+    text: "A quick summary of the role, tools, duration, and platform behind the work.",
+    columns: ["Item", "Details"],
+    rows,
+  });
+}
+
+function buildModernCaseStudySections({
+  title,
+  description,
+  overviewText,
+  role,
+  tools,
+  timeline,
+  category,
+  client,
+  industry,
+  status,
+  projectImages,
+  researchImages,
+  wireframeImages,
+  prototypeImages,
+  finalGallery,
+  results,
+  sections,
+}) {
+  const explicitSections = toObjectArray(sections)
+    .map((section, index) => normalizeFlexibleCaseStudySection(section, index, title))
+    .filter(Boolean);
+
+  const infoSection = buildCaseStudySummaryTableSection({
+    role,
+    tools,
+    timeline,
+    category,
+    client,
+    industry,
+    status,
+  });
+
+  if (explicitSections.length) {
+    if (infoSection && !explicitSections.some((section) => section.type === "table")) {
+      return [infoSection, ...explicitSections];
+    }
+
+    return explicitSections;
+  }
+
+  const fallbackSections = [];
+
+  if (infoSection) {
+    fallbackSections.push(infoSection);
+  }
+
+  const introImage =
+    projectImages[0] ||
+    researchImages[0] ||
+    wireframeImages[0] ||
+    prototypeImages[0] ||
+    finalGallery[0] ||
+    null;
+
+  const overviewSection = createStorySection({
+    id: "project-overview",
+    heading: "Project overview",
+    text: firstString(overviewText, description),
+    image: introImage,
+  });
+
+  if (overviewSection) {
+    fallbackSections.push(overviewSection);
+  }
+
+  const imageSets = [
+    {
+      id: "project-images",
+      heading: "Selected frames",
+      text: "A focused set of screens and visuals from the project story.",
+      frames: projectImages,
+    },
+    {
+      id: "research-frames",
+      heading: "Discovery frames",
+      text: "Research references and supporting visuals used to guide the early direction.",
+      frames: researchImages,
+    },
+    {
+      id: "wireframe-frames",
+      heading: "Structure and wireframes",
+      text: "Low-fidelity frames that clarified hierarchy, layout, and product flow.",
+      frames: wireframeImages,
+    },
+    {
+      id: "prototype-frames",
+      heading: "Prototype previews",
+      text: "Interactive previews that shaped the final interface direction.",
+      frames: prototypeImages,
+    },
+    {
+      id: "final-frames",
+      heading: "Final screens",
+      text: "Polished interface frames from the final case study.",
+      frames: finalGallery,
+    },
+  ];
+
+  imageSets.forEach((imageSet) => {
+    const section = createFramesSection(imageSet);
+    if (section) fallbackSections.push(section);
+  });
+
+  const resultRows = Array.isArray(results)
+    ? results
+        .map((item) => [firstString(item?.metric), firstString(item?.description)])
+        .filter((row) => row.some(Boolean))
+    : [];
+
+  const resultsSection = createTableSection({
+    id: "design-decisions",
+    heading: "Design decisions",
+    text: "A concise summary of the outcomes and choices that shaped the final solution.",
+    columns: ["Focus", "Details"],
+    rows: resultRows,
+  });
+
+  if (resultsSection) {
+    fallbackSections.push(resultsSection);
+  }
+
+  return fallbackSections.filter(Boolean);
+}
+
+function buildLegacyCaseStudySections(project, caseStudyData, rawSections = []) {
+  const explicitSections = toObjectArray(rawSections)
+    .map((section, index) => normalizeFlexibleCaseStudySection(section, index, project?.title))
+    .filter(Boolean);
+
+  const timelineValue =
+    firstHighlightValue(project?.highlights || [], /timeline|duration|weeks|months/i) || "";
+
+  const infoSection = buildCaseStudySummaryTableSection({
+    role: project?.tasks || [],
+    tools: project?.tags || [project?.tag1, project?.tag2].filter(Boolean),
+    timeline: timelineValue ? [timelineValue] : [],
+    category: project?.category,
+    client: project?.client,
+    industry: project?.industry,
+    status: project?.status,
+  });
+
+  const sections = [];
+
+  if (infoSection && !explicitSections.some((section) => section.type === "table")) {
+    sections.push(infoSection);
+  }
+
+  sections.push(...explicitSections);
+
+  const gallerySection = createFramesSection({
+    id: "selected-screens",
+    heading: "Selected screens",
+    text: "Key interface views and supporting visuals from the case study.",
+    frames: project?.gallery || [],
+  });
+
+  if (gallerySection) {
+    sections.push(gallerySection);
+  }
+
+  const nextStepsRows = toStringArray(caseStudyData?.nextSteps)
+    .map((item) => ["Next step", item])
+    .filter((row) => row[1]);
+
+  const nextStepsSection = createTableSection({
+    id: "next-steps",
+    heading: "Next steps",
+    text: "A short list of follow-up opportunities for the product after delivery.",
+    columns: ["Focus", "Details"],
+    rows: nextStepsRows,
+  });
+
+  if (nextStepsSection) {
+    sections.push(nextStepsSection);
+  }
+
+  return sections.filter(Boolean);
+}
+
+function buildBrokenLinkMessage(pageUrl = "[page url]") {
+  return `Hi, this page is broken on my portfolio: ${pageUrl}`;
+}
+
+function buildWhatsAppUrl(number, pageUrl = "[page url]") {
   const normalized = String(number || "").replace(/[^\d]/g, "");
   if (!normalized) return "";
 
-  return `https://wa.me/${normalized}?text=${encodeURIComponent(
-    "Hi, I found a broken link on your portfolio"
-  )}`;
+  return `https://wa.me/${normalized}?text=${encodeURIComponent(buildBrokenLinkMessage(pageUrl))}`;
 }
 
 function normalizeModernCaseStudy(raw) {
@@ -391,35 +830,66 @@ function normalizeModernCaseStudy(raw) {
   const description = firstString(raw?.description, overviewText);
   const brandLogo = normalizeSanityImage(raw?.brandLogo, `${title} logo`);
   const heroImage = normalizeSanityImage(raw?.heroImage, `${title} hero image`);
+  const projectImages = normalizeSanityImageArray(raw?.images, title, "Project image");
   const researchImages = normalizeSanityImageArray(raw?.researchImages, title, "Research image");
   const wireframeImages = normalizeSanityImageArray(raw?.wireframeImages, title, "Wireframe image");
   const prototypeImages = normalizeSanityImageArray(raw?.prototypeImages, title, "Prototype image");
   const finalGallery = normalizeSanityImageArray(raw?.finalGallery, title, "Final gallery image");
   const stats = normalizeCaseStudyStats(raw?.stats);
+  const objectives = normalizeCaseStudyObjectives(raw?.objectives);
   const results = normalizeCaseStudyResults(raw?.results);
   const role = toStringArray(raw?.role);
   const tools = toStringArray(raw?.tools);
   const timeline = toStringArray(raw?.timeline);
+  const tasks = toStringArray(raw?.tasks);
+  const tags = toStringArray(raw?.tags);
+  const nextSteps = toStringArray(raw?.nextSteps);
   const publishedDate = firstString(raw?.publishedDate, raw?.date, raw?._createdAt);
   const fallbackImage =
     heroImage?.src ||
+    projectImages[0]?.src ||
     finalGallery[0]?.src ||
     researchImages[0]?.src ||
     wireframeImages[0]?.src ||
     prototypeImages[0]?.src ||
     makePlaceholderImage(slug || title);
-  const liveUrl = firstString(raw?.liveUrl);
-  const prototypeUrl = firstString(raw?.prototypeUrl);
-  const twitterUrl = firstString(raw?.twitterUrl);
+  const liveUrl = sanitizeExternalUrl(firstString(raw?.liveUrl, raw?.liveProjectUrl));
+  const prototypeUrl = sanitizeExternalUrl(firstString(raw?.prototypeUrl));
+  const twitterUrl = sanitizeExternalUrl(firstString(raw?.twitterUrl));
   const whatsappNumber = firstString(raw?.whatsappNumber);
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber);
-  const category = firstString(raw?.category, "Case Study");
+  const category = firstString(raw?.category, raw?.industry, "Case Study");
   const status = firstString(raw?.status, "Concept");
-  const displayTasks = uniqueStrings([
-    ...role.slice(0, 2),
-    ...tools.slice(0, 1),
+  const client = firstString(raw?.client);
+  const industry = firstString(raw?.industry, category);
+  const normalizedSections = buildModernCaseStudySections({
+    title,
+    description,
+    overviewText,
+    role,
+    tools,
+    timeline,
     category,
-  ]).slice(0, 3);
+    client,
+    industry,
+    status,
+    projectImages,
+    researchImages,
+    wireframeImages,
+    prototypeImages,
+    finalGallery,
+    results,
+    sections: raw?.sections,
+  });
+  const displayTasks = uniqueStrings(
+    tasks.length
+      ? tasks
+      : [
+          ...role.slice(0, 2),
+          ...tools.slice(0, 1),
+          category,
+        ],
+  ).slice(0, 3);
 
   return {
     id,
@@ -432,14 +902,14 @@ function normalizeModernCaseStudy(raw) {
     description,
     category,
     tasks: displayTasks,
-    tags: uniqueStrings([...role, ...tools, ...timeline]),
+    tags: uniqueStrings(tags.length ? tags : [...role, ...tools, ...timeline]),
     tag1: role[0] || category,
     tag2: tools[0] || status,
     image: fallbackImage,
     cover: heroImage?.src || fallbackImage,
     thumbnail: fallbackImage,
-    client: "",
-    industry: category,
+    client,
+    industry,
     status,
     date: publishedDate,
     overview: overviewText,
@@ -451,14 +921,15 @@ function normalizeModernCaseStudy(raw) {
       value: String(item.value),
     })),
     process: [],
-    sections: [],
+    sections: normalizedSections,
     gallery: finalGallery,
-    nextSteps: [],
+    nextSteps,
     liveProject: {
       enabled: Boolean(liveUrl),
       text: "Visit Website",
       url: liveUrl,
     },
+    liveProjectUrl: liveUrl,
     caseStudy: {
       brandLogo: brandLogo?.src || "",
       heroImage: heroImage?.src || fallbackImage,
@@ -466,17 +937,26 @@ function normalizeModernCaseStudy(raw) {
       category,
       publishedDate,
       status,
+      images: projectImages,
+      sections: normalizedSections,
       overviewBlocks,
       stats,
       role,
       tools,
       timeline,
+      objectives,
+      tasks,
+      tags,
+      client,
+      industry,
+      nextSteps,
       researchImages,
       wireframeImages,
       prototypeImages,
       results,
       finalGallery,
       liveUrl,
+      liveProjectUrl: sanitizeExternalUrl(firstString(raw?.liveProjectUrl)),
       prototypeUrl,
       twitterUrl,
       whatsappNumber,
@@ -576,6 +1056,17 @@ function normalizeCaseStudy(raw, project) {
         integrationNote,
       ]).slice(0, 4);
   const nextSteps = toStringArray(processRoot?.next_steps || caseStudyRaw.nextSteps);
+  const liveUrl = sanitizeExternalUrl(
+    firstString(caseStudyRaw.liveUrl, caseStudyRaw.liveProjectUrl, raw?.liveUrl, raw?.liveProjectUrl)
+  );
+  const prototypeUrl = sanitizeExternalUrl(
+    firstString(caseStudyRaw.prototypeUrl, raw?.prototypeUrl)
+  );
+  const twitterUrl = sanitizeExternalUrl(
+    firstString(caseStudyRaw.twitterUrl, raw?.twitterUrl)
+  );
+  const whatsappNumber = firstString(caseStudyRaw.whatsappNumber, raw?.whatsappNumber);
+  const whatsappUrl = buildWhatsAppUrl(whatsappNumber);
   const learned = firstString(
     outcomesRaw?.learned,
     caseStudyRaw.learned,
@@ -588,6 +1079,13 @@ function normalizeCaseStudy(raw, project) {
     outcomeFromHighlights,
     project.result,
     "The final direction created a clearer and more scalable experience ready for continued iteration."
+  );
+  const normalizedSections = buildLegacyCaseStudySections(
+    project,
+    {
+      nextSteps: nextSteps.length ? nextSteps : project.nextSteps,
+    },
+    raw?.sections || raw?.contentSections
   );
 
   return {
@@ -736,6 +1234,13 @@ function normalizeCaseStudy(raw, project) {
     impact,
     learned,
     nextSteps: nextSteps.length ? nextSteps : project.nextSteps,
+    liveUrl,
+    liveProjectUrl: liveUrl,
+    prototypeUrl,
+    twitterUrl,
+    whatsappNumber,
+    whatsappUrl,
+    sections: normalizedSections,
   };
 }
 
@@ -767,9 +1272,15 @@ export function normalizeProject(raw) {
   const description = firstString(raw?.description, raw?.summary);
   const subtitle = firstString(raw?.subtitle);
   const placeholderImage = makePlaceholderImage(slug || id || title);
-  const image = firstString(raw?.image, imagesRaw?.cover, raw?.cover, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage);
-  const cover = firstString(imagesRaw?.cover, raw?.cover, image, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage);
-  const thumbnail = firstString(imagesRaw?.thumbnail, raw?.thumbnail, image, cover, placeholderImage);
+  const image = sanitizeMediaUrl(
+    firstString(raw?.image, imagesRaw?.cover, raw?.cover, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage)
+  );
+  const cover = sanitizeMediaUrl(
+    firstString(imagesRaw?.cover, raw?.cover, image, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage)
+  );
+  const thumbnail = sanitizeMediaUrl(
+    firstString(imagesRaw?.thumbnail, raw?.thumbnail, image, cover, placeholderImage)
+  );
   const overview = firstString(raw?.overview, raw?.description, summary, description);
   const firstChallenge = Array.isArray(raw?.challenges) ? raw.challenges[0] : null;
   const problem = firstString(raw?.problem, firstChallenge?.text, firstChallenge?.description, raw?.challenges);
@@ -802,10 +1313,13 @@ export function normalizeProject(raw) {
 
   const nextSteps = toStringArray(raw?.process?.next_steps || raw?.nextSteps);
   const liveProjectRaw = raw?.liveProject && typeof raw.liveProject === "object" ? raw.liveProject : {};
+  const liveProjectUrl = sanitizeExternalUrl(
+    firstString(raw?.liveProjectUrl, liveProjectRaw?.url)
+  );
   const liveProject = {
-    enabled: toBoolean(liveProjectRaw?.enabled, false),
+    enabled: toBoolean(liveProjectRaw?.enabled, Boolean(liveProjectUrl)),
     text: firstString(liveProjectRaw?.text, "View Live Project"),
-    url: firstString(liveProjectRaw?.url),
+    url: liveProjectUrl,
   };
 
   const project = {
@@ -839,6 +1353,7 @@ export function normalizeProject(raw) {
     gallery,
     nextSteps,
     liveProject,
+    liveProjectUrl,
   };
 
   return {

@@ -1,18 +1,40 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import BlogCard from "./BlogCard";
-import { getInitialPosts } from "../../lib/blogData";
+import { getInitialPosts, loadAllPosts } from "../../lib/blogData";
 import "../work/selected-work.css";
 import "./selected-blog.css";
 
 export default function SelectedBlog({ scrollRootRef }) {
-  const posts = getInitialPosts();
+  const [posts, setPosts] = useState(() => getInitialPosts());
   const sectionRef = useRef(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    loadAllPosts().then((loadedPosts) => {
+      if (!isMounted || !Array.isArray(loadedPosts)) return;
+      setPosts(loadedPosts);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const root = scrollRootRef?.current;
     const section = sectionRef.current;
-    if (!root || !section) return;
+    if (!section) return undefined;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion || !root || typeof IntersectionObserver !== "function") {
+      section.classList.add("is-inview");
+      section.classList.remove("is-observing");
+      return undefined;
+    }
+
+    section.classList.add("is-observing");
 
     const io = new IntersectionObserver(
       ([entry]) => {
@@ -25,11 +47,12 @@ export default function SelectedBlog({ scrollRootRef }) {
     io.observe(section);
 
     return () => {
+      section.classList.remove("is-observing");
       io.disconnect();
     };
   }, [scrollRootRef]);
 
-  const [featured, second, third] = posts;
+  const [featured, second, third] = posts.slice(0, 3);
 
   if (!featured) return null;
 

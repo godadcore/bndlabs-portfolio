@@ -1,4 +1,5 @@
 import siteSettings from "../content/site/settings.json" with { type: "json" };
+import { sanitizeExternalUrl } from "./urlSecurity.js";
 
 export const SITE_URL = "https://getbndlabs.com";
 export const SITE_NAME = "Bndlabs";
@@ -53,11 +54,11 @@ export function buildSiteSettings(value = {}) {
     contactEmail: String(input?.email || defaults?.email || "hello@getbndlabs.com").trim(),
     whatsappNumber: String(input?.whatsapp_number || defaults?.whatsapp_number || "").trim(),
     socialLinks: {
-      linkedin: String(input?.linkedin || defaults?.linkedin || "").trim(),
-      x: String(input?.x || defaults?.x || "").trim(),
-      behance: String(input?.behance || defaults?.behance || "").trim(),
-      instagram: String(input?.instagram || defaults?.instagram || "").trim(),
-      tiktok: String(input?.tiktok || defaults?.tiktok || "").trim(),
+      linkedin: sanitizeExternalUrl(input?.linkedin || defaults?.linkedin),
+      x: sanitizeExternalUrl(input?.x || defaults?.x),
+      behance: sanitizeExternalUrl(input?.behance || defaults?.behance),
+      instagram: sanitizeExternalUrl(input?.instagram || defaults?.instagram),
+      tiktok: sanitizeExternalUrl(input?.tiktok || defaults?.tiktok),
       whatsapp: normalizeWhatsAppLink(input?.whatsapp_number || defaults?.whatsapp_number),
     },
   };

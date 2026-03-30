@@ -5,6 +5,7 @@ import path from "node:path";
 import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@sanity/client";
+import { BLOG_POST } from "../src/lib/blogData.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -283,6 +284,203 @@ function buildImagesField(raw) {
   });
 }
 
+function mapPostImageEntries(value) {
+  return toObjectArray(value)
+    .map((item, index) =>
+      createTypedObject(
+        "image_item",
+        {
+          url: safeString(item?.url || item?.src || item?.image),
+          alt: safeString(item?.alt),
+          caption: safeString(item?.caption),
+        },
+        index
+      )
+    )
+    .filter(Boolean);
+}
+
+function mapTableRows(value) {
+  return (Array.isArray(value) ? value : [])
+    .map((row, index) => {
+      const cells = Array.isArray(row)
+        ? row.map((cell) => safeString(cell)).filter(Boolean)
+        : Array.isArray(row?.cells)
+          ? row.cells.map((cell) => safeString(cell)).filter(Boolean)
+          : Array.isArray(row?.columns)
+            ? row.columns.map((cell) => safeString(cell)).filter(Boolean)
+            : [];
+
+      return createTypedObject("table_row", { cells }, index);
+    })
+    .filter(Boolean);
+}
+
+function mapPostContentBlocks(value) {
+  return toObjectArray(value)
+    .map((block, index) => {
+      const rawType = safeString(block?.type || block?._type);
+
+      if (rawType === "text" || rawType === "textBlock") {
+        return createTypedObject(
+          "textBlock",
+          {
+            html: safeString(block?.html),
+            body: safeString(block?.body || block?.text),
+          },
+          index
+        );
+      }
+
+      if (rawType === "heading" || rawType === "headingBlock") {
+        return createTypedObject(
+          "headingBlock",
+          {
+            text: safeString(block?.text || block?.title),
+          },
+          index
+        );
+      }
+
+      if (rawType === "image" || rawType === "imageBlock") {
+        return createTypedObject(
+          "imageBlock",
+          {
+            url: safeString(block?.url || block?.src || block?.image),
+            alt: safeString(block?.alt),
+            caption: safeString(block?.caption),
+            images: mapPostImageEntries(block?.images),
+          },
+          index
+        );
+      }
+
+      if (rawType === "video" || rawType === "videoBlock") {
+        return createTypedObject(
+          "videoBlock",
+          {
+            url: safeString(block?.url || block?.src),
+            caption: safeString(block?.caption),
+          },
+          index
+        );
+      }
+
+      if (rawType === "gif" || rawType === "gifBlock") {
+        return createTypedObject(
+          "gifBlock",
+          {
+            url: safeString(block?.url || block?.src || block?.image),
+            alt: safeString(block?.alt),
+            caption: safeString(block?.caption),
+          },
+          index
+        );
+      }
+
+      if (rawType === "code" || rawType === "codeBlock") {
+        return createTypedObject(
+          "codeBlock",
+          {
+            language: safeString(block?.language),
+            filename: safeString(block?.filename),
+            code: safeString(block?.code),
+          },
+          index
+        );
+      }
+
+      if (rawType === "table" || rawType === "tableBlock") {
+        return createTypedObject(
+          "tableBlock",
+          {
+            headers: toStringArray(block?.headers),
+            rows: mapTableRows(block?.rows),
+          },
+          index
+        );
+      }
+
+      if (rawType === "audio" || rawType === "audioBlock") {
+        return createTypedObject(
+          "audioBlock",
+          {
+            url: safeString(block?.url || block?.src),
+          },
+          index
+        );
+      }
+
+      if (rawType === "callout" || rawType === "calloutBlock") {
+        return createTypedObject(
+          "calloutBlock",
+          {
+            emoji: safeString(block?.emoji),
+            title: safeString(block?.title),
+            body: safeString(block?.body || block?.text),
+          },
+          index
+        );
+      }
+
+      return undefined;
+    })
+    .filter(Boolean);
+}
+
+function buildPostSummary(raw) {
+  if (!raw || typeof raw !== "object") {
+    return undefined;
+  }
+
+  return pruneValue({
+    title: safeString(raw?.title),
+    slug: safeLowerSlug(raw?.slug || raw?.id || raw?.title),
+    excerpt: safeString(raw?.excerpt || raw?.description),
+    date: safeString(raw?.date),
+    read_time: safeString(raw?.read_time || raw?.readTime),
+    tag: safeString(raw?.tag),
+    thumb_url: safeString(
+      raw?.thumb_url || raw?.thumbnail || raw?.image || raw?.cover_image_url || raw?.coverImageUrl
+    ),
+    author: pruneValue({
+      name: safeString(raw?.author?.name),
+      initials: safeString(raw?.author?.initials),
+      avatar_url: safeString(raw?.author?.avatar_url || raw?.author?.avatarUrl),
+    }),
+  });
+}
+
+function toSanityPostDocument(raw) {
+  const slug = safeLowerSlug(raw?.slug || raw?.id || raw?.title);
+
+  if (!slug) {
+    return undefined;
+  }
+
+  return pruneValue({
+    _id: `post.${slug}`,
+    _type: "post",
+    title: safeString(raw?.title),
+    slug: {
+      _type: "slug",
+      current: slug,
+    },
+    excerpt: safeString(raw?.excerpt),
+    date: safeString(raw?.date),
+    read_time: safeString(raw?.read_time || raw?.readTime),
+    tag: safeString(raw?.tag),
+    thumb_url: safeString(raw?.thumb_url),
+    author: pruneValue({
+      name: safeString(raw?.author?.name),
+      initials: safeString(raw?.author?.initials),
+      avatar_url: safeString(raw?.author?.avatar_url || raw?.author?.avatarUrl),
+    }),
+    content_blocks: mapPostContentBlocks(raw?.content_blocks),
+    next_post: buildPostSummary(raw?.next_post),
+  });
+}
+
 function toSanityProjectDocument(raw, slug) {
   return pruneValue({
     _id: `project.${slug}`,
@@ -379,6 +577,10 @@ async function loadSiteSettingsDocument() {
   });
 }
 
+async function loadPostDocuments() {
+  return [toSanityPostDocument(BLOG_POST)].filter(Boolean);
+}
+
 function toNdjson(documents) {
   return `${documents.map((document) => JSON.stringify(document)).join("\n")}\n`;
 }
@@ -446,8 +648,9 @@ async function importDocumentsWithToken(allDocuments) {
 
 async function importDocuments() {
   const projectDocuments = await loadProjectDocuments();
+  const postDocuments = await loadPostDocuments();
   const siteSettingsDocument = await loadSiteSettingsDocument();
-  const allDocuments = [...projectDocuments, siteSettingsDocument];
+  const allDocuments = [...projectDocuments, ...postDocuments, siteSettingsDocument];
 
   if (client) {
     await importDocumentsWithToken(allDocuments);

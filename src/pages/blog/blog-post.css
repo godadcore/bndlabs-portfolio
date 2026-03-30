@@ -261,8 +261,8 @@
 .blogPostPage .blogPostText p {
   margin: 0 0 16px;
   color: var(--text-secondary);
-  font-size: 15px;
-  line-height: 1.9;
+  font-size: 16px;
+  line-height: 1.85;
 }
 
 .blogPostPage .blogPostText p:last-child {

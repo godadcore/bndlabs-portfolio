@@ -15,11 +15,11 @@
   --hamPad: 8px;
   --spill: 18%;
   --mobileRightH: 360px;
-  --fontMain: -apple-system, BlinkMacSystemFont, "San Francisco", "SF Pro Text", "SF Pro Display", sans-serif;
+  --fontMain: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --fontHeading: "Playfair Display", serif;
-  --fontBrand: "Gerova", "Playfair Display", serif;
+  --fontBrand: var(--fontUi);
   --fontUi: var(--fontMain);
-  --fontAccent: "Dena", var(--fontMain);
+  --fontAccent: var(--fontUi);
   --w-regular: 500;
   --w-medium: 600;
   --w-semi: 650;

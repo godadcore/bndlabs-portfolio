@@ -1,7 +1,4 @@
-import {
-  publishedCaseStudiesQuery,
-  publishedLegacyProjectsQuery,
-} from "../../src/lib/sanity/queries.js";
+import { publishedPostsQuery } from "../../src/lib/sanity/queries.js";
 import { hasSanityServerConfig, sanityServerClient } from "./client.js";
 
 export default async function handler(req, res) {
@@ -17,27 +14,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    const [caseStudies, legacyProjects] = await Promise.all([
-      sanityServerClient.fetch(publishedCaseStudiesQuery),
-      sanityServerClient.fetch(publishedLegacyProjectsQuery),
-    ]);
-
-    const projects = [
-      ...(Array.isArray(caseStudies) ? caseStudies : []),
-      ...(Array.isArray(legacyProjects) ? legacyProjects : []),
-    ];
+    const posts = await sanityServerClient.fetch(publishedPostsQuery);
 
     res.setHeader("Cache-Control", "no-store");
     res.status(200).json({
       source: "sanity",
-      projects,
+      posts: Array.isArray(posts) ? posts : [],
     });
   } catch (error) {
-    console.error("SANITY_PROJECTS_API_ERROR", {
+    console.error("SANITY_POSTS_API_ERROR", {
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
 
-    res.status(502).json({ error: "Unable to load Sanity projects." });
+    res.status(502).json({ error: "Unable to load Sanity posts." });
   }
 }

@@ -1,7 +1,20 @@
-import { normalizeProject, safeLowerSlug } from "./projects";
+import { getAllProjects, normalizeProject, safeLowerSlug } from "./projects";
 
 let cachedRemoteProjectsPromise = null;
 const PROJECTS_API_PATH = "/api/sanity/projects";
+
+function getFallbackProjects() {
+  try {
+    return sortProjectsNewestFirst(getAllProjects());
+  } catch (error) {
+    console.error("LOCAL_PROJECTS_FALLBACK_ERROR", {
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return [];
+  }
+}
+
+let cachedProjectsSnapshot = getFallbackProjects();
 
 function isValidProjectDate(value) {
   const parsed = new Date(value);
@@ -60,14 +73,15 @@ async function fetchProjectsFromSanity() {
       reason: "empty_or_unusable_response",
       source: payload?.source || "unknown",
     });
-    return [];
+    return cachedProjectsSnapshot.length ? cachedProjectsSnapshot : getFallbackProjects();
   }
 
-  return sortProjectsNewestFirst(normalizedProjects);
+  cachedProjectsSnapshot = sortProjectsNewestFirst(normalizedProjects);
+  return cachedProjectsSnapshot;
 }
 
 export function getInitialProjects() {
-  return [];
+  return cachedProjectsSnapshot;
 }
 
 export async function loadAllProjects(options = {}) {
@@ -78,7 +92,8 @@ export async function loadAllProjects(options = {}) {
       console.error("SANITY_PROJECTS_FETCH_ERROR", {
         message: error instanceof Error ? error.message : String(error),
       });
-      return [];
+      cachedProjectsSnapshot = getFallbackProjects();
+      return cachedProjectsSnapshot;
     });
   }
 
@@ -98,4 +113,5 @@ export async function loadProjectBySlug(slug, options = {}) {
 
 export function resetProjectDataCache() {
   cachedRemoteProjectsPromise = null;
+  cachedProjectsSnapshot = getFallbackProjects();
 }
