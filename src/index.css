@@ -1,1 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap");
+@font-face {
+  font-family: "Gerova";
+  src: url("/fonts/gerova.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Blockat";
+  src:
+    url("/fonts/blockat.woff2") format("woff2"),
+    url("/fonts/blockat.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dena";
+  src:
+    url("/fonts/dena.woff2") format("woff2"),
+    url("/fonts/dena.woff") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

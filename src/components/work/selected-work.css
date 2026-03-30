@@ -1,9 +1,9 @@
 .selectedWorkSection {
-  padding-left: var(--swPadX, 64px);
-  padding-right: var(--swPadX, 64px);
-  padding-top: 36px;
-  padding-bottom: 56px;
-  margin-top: 40px;
+  padding-left: var(--swPadX, clamp(22px, 3.2vw, 42px));
+  padding-right: var(--swPadX, clamp(22px, 3.2vw, 42px));
+  padding-top: 42px;
+  padding-bottom: 62px;
+  margin-top: 28px;
 }
 
 .selectedWorkLayout {
@@ -11,15 +11,20 @@
   max-width: 100%;
   margin: 0;
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 28px;
+  grid-template-columns: minmax(190px, 220px) minmax(0, 1fr);
+  gap: clamp(24px, 3vw, 38px);
   align-items: start;
 }
 
 .selectedWorkLeft {
   position: sticky;
-  top: 28px;
+  top: 24px;
   align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+  min-width: 0;
   padding-top: 4px;
 }
 
@@ -29,18 +34,19 @@
 
 .selectedWorkTitle {
   margin: 0;
-  font-size: clamp(44px, 4.3vw, 60px);
-  line-height: 0.98;
+  font-size: clamp(34px, 3.2vw, 44px);
+  line-height: 1.04;
   letter-spacing: -0.03em;
-  font-weight: 800;
+  font-weight: 400;
   color: #0b0b0d;
+  max-width: 6ch;
 }
 
 .selectedWorkRight {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .featuredCard {
@@ -127,27 +133,27 @@
 }
 
 .selectedWorkSection .workCard__title {
-  font-family: "DM Serif Display", serif;
+  font-family: var(--fontHeading);
   font-weight: 400;
-  font-size: 1.28rem;
+  font-size: 1.22rem;
   color: #111111;
   margin: 0;
-  line-height: 1.08;
+  line-height: 1.12;
   letter-spacing: -0.02em;
 }
 
 .selectedWorkSection .workCard__year {
   color: #888888;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 0.75rem;
 }
 
 .selectedWorkSection .workCard__task {
-  font-size: 0.92rem;
+  font-size: 0.94rem;
   color: rgba(17, 17, 17, 0.58);
   margin: 0;
-  line-height: 1.4;
-  font-weight: 500;
+  line-height: 1.52;
+  font-weight: 400;
   letter-spacing: -0.01em;
   max-width: none;
 }
@@ -195,17 +201,18 @@
 
 @media (max-width: 980px) {
   .selectedWorkSection {
-    padding: 34px 22px 40px;
+    padding: 38px 16px 44px;
   }
 
   .selectedWorkLayout {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 20px;
   }
 
   .selectedWorkLeft {
     position: relative;
     top: auto;
+    gap: 16px;
   }
 
   .twoCards {
@@ -226,6 +233,11 @@
 }
 
 @media (max-width: 430px) {
+  .selectedWorkTitle {
+    font-size: clamp(28px, 10vw, 34px);
+    line-height: 1.08;
+  }
+
   .selectedWorkSection .workCard__visual {
     padding: 10px 10px 0;
   }
@@ -243,7 +255,7 @@
   }
 
   .selectedWorkSection .workCard__task {
-    font-size: 0.8rem;
+    font-size: 0.86rem;
   }
 }
 

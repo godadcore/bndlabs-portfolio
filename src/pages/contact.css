@@ -17,14 +17,14 @@
 .contactPage .aboutStickyHeader {
   position: relative;
   z-index: 30;
-  background: #fff;
+  background: transparent;
 }
 
 .contactPage .aboutStickyHeader .aboutTopbar {
   width: 100%;
   margin: 0;
   padding: 0;
-  background: #fff;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -892,12 +892,15 @@
     position: relative;
     top: auto;
     z-index: 50;
-    background: #fff;
+    margin-left: -16px;
+    margin-right: -16px;
+    background: transparent;
     border-bottom: 0;
   }
 
   .contactPage .aboutStickyHeader .aboutTopbar {
-    padding: 12px 0;
+    padding: 0;
+    background: transparent;
   }
 
   .contactPage .aboutDesktopSocial {
@@ -987,7 +990,7 @@
 
 @media (max-width: 640px) {
   .contactPage .aboutHeroShell {
-    padding-top: 28px;
+    padding-top: 24px;
   }
 }
 
@@ -996,6 +999,11 @@
   .contactPage .aboutSectionInner {
     padding-left: 14px;
     padding-right: 14px;
+  }
+
+  .contactPage .aboutStickyHeader {
+    margin-left: -14px;
+    margin-right: -14px;
   }
 
   .contactSection {
@@ -1027,27 +1035,30 @@
 }
 
 .processSectionHead {
-  text-align: center;
-  margin-bottom: 56px;
+  max-width: 760px;
+  text-align: left;
+  margin-bottom: 44px;
 }
 
 .processSectionEyebrow {
-  margin: 0 0 12px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #7c3aed;
+  margin: 0 0 18px;
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-subtle);
+  font-family: var(--fontAccent);
 }
 
 .processSectionTitle {
   margin: 0;
-  font-size: clamp(32px, 4vw, 58px);
-  font-weight: 800;
-  line-height: 1.05;
+  font-size: clamp(38px, 4.6vw, 68px);
+  font-weight: 400;
+  line-height: 1.04;
   letter-spacing: -0.04em;
   color: #0b0b0d;
-  font-family: inherit;
+  font-family: var(--fontHeading);
 }
 
 .processSectionTitle em {
@@ -1102,27 +1113,27 @@
 
 .processStep {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.06em;
   color: rgba(124, 58, 237, 0.35);
-  font-family: inherit;
+  font-family: var(--fontAccent);
 }
 
 .processTitle {
   margin: 0 0 10px;
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 24px;
+  font-weight: 400;
   color: #0b0b0d;
   letter-spacing: -0.02em;
-  font-family: inherit;
+  font-family: var(--fontHeading);
 }
 
 .processDesc {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.75;
+  font-size: 16px;
+  line-height: 1.72;
   color: rgba(11, 11, 13, 0.62);
-  font-family: inherit;
+  font-family: var(--fontMain);
 }
 
 .processConnector {
@@ -1348,14 +1359,19 @@
 
   .processSectionTitle,
   .faqTitle {
-    font-size: 32px;
+    font-size: 36px;
+  }
+
+  .processSectionEyebrow {
+    font-size: 28px;
+    margin-bottom: 14px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .contactPage .aboutStickyHeader,
   .contactPage .aboutStickyHeader .aboutTopbar {
-    background: var(--surface-main);
+    background: transparent;
   }
 
   .contactTitle,

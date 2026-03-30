@@ -391,9 +391,7 @@ export default function Contact() {
         <div className="cardScroll" ref={scrollRootRef}>
           <section className="aboutHeroShell" id="top">
             <div className="aboutShell">
-              <div className="aboutStickyHeader">
-                <Header active="contact" />
-              </div>
+              <Header active="contact" />
             </div>
           </section>
 

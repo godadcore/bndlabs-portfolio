@@ -15,15 +15,20 @@
   --hamPad: 8px;
   --spill: 18%;
   --mobileRightH: 360px;
-  --fontMain: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --fontMain: -apple-system, BlinkMacSystemFont, "San Francisco", "SF Pro Text", "SF Pro Display", sans-serif;
+  --fontHeading: "Playfair Display", serif;
+  --fontBrand: "Gerova", "Playfair Display", serif;
+  --fontUi: var(--fontMain);
+  --fontAccent: "Dena", var(--fontMain);
   --w-regular: 500;
   --w-medium: 600;
   --w-semi: 650;
   --w-bold: 700;
+  --sectionPadX: clamp(22px, 3.2vw, 42px);
   --logoSizeMobile: 14px;
   --logoSizeDesktop: 20px;
-  --logoWeight: var(--w-bold);
-  --logoTracking: .18em;
+  --logoWeight: 400;
+  --logoTracking: .16em;
   --socialSizeDesktop: 22px;
   --socialWeight: var(--w-medium);
   --bylineNameSize: 17px;
@@ -207,14 +212,119 @@
 
 *{ box-sizing:border-box; margin:0; padding:0; }
 html,body{ height:100%; }
+html{ scroll-behavior: smooth; }
 
 body{
   font-family: var(--fontMain);
   background: var(--bg-canvas);
   color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-.sectionBlock{ padding: 34px 6px 10px; }
+button {
+  font-family: var(--fontUi);
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+:where(a, button, input, textarea, select) {
+  transition: all 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.sectionTitle h2,
+.servicesTitle,
+.contactTitle,
+.aboutTitle,
+.aboutExperienceTitle,
+.aboutProcessTitle,
+.selectedWorkTitle,
+.workHeroTitleClean,
+.workGridTitle,
+.workFinalCtaTitle,
+.blogPostTitle,
+.blogPostSectionHeading,
+.blogPostNextTitle,
+.notFoundTitle,
+.pd-h1,
+.pd-sh2,
+.pd-p-quote,
+.projectMoreWorksTitle {
+  font-family: var(--fontHeading);
+}
+
+.logo-text {
+  font-family: var(--fontBrand);
+}
+
+.footerText {
+  font-family: var(--fontBrand);
+}
+
+.social-link,
+.scroll-label,
+.dropdown a,
+.btnGhost,
+.whatidoBtn,
+.aboutProcessBtn,
+.contactBtn,
+.footerCopy,
+.footerEmail,
+.footerSite,
+.blogCard__button,
+.blogPostBackBtn,
+.blogPostCopyBtn,
+.blogPostTocLink,
+.projectBackBtn,
+.pd-live-project-btn,
+.projectMoreWorksBtn,
+.notFoundBtn {
+  font-family: var(--fontUi);
+}
+
+.byline-name,
+.pill,
+.whatidoLabel,
+.aboutExperiencePill,
+.aboutProcessKicker,
+.blogPostMeta,
+.blogPostMetaTag,
+.blogPostCodeLang,
+.blogPostTocTitle,
+.blogPostNextLabel,
+.pd-brand-name,
+.pd-meta-lbl,
+.pd-goal-lbl,
+.pd-p-gft,
+.pd-dt,
+.pd-ftitle,
+.pd-strip-lbl,
+.pd-out-h5,
+.projectMoreWorksEyebrow,
+.notFoundEyebrow,
+.notFoundMetaLabel,
+.whoAmI,
+.selectedWorkTitle,
+.servicesTitle,
+.contactTitle,
+.aboutExperienceTitle,
+.aboutProcessTitle {
+  font-family: var(--fontAccent);
+}
+
+.sectionBlock{ padding: 40px var(--sectionPadX) 14px; }
 .sectionBlock__head{ margin-bottom: 18px; }
 .sectionTitle{ display:flex; align-items:flex-start; justify-content:space-between; gap: 18px; }
 .sectionTitle h2{ font-size: clamp(34px, 4.2vw, 56px); line-height: 1.0; letter-spacing: -0.03em; font-weight: var(--w-bold); }
@@ -290,7 +400,7 @@ body{
 
 .logo{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
 .logo-mark{ display:block; width:32px; height:auto; aspect-ratio: 118 / 90; flex:0 0 auto; }
-.logo-text{ font-weight: var(--logoWeight); letter-spacing: var(--logoTracking); font-size: var(--logoSizeDesktop); }
+.logo-text{ font-weight: var(--logoWeight); letter-spacing: var(--logoTracking); font-size: var(--logoSizeDesktop); line-height: 1.02; }
 .dot{ letter-spacing:0; }
 
 .social{ display:flex; align-items:center; gap:18px; margin-left:auto; }
@@ -347,6 +457,7 @@ body{
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none !important;
   -ms-overflow-style: none;
@@ -476,7 +587,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .contactSection.is-inview .contactHead{ opacity: 1; transform: translateY(0); filter: blur(0); }
 .contactSection.is-inview .contactForm{ opacity: 1; transform: translateY(0); filter: blur(0); }
 
-.servicesSection{ padding: 34px 22px 14px; overflow: hidden; }
+.servicesSection{ padding: 40px var(--sectionPadX) 18px; overflow: hidden; }
 .servicesGrid{ max-width: min(100%, 1600px); margin: 0 auto; display: grid; grid-template-columns: 0.95fr 1.25fr; gap: 18px; align-items: start; }
 .servicesTitle{ font-size: clamp(34px, 4.2vw, 56px); line-height: 1.0; letter-spacing: -0.03em; font-weight: var(--w-bold); color: rgba(11,11,13,.92); }
 .servicesCards{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0; align-content: start; }
@@ -489,7 +600,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .serviceName{ font-size: 18px; font-weight: var(--w-medium); color: rgba(11,11,13,.90); }
 .serviceNo{ font-size: 16px; font-weight: var(--w-bold); color: rgba(11,11,13,.35); }
 
-.contactSection{ padding: 34px 22px 18px; overflow: hidden; }
+.contactSection{ padding: 40px var(--sectionPadX) 24px; overflow: hidden; }
 .contactShell{ position: relative; max-width: min(100%, 1600px); margin: 0 auto; border-radius: 30px; overflow: hidden; border: 1px solid rgba(11,11,13,.06); box-shadow: 0 26px 90px rgba(0,0,0,.10); padding: clamp(22px, 4.2vw, 52px); background: radial-gradient(900px 380px at 92% 16%, rgba(106,88,255,.10), transparent 62%), linear-gradient(90deg, rgba(246,246,251,.92) 0%, rgba(235,233,247,.94) 58%, rgba(223,217,243,.96) 100%); }
 .contactGlow{ position:absolute; inset:-40%; background: radial-gradient(circle at 80% 34%, rgba(106,88,255,.16), transparent 58%); filter: blur(30px); opacity: .9; pointer-events:none; }
 .contactHead{ position: relative; text-align: center; margin-bottom: 22px; }
@@ -536,8 +647,8 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
 .aboutShell, .aboutSectionInner{ width: 100%; max-width: 100%; padding-left: 42px; padding-right: 42px; }
 
-.aboutStickyHeader{ position: relative; z-index: 30; background: #fff; }
-.aboutStickyHeader .aboutTopbar{ width: 100%; margin: 0; padding: 0; background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.aboutStickyHeader{ position: relative; z-index: 30; background: transparent; }
+.aboutStickyHeader .aboutTopbar{ width: 100%; margin: 0; padding: 0; background: transparent; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .aboutTopbar .logo{ flex: 0 0 auto; }
 .aboutHeaderRight{ display: flex; align-items: center; justify-content: flex-end; gap: 18px; margin-left: auto; min-width: 0; }
 .aboutDesktopSocial{ display: flex; align-items: center; gap: 16px; margin: 0; }
@@ -550,9 +661,9 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .aboutHeroShell{ padding-top: 38px; padding-bottom: 72px; }
 .aboutBodyGrid{ display: grid; grid-template-columns: minmax(320px, 1.05fr) minmax(300px, 0.88fr); gap: 70px; align-items: start; margin-top: 56px; }
 .aboutTextBlock{ max-width: 720px; min-width: 0; padding-top: 58px; }
-.whoAmI{ font-family: "Caveat", cursive; font-size: 56px; line-height: 1; color: #676767; margin-bottom: 26px; letter-spacing: 0.3px; }
-.aboutTitle{ margin: 0 0 28px; font-size: clamp(54px, 5vw, 82px); line-height: 0.95; font-weight: 700; letter-spacing: -0.04em; color: #0b0b0d; }
-.aboutDesc{ margin: 0 0 18px; max-width: 620px; font-size: 22px; line-height: 1.72; color: rgba(11,11,13,0.62); }
+.whoAmI{ font-family: var(--fontAccent); font-size: 56px; line-height: 1; color: #676767; margin-bottom: 22px; letter-spacing: 0.3px; }
+.aboutTitle{ margin: 0 0 24px; font-size: clamp(54px, 5vw, 82px); line-height: 0.98; font-weight: 400; letter-spacing: -0.04em; color: #0b0b0d; }
+.aboutDesc{ margin: 0 0 18px; max-width: 640px; font-size: 21px; line-height: 1.78; color: var(--text-secondary); }
 .aboutMediaBlock{ display: flex; flex-direction: column; align-items: stretch; min-width: 0; padding-top: 10px; }
 .aboutVideoWrap{ width: 100%; max-width: 540px; margin-left: auto; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 60px rgba(11,11,13,0.08), 0 4px 20px rgba(11,11,13,0.05); }
 .aboutVideo{ width: 100%; display: block; object-fit: cover; object-position: center top; }
@@ -571,12 +682,12 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .aboutExperienceSection{ padding-top: 34px; padding-bottom: 70px; }
 .aboutExperienceHead{ display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 38px; }
 .aboutExperiencePill{ display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 16px; border-radius: 999px; background: rgba(255,255,255,.7); border: 1px solid rgba(11,11,13,.06); font-size: 14px; font-weight: 600; color: rgba(11,11,13,.86); margin-bottom: 16px; }
-.aboutExperienceTitle{ margin: 0; font-size: clamp(34px, 4.2vw, 64px); line-height: 1.02; letter-spacing: -0.04em; font-weight: 700; color: #0b0b0d; }
+.aboutExperienceTitle{ margin: 0; font-size: clamp(34px, 4.2vw, 64px); line-height: 1.04; letter-spacing: -0.04em; font-weight: 400; color: #0b0b0d; }
 .aboutExperienceList{ margin-top: 14px; margin-bottom: 56px; }
 .aboutExperienceRow{ display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 0; border-bottom: 2px solid rgba(11,11,13,.10); }
 .aboutExperienceLeft{ display: flex; align-items: center; gap: 14px; min-width: 0; }
-.aboutCompany{ font-size: clamp(28px, 2.6vw, 42px); line-height: 1; font-weight: 700; color: #0b0b0d; letter-spacing: -0.03em; }
-.aboutRole, .aboutExperienceYears{ font-size: 18px; line-height: 1.4; color: rgba(11,11,13,.55); }
+.aboutCompany{ font-size: clamp(28px, 2.6vw, 42px); line-height: 1.04; font-weight: 600; color: #0b0b0d; letter-spacing: -0.03em; }
+.aboutRole, .aboutExperienceYears{ font-size: 18px; line-height: 1.5; color: rgba(11,11,13,.62); }
 .aboutExperienceGallery{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; max-width: 980px; margin: 0 auto; }
 .aboutGalleryCol{ display: flex; flex-direction: column; gap: 18px; }
 .aboutGalleryCard{ width: 100%; overflow: hidden; border-radius: 22px; background: #f2f2f2; box-shadow: 0 18px 48px rgba(11,11,13,0.08), 0 3px 14px rgba(11,11,13,0.04); }
@@ -589,9 +700,9 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .aboutProcessGrid{ display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 42px; align-items: start; }
 .aboutProcessIntro{ max-width: 460px; padding-top: 18px; }
 .aboutProcessKicker{ display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: rgba(255,255,255,.72); border: 1px solid rgba(11,11,13,.06); font-size: 13px; font-weight: 600; color: rgba(11,11,13,.84); margin-bottom: 18px; }
-.aboutProcessTitle{ margin: 0 0 18px; font-size: clamp(38px, 4.4vw, 72px); line-height: 1.02; letter-spacing: -0.04em; font-weight: 700; color: #0b0b0d; }
+.aboutProcessTitle{ margin: 0 0 18px; font-size: clamp(38px, 4.4vw, 72px); line-height: 1.04; letter-spacing: -0.04em; font-weight: 400; color: #0b0b0d; }
 .aboutProcessHighlight{ display: inline-block; padding: 2px 16px 6px; border-radius: 14px; background: #6a58ff; color: #fff; transform: rotate(-4deg); }
-.aboutProcessText{ margin: 0 0 24px; max-width: 420px; font-size: 20px; line-height: 1.6; color: rgba(11,11,13,.62); }
+.aboutProcessText{ margin: 0 0 24px; max-width: 440px; font-size: 19px; line-height: 1.72; color: var(--text-secondary); }
 .aboutProcessBtn{ display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 22px; border-radius: 16px; background: #6a58ff; color: #fff; text-decoration: none; font-size: 18px; font-weight: 600; box-shadow: 0 10px 26px rgba(106,88,255,.35); }
 .aboutProcessSteps{ display: flex; flex-direction: column; gap: 22px; }
 .aboutStepCard{ position: relative; display: flex; align-items: flex-start; gap: 18px; padding: 30px 28px 28px; border: 2px solid rgba(11,11,13,.90); border-radius: 26px; background: transparent; }
@@ -601,8 +712,8 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .aboutStepBadge{ position: absolute; top: -20px; left: -10px; width: 54px; height: 54px; border-radius: 999px; background: #0b0b0d; color: #fff; display: grid; place-items: center; font-size: 22px; font-weight: 700; }
 .aboutStepIcon{ flex: 0 0 auto; width: 90px; height: 81px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
 .aboutStepIcon svg{ width: 100%; height: 100%; display: block; }
-.aboutStepContent h3{ margin: 0 0 8px; font-size: clamp(28px, 2.2vw, 48px); line-height: 1.02; letter-spacing: -0.03em; font-weight: 700; color: #0b0b0d; }
-.aboutStepContent p{ margin: 0; max-width: 540px; font-size: 18px; line-height: 1.58; color: rgba(11,11,13,.62); }
+.aboutStepContent h3{ margin: 0 0 8px; font-size: clamp(28px, 2.2vw, 48px); line-height: 1.04; letter-spacing: -0.03em; font-weight: 400; color: #0b0b0d; }
+.aboutStepContent p{ margin: 0; max-width: 540px; font-size: 17px; line-height: 1.7; color: var(--text-secondary); }
 
 /* =========================================
    MEDIA QUERIES
@@ -655,7 +766,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .aboutBodyGrid{ gap: 44px; grid-template-columns: 1fr 0.92fr; }
   .aboutTextBlock{ padding-top: 34px; }
   .whoAmI{ font-size: 48px; }
-  .aboutDesc{ font-size: 18px; max-width: 560px; }
+  .aboutDesc{ font-size: 19px; max-width: 580px; }
   .aboutVideoWrap, .aboutIconsRail{ max-width: 470px; }
 }
 
@@ -688,8 +799,8 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .wCubeTwo{ right: 70px; bottom: 25px; }
   .servicesGrid{ grid-template-columns: 1fr; }
   .aboutShell, .aboutSectionInner{ padding-left: 16px; padding-right: 16px; }
-  .aboutStickyHeader{ position: relative; top: auto; z-index: 50; background: #fff; border-bottom: 0; transform: none; backface-visibility: visible; }
-  .aboutStickyHeader .aboutTopbar{ padding: 12px 0; }
+  .aboutStickyHeader{ position: relative; top: auto; z-index: 50; margin-left: -16px; margin-right: -16px; background: transparent; border-bottom: 0; transform: none; backface-visibility: visible; }
+  .aboutStickyHeader .aboutTopbar{ padding: 0; background: transparent; }
   .aboutDesktopSocial{ display: none !important; }
   .aboutTopbar .menu-wrapper--desktop{ display: none !important; }
   .aboutTopbar .menu-wrapper--mobile{ display: flex !important; position: relative !important; top: auto !important; right: auto !important; margin-left: auto !important; }
@@ -698,7 +809,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .aboutTextBlock{ padding-top: 0; max-width: 100%; }
   .whoAmI{ font-size: 34px; margin-bottom: 14px; }
   .aboutTitle{ font-size: clamp(28px, 7.8vw, 42px); line-height: 1.04; margin-bottom: 14px; }
-  .aboutDesc{ max-width: 100%; font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+  .aboutDesc{ max-width: 100%; font-size: 16px; line-height: 1.78; margin-bottom: 14px; }
   .aboutVideoWrap, .aboutIconsRail{ max-width: 100%; margin-left: 0; }
   .aboutVideoWrap{ border-radius: 18px; }
   .aboutVideo{ border-radius: 18px; max-height: 420px; }
@@ -707,7 +818,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .aboutExperienceRow{ flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 0; }
   .aboutExperienceLeft{ flex-direction: column; align-items: flex-start; gap: 4px; }
   .aboutCompany{ font-size: 26px; }
-  .aboutRole, .aboutExperienceYears{ font-size: 14px; white-space: normal; }
+  .aboutRole, .aboutExperienceYears{ font-size: 15px; white-space: normal; }
   .aboutExperienceGallery{ grid-template-columns: 1fr; }
   .aboutGalleryCol{ gap: 14px; }
   .aboutGalleryCard{ border-radius: 18px; }
@@ -715,7 +826,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .aboutProcessGrid{ grid-template-columns: 1fr; gap: 28px; }
   .aboutProcessIntro{ max-width: 100%; padding-top: 0; }
   .aboutProcessTitle{ font-size: clamp(30px, 8vw, 46px); }
-  .aboutProcessText{ max-width: 100%; font-size: 15px; line-height: 1.65; }
+  .aboutProcessText{ max-width: 100%; font-size: 16px; line-height: 1.74; }
   .aboutProcessBtn{ min-height: 46px; padding: 0 18px; font-size: 16px; border-radius: 14px; }
   .aboutProcessSteps{ gap: 16px; }
   .aboutStepCard{ padding: 24px 20px 22px; border-radius: 22px; gap: 14px; }
@@ -723,7 +834,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .aboutStepBadge{ width: 46px; height: 46px; top: -16px; left: -6px; font-size: 18px; }
   .aboutStepIcon{ width: 68px; height: 62px; }
   .aboutStepContent h3{ font-size: 22px; }
-  .aboutStepContent p{ font-size: 15px; line-height: 1.6; }
+  .aboutStepContent p{ font-size: 15.5px; line-height: 1.68; }
   .toolFrame{ width: 50px; height: 50px; border-radius: 12px; }
   .toolFrame svg{ width: 26px; height: 26px; }
 
@@ -971,7 +1082,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
   .aboutStickyHeader,
   .aboutStickyHeader .aboutTopbar{
-    background: var(--surface-main);
+    background: transparent;
   }
 
   .whoAmI{
@@ -1042,12 +1153,12 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 }
 
 @media (max-width: 560px){
-  .aboutHeroShell{ padding: 28px 20px 44px; }
-  .aboutTopbar{ align-items: center; margin-bottom: 28px; }
+  .aboutHeroShell{ padding: 24px 20px 44px; }
+  .aboutTopbar{ align-items: center; margin-bottom: 0; }
   .aboutHeaderRight{ gap: 10px; }
   .whoAmI{ font-size: 38px; }
-  .aboutTitle{ font-size: 34px; line-height: 1.02; }
-  .aboutDesc{ font-size: 15px; }
+  .aboutTitle{ font-size: 36px; line-height: 1.04; }
+  .aboutDesc{ font-size: 16px; }
   .aboutIconsTrack{ gap: 12px; }
   .aboutStatsRow{ grid-template-columns: 1fr 1fr; }
 }
@@ -1058,12 +1169,13 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .h1{ font-size: clamp(44px, 13vw, 60px); line-height: 0.96; }
   .heroSection .left, .heroSection .right{ min-height: auto !important; }
   .aboutShell, .aboutSectionInner{ padding-left: 14px; padding-right: 14px; }
-  .aboutStickyHeader .aboutTopbar{ padding: 11px 0; }
+  .aboutStickyHeader{ margin-left: -14px; margin-right: -14px; }
+  .aboutStickyHeader .aboutTopbar{ padding: 0; }
   .logo-mark{ width: 24px; }
   .logo-text{ font-size: 12px !important; letter-spacing: 0.1em !important; }
   .whoAmI{ font-size: 30px; margin-bottom: 12px; }
-  .aboutTitle{ font-size: 24px; line-height: 1.06; margin-bottom: 12px; }
-  .aboutDesc{ font-size: 13px; line-height: 1.65; margin-bottom: 10px; }
+  .aboutTitle{ font-size: 28px; line-height: 1.08; margin-bottom: 12px; }
+  .aboutDesc{ font-size: 15px; line-height: 1.72; margin-bottom: 12px; }
   .aboutVideo{ max-height: 360px; }
   .aboutIconsTrack{ gap: 12px; }
   .toolFrame{ width: 46px; height: 46px; }
@@ -1072,15 +1184,15 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .aboutStatsRow .statItem h2{ font-size: 30px; }
   .aboutStatsRow .statItem p{ font-size: 13px; }
   .aboutExperiencePill{ font-size: 13px; min-height: 34px; padding: 0 14px; }
-  .aboutExperienceTitle{ font-size: 26px; }
+  .aboutExperienceTitle{ font-size: 28px; }
   .aboutCompany{ font-size: 22px; }
-  .aboutRole, .aboutExperienceYears{ font-size: 13px; }
+  .aboutRole, .aboutExperienceYears{ font-size: 14px; }
   .aboutProcessSection{ padding-bottom: 44px; }
-  .aboutProcessTitle{ font-size: 28px; line-height: 1.06; }
+  .aboutProcessTitle{ font-size: 30px; line-height: 1.08; }
   .aboutProcessHighlight{ padding: 2px 12px 5px; border-radius: 12px; }
   .aboutStepCard{ padding: 22px 16px 20px; }
   .aboutStepContent h3{ font-size: 18px; }
-  .aboutStepContent p{ font-size: 14px; }
+  .aboutStepContent p{ font-size: 15px; }
 }
 
 @media (max-width: 820px){

@@ -29,6 +29,7 @@
  * @property {{title: string, body: string, image: string}[]} sections
  * @property {{src: string, alt: string}[]} gallery
  * @property {string[]} nextSteps
+ * @property {{enabled: boolean, text: string, url: string}} liveProject
  * @property {Object} caseStudy
  */
 
@@ -78,6 +79,16 @@ function toStringArray(value) {
 function toObjectArray(value) {
   if (!Array.isArray(value)) return [];
   return value.filter((item) => item && typeof item === "object");
+}
+
+function toBoolean(value, fallback = false) {
+  if (typeof value === "boolean") return value;
+  if (value == null) return fallback;
+
+  const normalized = String(value).trim().toLowerCase();
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+  return fallback;
 }
 
 function makePlaceholderImage(seed) {
@@ -270,6 +281,208 @@ function normalizeGalleryItems(value, title) {
       };
     })
     .filter((item) => item.src);
+}
+
+function normalizePortableText(value) {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item) => item && typeof item === "object");
+}
+
+function portableTextToPlainText(value) {
+  return normalizePortableText(value)
+    .map((block) => {
+      if (block?._type !== "block" || !Array.isArray(block?.children)) return "";
+      return block.children
+        .map((child) => firstString(child?.text))
+        .join("")
+        .trim();
+    })
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+function normalizeSanityImage(value, fallbackAlt = "") {
+  if (!value) return null;
+
+  if (typeof value === "string") {
+    return {
+      src: firstString(value),
+      alt: firstString(fallbackAlt),
+      caption: "",
+    };
+  }
+
+  const src = firstString(value?.url, value?.src, value?.asset?.url, value?.image?.url, value?.image?.asset?.url);
+  if (!src) return null;
+
+  return {
+    src,
+    alt: firstString(value?.alt, value?.image?.alt, fallbackAlt),
+    caption: firstString(value?.caption),
+  };
+}
+
+function normalizeSanityImageArray(value, title, label) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item, index) =>
+      normalizeSanityImage(item, `${title} ${label.toLowerCase()} ${index + 1}`)
+    )
+    .filter((item) => item?.src);
+}
+
+function normalizeCaseStudyStats(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => {
+      const numericValue =
+        typeof item?.value === "number"
+          ? item.value
+          : Number.parseFloat(String(item?.value ?? "").trim());
+
+      return {
+        value: Number.isFinite(numericValue) ? numericValue : null,
+        label: firstString(item?.label),
+      };
+    })
+    .filter((item) => item.label && item.value != null);
+}
+
+function normalizeCaseStudyResults(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => ({
+      metric: firstString(item?.metric, item?.value),
+      description: firstString(item?.description, item?.text),
+    }))
+    .filter((item) => item.metric && item.description);
+}
+
+function buildWhatsAppUrl(number) {
+  const normalized = String(number || "").replace(/[^\d]/g, "");
+  if (!normalized) return "";
+
+  return `https://wa.me/${normalized}?text=${encodeURIComponent(
+    "Hi, I found a broken link on your portfolio"
+  )}`;
+}
+
+function normalizeModernCaseStudy(raw) {
+  const looksLikeCaseStudy =
+    raw &&
+    typeof raw === "object" &&
+    (raw?._type === "caseStudy" ||
+      "publishedDate" in raw ||
+      "brandLogo" in raw ||
+      "prototypeUrl" in raw ||
+      "whatsappNumber" in raw ||
+      Array.isArray(raw?.stats));
+
+  if (!looksLikeCaseStudy) return null;
+
+  const slug = safeLowerSlug(raw?.slug || raw?.id || raw?.title);
+  const id = safeLowerSlug(raw?._id || raw?.id || slug || raw?.title);
+  const title = firstString(raw?.title, "Untitled Case Study");
+  const overviewBlocks = normalizePortableText(raw?.overview);
+  const overviewText = firstString(portableTextToPlainText(overviewBlocks), raw?.description);
+  const description = firstString(raw?.description, overviewText);
+  const brandLogo = normalizeSanityImage(raw?.brandLogo, `${title} logo`);
+  const heroImage = normalizeSanityImage(raw?.heroImage, `${title} hero image`);
+  const researchImages = normalizeSanityImageArray(raw?.researchImages, title, "Research image");
+  const wireframeImages = normalizeSanityImageArray(raw?.wireframeImages, title, "Wireframe image");
+  const prototypeImages = normalizeSanityImageArray(raw?.prototypeImages, title, "Prototype image");
+  const finalGallery = normalizeSanityImageArray(raw?.finalGallery, title, "Final gallery image");
+  const stats = normalizeCaseStudyStats(raw?.stats);
+  const results = normalizeCaseStudyResults(raw?.results);
+  const role = toStringArray(raw?.role);
+  const tools = toStringArray(raw?.tools);
+  const timeline = toStringArray(raw?.timeline);
+  const publishedDate = firstString(raw?.publishedDate, raw?.date, raw?._createdAt);
+  const fallbackImage =
+    heroImage?.src ||
+    finalGallery[0]?.src ||
+    researchImages[0]?.src ||
+    wireframeImages[0]?.src ||
+    prototypeImages[0]?.src ||
+    makePlaceholderImage(slug || title);
+  const liveUrl = firstString(raw?.liveUrl);
+  const prototypeUrl = firstString(raw?.prototypeUrl);
+  const twitterUrl = firstString(raw?.twitterUrl);
+  const whatsappNumber = firstString(raw?.whatsappNumber);
+  const whatsappUrl = buildWhatsAppUrl(whatsappNumber);
+  const category = firstString(raw?.category, "Case Study");
+  const status = firstString(raw?.status, "Concept");
+  const displayTasks = uniqueStrings([
+    ...role.slice(0, 2),
+    ...tools.slice(0, 1),
+    category,
+  ]).slice(0, 3);
+
+  return {
+    id,
+    slug,
+    createdAt: firstString(raw?._createdAt),
+    updatedAt: firstString(raw?._updatedAt),
+    title,
+    subtitle: description,
+    summary: description,
+    description,
+    category,
+    tasks: displayTasks,
+    tags: uniqueStrings([...role, ...tools, ...timeline]),
+    tag1: role[0] || category,
+    tag2: tools[0] || status,
+    image: fallbackImage,
+    cover: heroImage?.src || fallbackImage,
+    thumbnail: fallbackImage,
+    client: "",
+    industry: category,
+    status,
+    date: publishedDate,
+    overview: overviewText,
+    problem: "",
+    solution: "",
+    result: results[0]?.description || description,
+    highlights: stats.map((item) => ({
+      label: item.label,
+      value: String(item.value),
+    })),
+    process: [],
+    sections: [],
+    gallery: finalGallery,
+    nextSteps: [],
+    liveProject: {
+      enabled: Boolean(liveUrl),
+      text: "Visit Website",
+      url: liveUrl,
+    },
+    caseStudy: {
+      brandLogo: brandLogo?.src || "",
+      heroImage: heroImage?.src || fallbackImage,
+      description,
+      category,
+      publishedDate,
+      status,
+      overviewBlocks,
+      stats,
+      role,
+      tools,
+      timeline,
+      researchImages,
+      wireframeImages,
+      prototypeImages,
+      results,
+      finalGallery,
+      liveUrl,
+      prototypeUrl,
+      twitterUrl,
+      whatsappNumber,
+      whatsappUrl,
+    },
+  };
 }
 
 function normalizeCaseStudy(raw, project) {
@@ -527,6 +740,11 @@ function normalizeCaseStudy(raw, project) {
 }
 
 export function normalizeProject(raw) {
+  const modernCaseStudy = normalizeModernCaseStudy(raw);
+  if (modernCaseStudy) {
+    return modernCaseStudy;
+  }
+
   const processRoot = raw?.process && typeof raw.process === "object" && !Array.isArray(raw.process)
     ? raw.process
     : {};
@@ -583,6 +801,12 @@ export function normalizeProject(raw) {
   const gallery = normalizeGalleryItems(raw?.images?.gallery || raw?.gallery, title);
 
   const nextSteps = toStringArray(raw?.process?.next_steps || raw?.nextSteps);
+  const liveProjectRaw = raw?.liveProject && typeof raw.liveProject === "object" ? raw.liveProject : {};
+  const liveProject = {
+    enabled: toBoolean(liveProjectRaw?.enabled, false),
+    text: firstString(liveProjectRaw?.text, "View Live Project"),
+    url: firstString(liveProjectRaw?.url),
+  };
 
   const project = {
     id,
@@ -614,6 +838,7 @@ export function normalizeProject(raw) {
     sections,
     gallery,
     nextSteps,
+    liveProject,
   };
 
   return {

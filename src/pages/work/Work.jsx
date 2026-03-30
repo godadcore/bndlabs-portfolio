@@ -17,15 +17,6 @@ const DESKTOP_INITIAL_VISIBLE_COUNT = 5;
 const MOBILE_INITIAL_VISIBLE_COUNT = 4;
 const LOAD_MORE_STEP = 3;
 
-function shuffleProjects(items) {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
 const ChevronLeft = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -48,7 +39,7 @@ export default function Work() {
     sortProjectsNewestFirst(getInitialProjects())
   );
   const featuredProjects = useMemo(
-    () => shuffleProjects(orderedProjects).slice(0, FEATURED_COUNT),
+    () => orderedProjects.slice(0, FEATURED_COUNT),
     [orderedProjects]
   );
   const totalFeatured = featuredProjects.length;
@@ -73,8 +64,8 @@ export default function Work() {
   useEffect(() => {
     let isMounted = true;
 
-    loadAllProjects().then((loadedProjects) => {
-      if (!isMounted || !Array.isArray(loadedProjects) || !loadedProjects.length) return;
+    loadAllProjects({ force: true }).then((loadedProjects) => {
+      if (!isMounted || !Array.isArray(loadedProjects)) return;
       setOrderedProjects(sortProjectsNewestFirst(loadedProjects));
     });
 
@@ -85,6 +76,9 @@ export default function Work() {
 
   const isMobile = vw <= 640;
   const isTablet = vw > 640 && vw <= 980;
+  const activeIndex = totalFeatured
+    ? ((current % totalFeatured) + totalFeatured) % totalFeatured
+    : 0;
 
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth);
@@ -246,7 +240,7 @@ export default function Work() {
   };
 
   const getCardStyle = (i) => {
-    let offset = i - current;
+    let offset = i - activeIndex;
     if (offset > totalFeatured / 2) offset -= totalFeatured;
     if (offset < -totalFeatured / 2) offset += totalFeatured;
 
@@ -365,10 +359,7 @@ export default function Work() {
           <section className="workHeroSection--clean">
             <div className="workHeroShell--clean">
               <div className="aboutShell workShell">
-
-                <div className="aboutStickyHeader">
-                  <Header active="work" />
-                </div>
+                <Header active="work" />
 
                 <div className="workMotionScope" ref={motionScopeRef}>
                   <div className="workHeroHeadingWrapClean workReveal workReveal--soft">
@@ -392,7 +383,7 @@ export default function Work() {
                       style={{ cursor: isDragging ? "grabbing" : "grab" }}
                     >
                       {featuredProjects.map((project, i) => {
-                        let offset = i - current;
+                        let offset = i - activeIndex;
                         if (offset > totalFeatured / 2) offset -= totalFeatured;
                         if (offset < -totalFeatured / 2) offset += totalFeatured;
                         const isActive = offset === 0;
@@ -459,7 +450,7 @@ export default function Work() {
                           key={i}
                           type="button"
                           onClick={() => { goTo(i); stopAutoplay(); }}
-                          className={`workCarouselDotClean ${i === current ? "is-active" : ""}`}
+                          className={`workCarouselDotClean ${i === activeIndex ? "is-active" : ""}`}
                           aria-label={`Go to project ${i + 1}`}
                         />
                       ))}

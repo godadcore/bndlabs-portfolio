@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import WhatIDo from "../components/home/WhatIDo";
+import SelectedBlog from "../components/blog/SelectedBlog";
 import SelectedWork from "../components/work/SelectedWork";
 import Services from "../components/home/Services";
 import ContactSection from "../components/home/ContactSection";
@@ -162,6 +163,7 @@ export default function Home() {
                 
                     <a href="/about" onClick={navigateTo("/about")}>About</a>
                     <a href="/work" onClick={navigateTo("/work")}>Work</a>
+                    <a href="/blog" onClick={navigateTo("/blog")}>Blog</a>
                     <a href="/contact" onClick={navigateTo("/contact")}>Contact</a>
                   </div>
                 </div>
@@ -209,6 +211,7 @@ export default function Home() {
                   <div className="dropdown-divider"></div>
                   <a href="/about" onClick={navigateTo("/about")}>About</a>
                   <a href="/work" onClick={navigateTo("/work")}>Work</a>
+                  <a href="/blog" onClick={navigateTo("/blog")}>Blog</a>
                   <a href="/contact" onClick={navigateTo("/contact")}>Contact</a>
                 </div>
               </div>
@@ -227,6 +230,10 @@ export default function Home() {
 
           <section id="selectedwork">
             <SelectedWork scrollRootRef={scrollRef} />
+          </section>
+
+          <section id="blog">
+            <SelectedBlog scrollRootRef={scrollRef} />
           </section>
 
           <section id="services">

@@ -120,6 +120,14 @@ export default function Header({ active = "" }) {
               </a>
 
               <a
+                href="/blog"
+                onClick={navigateTo("/blog")}
+                className={active === "blog" ? "is-active-link" : ""}
+              >
+                Blog
+              </a>
+
+              <a
                 href="/contact"
                 onClick={navigateTo("/contact")}
                 className={active === "contact" ? "is-active-link" : ""}
@@ -164,6 +172,14 @@ export default function Header({ active = "" }) {
                 className={active === "work" ? "is-active-link" : ""}
               >
                 Work
+              </a>
+
+              <a
+                href="/blog"
+                onClick={navigateTo("/blog")}
+                className={active === "blog" ? "is-active-link" : ""}
+              >
+                Blog
               </a>
 
               <a

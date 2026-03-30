@@ -1,11 +1,7 @@
-import { getAllProjects, getProjectBySlug, normalizeProject, safeLowerSlug } from "./projects";
+import { normalizeProject, safeLowerSlug } from "./projects";
 
 let cachedRemoteProjectsPromise = null;
 const PROJECTS_API_PATH = "/api/sanity/projects";
-
-function isPublishedProject(project) {
-  return String(project?.status || "published").trim().toLowerCase() === "published";
-}
 
 function isValidProjectDate(value) {
   const parsed = new Date(value);
@@ -35,10 +31,6 @@ export function sortProjectsNewestFirst(items) {
   });
 }
 
-function getFallbackProjects() {
-  return sortProjectsNewestFirst(getAllProjects().filter(isPublishedProject));
-}
-
 async function fetchProjectsPayload() {
   const response = await fetch(PROJECTS_API_PATH, {
     headers: {
@@ -54,8 +46,6 @@ async function fetchProjectsPayload() {
 }
 
 async function fetchProjectsFromSanity() {
-  const fallbackProjects = getFallbackProjects();
-
   const payload = await fetchProjectsPayload();
   const rawProjects = Array.isArray(payload?.projects) ? payload.projects : [];
   const normalizedProjects = Array.isArray(rawProjects)
@@ -66,41 +56,38 @@ async function fetchProjectsFromSanity() {
     : [];
 
   if (!normalizedProjects.length) {
-    console.warn("SANITY_PROJECTS_FALLBACK", {
+    console.warn("SANITY_PROJECTS_EMPTY", {
       reason: "empty_or_unusable_response",
       source: payload?.source || "unknown",
     });
-    return fallbackProjects;
+    return [];
   }
 
   return sortProjectsNewestFirst(normalizedProjects);
 }
 
 export function getInitialProjects() {
-  return getFallbackProjects();
+  return [];
 }
 
-export function getInitialProjectBySlug(slug) {
-  const project = getProjectBySlug(slug);
-  return isPublishedProject(project) ? project : null;
-}
+export async function loadAllProjects(options = {}) {
+  const forceRefresh = options?.force === true;
 
-export async function loadAllProjects() {
-  if (!cachedRemoteProjectsPromise) {
+  if (!cachedRemoteProjectsPromise || forceRefresh) {
     cachedRemoteProjectsPromise = fetchProjectsFromSanity().catch((error) => {
       console.error("SANITY_PROJECTS_FETCH_ERROR", {
         message: error instanceof Error ? error.message : String(error),
       });
-      return getFallbackProjects();
+      return [];
     });
   }
 
   return cachedRemoteProjectsPromise;
 }
 
-export async function loadProjectBySlug(slug) {
+export async function loadProjectBySlug(slug, options = {}) {
   const normalizedSlug = safeLowerSlug(slug);
-  const projects = await loadAllProjects();
+  const projects = await loadAllProjects(options);
 
   return (
     projects.find(

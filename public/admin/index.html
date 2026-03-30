@@ -2,6 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex,nofollow" />
     <base href="/admin/" />
@@ -49,7 +55,7 @@
         } catch (error) {
           console.error("CMS_INIT_ERROR", error);
           document.body.innerHTML = `
-            <pre style="margin:0;padding:24px;font:14px/1.7 monospace;white-space:pre-wrap;">
+            <pre style="margin:0;padding:24px;font:14px/1.7 'Playfair Display', serif;white-space:pre-wrap;">
 Unable to load the CMS.
 
 Check that /admin/config.yml is available and the CMS auth endpoints are configured correctly.

@@ -163,9 +163,7 @@ export default function About() {
         <div className="cardScroll" ref={scrollRef}>
           <section className="aboutHeroShell" id="top">
             <div className="aboutShell">
-              <div className="aboutStickyHeader">
-                <Header active="about" />
-              </div>
+              <Header active="about" />
 
               <div className="aboutBodyGrid">
                 <Motion.div

@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@sanity/client";
+import { BLOG_POSTS } from "../src/lib/blogData.js";
 import { SITE_URL } from "../src/lib/site.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +19,6 @@ for (const envFile of envFiles) {
   }
 }
 
-const projectsDir = path.join(rootDir, "src", "content", "projects");
 const publicDir = path.join(rootDir, "public");
 const sitemapPath = path.join(publicDir, "sitemap.xml");
 const robotsPath = path.join(publicDir, "robots.txt");
@@ -80,23 +80,23 @@ function absoluteUrl(pathname) {
 async function loadProjectRoutes() {
   if (sanityClient) {
     try {
-      const sanityProjects = await sanityClient.fetch(`*[_type == "project" && coalesce(status, "published") == "published"] {
+      const sanityProjects = await sanityClient.fetch(`*[_type == "caseStudy"] {
         "slug": coalesce(slug.current, slug),
-        id,
         title,
-        date
-      } | order(coalesce(date, _createdAt) desc, title asc)`);
+        publishedDate,
+        _createdAt
+      } | order(coalesce(publishedDate, _createdAt) desc, title asc)`);
 
       const sanityProjectEntries = Array.isArray(sanityProjects)
         ? sanityProjects
             .map((entry) => {
-              const slug = safeLowerSlug(entry?.slug || entry?.id || entry?.title);
+              const slug = safeLowerSlug(entry?.slug || entry?.title);
 
               if (!slug) return null;
 
               return {
                 path: `/work/${slug}`,
-                lastmod: lastModified(entry?.date),
+                lastmod: lastModified(entry?.publishedDate || entry?._createdAt),
               };
             })
             .filter(Boolean)
@@ -108,6 +108,8 @@ async function loadProjectRoutes() {
         );
         return sanityProjectEntries;
       }
+
+      return [];
     } catch (error) {
       console.error("SANITY_SITEMAP_FETCH_ERROR", {
         message: error instanceof Error ? error.message : String(error),
@@ -115,38 +117,39 @@ async function loadProjectRoutes() {
     }
   }
 
-  const files = await fs.readdir(projectsDir);
-  const projectEntries = [];
+  return [];
+}
 
-  for (const file of files) {
-    if (!file.endsWith(".json")) continue;
+async function loadPostRoutes() {
+  return BLOG_POSTS
+    .map((entry) => {
+      const slug = safeLowerSlug(entry?.slug || entry?.title);
 
-    const filePath = path.join(projectsDir, file);
-    const raw = JSON.parse(await fs.readFile(filePath, "utf8"));
-    const slug = safeLowerSlug(raw?.slug || raw?.id || raw?.title || file.replace(/\.json$/i, ""));
+      if (!slug) return null;
 
-    if (!slug) continue;
-
-    projectEntries.push({
-      path: `/work/${slug}`,
-      lastmod: lastModified(raw?.date),
-    });
-  }
-
-  projectEntries.sort((a, b) => a.path.localeCompare(b.path, undefined, { sensitivity: "base" }));
-  return projectEntries;
+      return {
+        path: `/blog/${slug}`,
+        lastmod: lastModified(entry?.date),
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.path.localeCompare(b.path, undefined, { sensitivity: "base" }));
 }
 
 async function generateSitemap() {
-  const projectRoutes = await loadProjectRoutes();
+  const [projectRoutes, postRoutes] = await Promise.all([
+    loadProjectRoutes(),
+    loadPostRoutes(),
+  ]);
   const staticRoutes = [
     { path: "/", lastmod: new Date().toISOString() },
     { path: "/about", lastmod: new Date().toISOString() },
+    { path: "/blog", lastmod: new Date().toISOString() },
     { path: "/work", lastmod: new Date().toISOString() },
     { path: "/contact", lastmod: new Date().toISOString() },
   ];
 
-  const urls = [...staticRoutes, ...projectRoutes]
+  const urls = [...staticRoutes, ...projectRoutes, ...postRoutes]
     .map(
       (entry) => `  <url>
     <loc>${escapeXml(absoluteUrl(entry.path))}</loc>

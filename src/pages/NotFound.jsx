@@ -27,9 +27,7 @@ export default function NotFound() {
         <div className="cardScroll" ref={scrollRef}>
           <section className="aboutHeroShell" id="top">
             <div className="aboutShell">
-              <div className="aboutStickyHeader">
-                <Header />
-              </div>
+              <Header />
             </div>
           </section>
 

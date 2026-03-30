@@ -12,8 +12,8 @@ export default function SelectedWork({ scrollRootRef }) {
   useEffect(() => {
     let isMounted = true;
 
-    loadAllProjects().then((loadedProjects) => {
-      if (!isMounted || !Array.isArray(loadedProjects) || !loadedProjects.length) return;
+    loadAllProjects({ force: true }).then((loadedProjects) => {
+      if (!isMounted || !Array.isArray(loadedProjects)) return;
       setProjects(loadedProjects);
     });
 
