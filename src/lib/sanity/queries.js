@@ -22,16 +22,23 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   nextSteps,
   tasks,
   tags,
-  "brandLogo": {
-    "url": brandLogo.asset->url
+  brandLogo{
+    asset->{
+      url
+    }
   },
-  "heroImage": {
-    "url": heroImage.asset->url
+  heroImage{
+    asset->{
+      url
+    }
   },
-  "overviewImage": {
-    "url": overviewImage.asset->url
+  overviewImage{
+    asset->{
+      url
+    }
   },
   overviewText,
+  overviewDescription,
   sections[]{
     _key,
     _type,
@@ -43,24 +50,34 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
     rows[]{
       cells
     },
-    "image": {
-      "url": image.asset->url,
-      "alt": alt,
-      "caption": caption
+    image{
+      asset->{
+        url
+      }
     },
-    "poster": {
-      "url": poster.asset->url
+    poster{
+      asset->{
+        url
+      }
     },
-    "video": {
-      "url": video.asset->url
+    video{
+      asset->{
+        url
+      }
     },
-    "audio": {
-      "url": audio.asset->url
+    audio{
+      asset->{
+        url
+      }
     },
     frames[]{
       alt,
       caption,
-      "url": image.asset->url
+      image{
+        asset->{
+          url
+        }
+      }
     }
   },
   overview,
@@ -77,22 +94,30 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   },
   researchText,
   researchImages[]{
-    "url": asset->url
+    asset->{
+      url
+    }
   },
   wireframeText,
   wireframeImages[]{
-    "url": asset->url
+    asset->{
+      url
+    }
   },
   prototypeText,
   prototypeImages[]{
-    "url": asset->url
+    asset->{
+      url
+    }
   },
   results[]{
     metric,
     description
   },
   finalImages[]{
-    "url": asset->url
+    asset->{
+      url
+    }
   }
 }`;
 

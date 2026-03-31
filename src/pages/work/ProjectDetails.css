@@ -16,6 +16,9 @@
     0 20px 54px rgba(15, 23, 42, 0.08),
     0 0 0 1px rgba(15, 23, 42, 0.04);
   color-scheme: light dark;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .projectDetailsPage .hero {
@@ -118,6 +121,7 @@
 .projectDetailsPage .projectDetailsInner {
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .projectDetailsPage .projectCaseStudy {
@@ -186,6 +190,7 @@
   max-width: 860px;
   margin: 0 0 0 calc(var(--case-nav-width) + 38px);
   padding: 52px 0 42px;
+  width: 100%;
 }
 
 .projectDetailsPage .projectCaseHeroText {
@@ -350,6 +355,7 @@
   border-radius: 20px;
   overflow: hidden;
   background: var(--case-border);
+  width: 100%;
 }
 
 .projectDetailsPage .projectCaseMetaItem {
@@ -399,12 +405,17 @@
   grid-template-columns: var(--case-nav-width) minmax(0, 1fr);
   gap: 38px;
   align-items: start;
+  width: 100%;
+  max-width: 100%;
 }
 
 .projectDetailsPage .projectCaseNav {
   position: sticky;
   top: 30px;
   align-self: start;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .projectDetailsPage .projectCaseNavList,
@@ -419,6 +430,7 @@
 .projectDetailsPage .projectCaseNavList {
   display: flex;
   flex-direction: column;
+  max-width: 100%;
 }
 
 .projectDetailsPage .projectCaseNavButton {
@@ -436,6 +448,7 @@
   font-family: var(--fontUi);
   font-size: 13px;
   cursor: pointer;
+  max-width: 100%;
 }
 
 .projectDetailsPage .projectCaseNavButton.is-active {
@@ -486,11 +499,25 @@
 
 .projectDetailsPage .projectCaseSection {
   scroll-margin-top: 110px;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .projectDetailsPage .projectCaseSection img {
   max-width: 100%;
   height: auto;
+}
+
+.projectDetailsPage .projectCaseSectionObserver {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .projectDetailsPage .projectCaseSection + .projectCaseSection {
@@ -509,6 +536,10 @@
   max-width: 60ch;
   margin-top: 16px;
   font-size: 16px;
+}
+
+.projectDetailsPage .projectCaseLead--secondary {
+  margin-top: 12px;
 }
 
 .projectDetailsPage .projectCaseStatsGrid,
@@ -539,6 +570,9 @@
   border-radius: 24px;
   background: var(--case-surface);
   box-shadow: var(--case-shadow);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .projectDetailsPage .projectCaseStat,
@@ -641,6 +675,9 @@
   border-radius: 12px;
   background: var(--brand-color-light);
   box-shadow: var(--case-shadow);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .projectDetailsPage .projectCaseFeatureMedia,
@@ -1027,6 +1064,10 @@
   margin-top: 8px;
 }
 
+.projectDetailsPage .projectCaseContent {
+  min-width: 0;
+}
+
 .projectDetailsPage .projectCaseMissingTitle {
   margin: 0;
   font-family: var(--fontHeading);
@@ -1058,6 +1099,7 @@
     top: 0;
     z-index: 12;
     padding-bottom: 8px;
+    border-radius: 20px;
     background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.96) 0%, rgba(var(--surface-rgb), 0.96) 78%, rgba(var(--surface-rgb), 0) 100%);
     backdrop-filter: blur(10px);
   }
@@ -1066,7 +1108,14 @@
     flex-direction: row;
     gap: 10px;
     overflow-x: auto;
-    padding-bottom: 4px;
+    scroll-behavior: smooth;
+    scroll-padding-inline: 16px;
+    padding: 10px 16px;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px;
+    background: var(--case-surface-soft);
+    padding-bottom: 10px;
     scrollbar-width: none;
   }
 
@@ -1074,8 +1123,33 @@
     display: none;
   }
 
+  .projectDetailsPage .projectCaseNavList::after {
+    content: "";
+    flex: 0 0 40px;
+  }
+
   .projectDetailsPage .projectCaseNavItem {
     flex: 0 0 auto;
+  }
+
+  .projectDetailsPage .projectCaseNavButton {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 14px;
+  }
+
+  .projectDetailsPage .projectCaseNavButton.is-active {
+    background: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgba(var(--accent-rgb), 0.24);
+  }
+
+  .projectDetailsPage .projectCaseNavButton.is-active .projectCaseNavIcon {
+    border-color: rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
   }
 
   .projectDetailsPage .projectCaseNavConnector {
@@ -1161,6 +1235,31 @@
     display: flex;
     overflow-x: auto;
     gap: 10px;
+  }
+
+  .projectDetailsPage .projectCaseTitle {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .projectDetailsPage .projectCaseSectionTitle,
+  .projectDetailsPage .projectCaseSplitTitle,
+  .projectDetailsPage .projectCaseClosingTitle {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  .projectDetailsPage .projectCaseDescription,
+  .projectDetailsPage .projectCaseLead,
+  .projectDetailsPage .projectCaseSplitText,
+  .projectDetailsPage .projectCaseResultDescription,
+  .projectDetailsPage .projectCaseProblemDescription,
+  .projectDetailsPage .projectCaseObjectiveText,
+  .projectDetailsPage .projectCaseListItem,
+  .projectDetailsPage .projectCaseDecisionItem,
+  .projectDetailsPage .projectCaseMetaValue,
+  .projectDetailsPage .projectCaseClosingText {
+    font-size: 14px;
   }
 }
 

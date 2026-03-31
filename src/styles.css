@@ -218,9 +218,16 @@ body{
   font-family: var(--fontMain);
   background: var(--bg-canvas);
   color: var(--ink);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+img{
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 button {
@@ -235,6 +242,20 @@ select {
 
 :where(a, button, input, textarea, select) {
   transition: all 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+p{
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.section{
+  width: 100%;
+  max-width: 100%;
+  padding: 20px 16px;
 }
 
 h1,

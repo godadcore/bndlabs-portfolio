@@ -604,6 +604,7 @@ function buildCaseStudySummaryTableSection(details) {
 }
 
 function buildModernCaseStudySections({
+  title,
   role,
   tools,
   timeline,
@@ -729,6 +730,7 @@ function normalizeModernCaseStudy(raw) {
   const title = firstString(raw?.title, "Untitled Case Study");
   const overviewBlocks = normalizePortableText(raw?.overview);
   const overviewText = firstString(raw?.overviewText);
+  const overviewDescription = firstString(raw?.overviewDescription);
   const description = firstString(raw?.description);
   const brandLogo = normalizeSanityImage(raw?.brandLogo, `${title} logo`);
   const heroImage = normalizeSanityImage(raw?.heroImage, `${title} hero image`);
@@ -764,6 +766,7 @@ function normalizeModernCaseStudy(raw) {
   const client = firstString(raw?.client);
   const industry = firstString(raw?.industry, category);
   const normalizedSections = buildModernCaseStudySections({
+    title,
     role,
     tools,
     timeline,
@@ -804,7 +807,7 @@ function normalizeModernCaseStudy(raw) {
     industry,
     status,
     date: publishedDate,
-    overview: overviewText,
+    overview: firstString(overviewText, overviewDescription),
     problem: "",
     solution: "",
     result: results[0]?.description || description,
@@ -832,6 +835,7 @@ function normalizeModernCaseStudy(raw) {
       status,
       overviewImage: overviewImage?.src ? overviewImage : null,
       overviewText,
+      overviewDescription,
       sections: normalizedSections,
       overviewBlocks,
       stats,

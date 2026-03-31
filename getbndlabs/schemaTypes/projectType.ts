@@ -388,6 +388,12 @@ export const caseStudyType = defineType({
       type: 'text',
       rows: 4,
     }),
+    defineField({
+      name: 'overviewDescription',
+      title: 'Overview Description',
+      type: 'text',
+      rows: 4,
+    }),
     mediaArrayField(
       'images',
       'Project Images',

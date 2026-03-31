@@ -346,12 +346,19 @@ function normalizeImageItem(value, fallbackAlt = "Project image") {
     const src = firstString(value);
     return src ? { src, alt: fallbackAlt, caption: "", label: "" } : null;
   }
-  const src = firstString(value?.src, value?.url, value?.image?.src);
+  const src = firstString(
+    value?.src,
+    value?.url,
+    value?.asset?.url,
+    value?.image?.src,
+    value?.image?.url,
+    value?.image?.asset?.url
+  );
   if (!src) return null;
   return {
     src,
-    alt: firstString(value?.alt, fallbackAlt),
-    caption: firstString(value?.caption),
+    alt: firstString(value?.alt, value?.image?.alt, fallbackAlt),
+    caption: firstString(value?.caption, value?.image?.caption),
     label: firstString(value?.label, value?.title),
   };
 }
@@ -666,13 +673,27 @@ function ResultCard({ metric, description }) {
 }
 
 function CaseSection({ id, index, label, title, copy, children }) {
+  const copyLines = Array.isArray(copy)
+    ? uniqueStrings(copy.map((item) => firstString(item)))
+    : firstString(copy)
+      ? [firstString(copy)]
+      : [];
+
   return (
     <section className="projectCaseSection" id={id}>
+      <span className="projectCaseSectionObserver" data-section-id={id} aria-hidden="true" />
       <p className="projectCaseEyebrow">
         {String(index).padStart(2, "0")} / {label}
       </p>
       <h2 className="projectCaseSectionTitle">{title}</h2>
-      {copy ? <p className="projectCaseLead">{copy}</p> : null}
+      {copyLines.map((line, lineIndex) => (
+        <p
+          className={`projectCaseLead ${lineIndex > 0 ? "projectCaseLead--secondary" : ""}`.trim()}
+          key={`${id}-copy-${lineIndex}`}
+        >
+          {line}
+        </p>
+      ))}
       {children}
     </section>
   );
@@ -743,6 +764,7 @@ export default function CaseStudyDetail({ slug }) {
   const [lightboxItems, setLightboxItems] = useState([]);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const scrollRootRef = useRef(null);
+  const navButtonRefs = useRef({});
   const { socialLinks, whatsappNumber: siteWhatsAppNumber } = useSiteSettings();
 
   usePullToRefresh(scrollRootRef);
@@ -750,6 +772,7 @@ export default function CaseStudyDetail({ slug }) {
   useEffect(() => {
     let isMounted = true;
     setIsProjectLoading(true);
+    setActiveSection("overview");
     setLightboxItems([]);
     setLightboxIndex(-1);
 
@@ -772,27 +795,37 @@ export default function CaseStudyDetail({ slug }) {
   useEffect(() => {
     const root = scrollRootRef.current;
     if (!root || !project) return undefined;
-    const targets = NAV_SECTIONS.map(({ id }) => document.getElementById(id)).filter(Boolean);
+    const targets = Array.from(root.querySelectorAll(".projectCaseSectionObserver"));
     if (!targets.length) return undefined;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => {
-            if (b.intersectionRatio !== a.intersectionRatio) {
-              return b.intersectionRatio - a.intersectionRatio;
-            }
-            return a.boundingClientRect.top - b.boundingClientRect.top;
-          });
-        if (visible.length) setActiveSection(visible[0].target.id);
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+        if (!visible.length) return;
+
+        const nextSectionId = visible[0].target.getAttribute("data-section-id");
+        if (nextSectionId) setActiveSection(nextSectionId);
       },
-      { root, rootMargin: "-18% 0px -56% 0px", threshold: [0.15, 0.3, 0.5, 0.7] }
+      { root, rootMargin: "-12% 0px -72% 0px", threshold: 0.6 }
     );
 
     targets.forEach((target) => observer.observe(target));
     return () => observer.disconnect();
   }, [project]);
+
+  useEffect(() => {
+    const activeButton = navButtonRefs.current[activeSection];
+    if (!activeButton) return;
+
+    activeButton.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [activeSection]);
 
   if (!project && isProjectLoading) {
     return (
@@ -937,33 +970,33 @@ export default function CaseStudyDetail({ slug }) {
     ? buildProblemItems(caseStudy)
     : buildObjectives(project, caseStudy);
   const resultCards = buildResultCards(project, caseStudy);
+  const heroImage = normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} hero image`);
   const overviewImage = normalizeImageItem(caseStudy.overviewImage, `${project.title} overview image`);
   const sectionImages = isModernCaseStudy ? [] : flattenSectionImages(sections);
   const galleryImages = isModernCaseStudy
     ? []
     : normalizeImageList(project.gallery, `${project.title} gallery image`);
-  const caseImages = isModernCaseStudy
-    ? []
-    : uniqueBy(
-        [
-          normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} hero image`),
-          ...normalizeImageList(caseStudy.images, `${project.title} project image`),
-          ...normalizeImageList(caseStudy.researchImages, `${project.title} research image`),
-          ...normalizeImageList(caseStudy.wireframeImages, `${project.title} wireframe image`),
-          ...normalizeImageList(caseStudy.prototypeImages, `${project.title} prototype image`),
-          ...normalizeImageList(caseStudy.finalGallery, `${project.title} final image`),
-          ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
-          ...sectionImages,
-          ...galleryImages,
-        ].filter(Boolean),
-        (item) => item.src
-      );
+  const caseImages = uniqueBy(
+    [
+      heroImage,
+      ...normalizeImageList(caseStudy.images, `${project.title} project image`),
+      ...normalizeImageList(caseStudy.researchImages, `${project.title} research image`),
+      ...normalizeImageList(caseStudy.wireframeImages, `${project.title} wireframe image`),
+      ...normalizeImageList(caseStudy.prototypeImages, `${project.title} prototype image`),
+      ...normalizeImageList(caseStudy.finalGallery, `${project.title} final image`),
+      ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
+      ...sectionImages,
+      ...galleryImages,
+    ].filter(Boolean),
+    (item) => item.src
+  );
 
-  const coverImage =
-    normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} cover image`) ||
-    overviewImage ||
-    caseImages[0] ||
-    null;
+  const coverImage = isModernCaseStudy
+    ? heroImage || overviewImage || null
+    : normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} cover image`) ||
+      overviewImage ||
+      caseImages[0] ||
+      null;
   const overviewGallery = isModernCaseStudy
     ? overviewImage
       ? [overviewImage]
@@ -1070,7 +1103,7 @@ export default function CaseStudyDetail({ slug }) {
   ];
 
   const overviewCopy = isModernCaseStudy
-    ? firstString(caseStudy.overviewText)
+    ? [firstString(caseStudy.overviewText), firstString(caseStudy.overviewDescription)].filter(Boolean)
     : firstString(caseStudy.overviewIntro, project.overview, caseStudy.description, project.description, project.summary);
   const researchCopy = isModernCaseStudy
     ? firstString(caseStudy.researchText)
@@ -1286,7 +1319,18 @@ export default function CaseStudyDetail({ slug }) {
                         const completed = NAV_SECTIONS.findIndex((item) => item.id === activeSection) > index;
                         return (
                           <li className="projectCaseNavItem" key={section.id}>
-                            <button type="button" className={`projectCaseNavButton ${isActive ? "is-active" : ""}`.trim()} onClick={() => scrollToSection(section.id)}>
+                            <button
+                              type="button"
+                              className={`projectCaseNavButton ${isActive ? "is-active" : ""}`.trim()}
+                              onClick={() => scrollToSection(section.id)}
+                              ref={(node) => {
+                                if (node) {
+                                  navButtonRefs.current[section.id] = node;
+                                } else {
+                                  delete navButtonRefs.current[section.id];
+                                }
+                              }}
+                            >
                               <span className="projectCaseNavIcon">
                                 <section.Icon />
                               </span>
