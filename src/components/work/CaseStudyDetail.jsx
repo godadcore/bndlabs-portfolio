@@ -16,12 +16,12 @@ import "../../pages/work/ProjectDetails.css";
 
 const NAV_SECTIONS = [
   { id: "overview", label: "Overview", Icon: IconOverview },
-  { id: "scope", label: "Project Scope", Icon: IconScope },
+  { id: "project-scope", label: "Project Scope", Icon: IconScope },
   { id: "research", label: "User Research", Icon: IconResearch },
   { id: "problem", label: "Problem & Goals", Icon: IconProblem },
   { id: "wireframe", label: "Wireframe", Icon: IconWireframe },
   { id: "prototype", label: "Prototype", Icon: IconPrototype },
-  { id: "results", label: "Final Results", Icon: IconResults },
+  { id: "final-results", label: "Final Results", Icon: IconResults },
 ];
 
 function IconOverview() {
@@ -508,79 +508,120 @@ function buildProblemItems(caseStudy) {
     .filter((item) => item.title || item.description);
 }
 
-function MediaCarousel({ slides, label, onOpen }) {
-  const trackRef = useRef(null);
-  if (!slides.length) return null;
+function MediaSlider({ items, label, onOpen, className = "" }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const touchStartXRef = useRef(0);
+  const didSwipeRef = useRef(false);
+  const itemSignature = items.map((item) => item?.src || "").join("|");
 
-  const scroll = (direction) => {
-    trackRef.current?.scrollBy({ left: direction * 360, behavior: "smooth" });
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [itemSignature]);
+
+  if (!items.length) return null;
+
+  const hasMultiple = items.length > 1;
+  const activeItem = items[currentIndex] || items[0];
+
+  const showNext = () => {
+    if (!hasMultiple) return;
+    setCurrentIndex((value) => (value + 1) % items.length);
+  };
+
+  const showPrevious = () => {
+    if (!hasMultiple) return;
+    setCurrentIndex((value) => (value - 1 + items.length) % items.length);
+  };
+
+  const handleTouchStart = (event) => {
+    touchStartXRef.current = event.touches[0]?.clientX ?? 0;
+    didSwipeRef.current = false;
+  };
+
+  const handleTouchEnd = (event) => {
+    const endX = event.changedTouches[0]?.clientX ?? touchStartXRef.current;
+    const delta = touchStartXRef.current - endX;
+
+    if (delta > 50) {
+      showNext();
+      didSwipeRef.current = true;
+      return;
+    }
+
+    if (delta < -50) {
+      showPrevious();
+      didSwipeRef.current = true;
+    }
+  };
+
+  const handleImageClick = (event) => {
+    if (didSwipeRef.current) {
+      didSwipeRef.current = false;
+      event.preventDefault();
+      return;
+    }
+
+    onOpen?.(items, currentIndex);
   };
 
   return (
-    <div className="projectCaseCarousel" aria-label={label}>
-      <div className="projectCaseCarouselTrack" ref={trackRef}>
-        {slides.map((slide, index) => (
-          <figure className="projectCaseCarouselSlide" key={`${slide.src}-${index}`}>
-            <button
-              type="button"
-              className="projectCaseMediaButton"
-              onClick={() => onOpen?.(slides, index)}
-              aria-label={`Open ${label} ${index + 1}`}
-            >
-              <img
-                src={slide.src}
-                alt={slide.alt || `${label} ${index + 1}`}
-                loading="lazy"
-                decoding="async"
-              />
-            </button>
-            {slide.label || slide.caption ? (
-              <figcaption className="projectCaseCarouselCaption">{slide.label || slide.caption}</figcaption>
-            ) : null}
-          </figure>
-        ))}
-      </div>
-      {slides.length > 1 ? (
-        <div className="projectCaseCarouselControls">
-          <button type="button" className="projectCaseCarouselButton" onClick={() => scroll(-1)} aria-label={`Scroll ${label} left`}>
+    <figure className={`projectCaseImageSlider ${className}`.trim()} aria-label={label}>
+      <div
+        className="projectCaseImageSliderViewport image-slider projectCaseSectionCard"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {hasMultiple ? (
+          <button
+            type="button"
+            className="projectCaseImageSliderArrow prev"
+            onClick={showPrevious}
+            aria-label={`Show previous ${label}`}
+          >
             <IconChevronLeft />
           </button>
-          <button type="button" className="projectCaseCarouselButton" onClick={() => scroll(1)} aria-label={`Scroll ${label} right`}>
+        ) : null}
+
+        <button
+          type="button"
+          className="projectCaseMediaButton projectCaseImageSliderButton"
+          onClick={handleImageClick}
+          aria-label={`Open ${label} ${currentIndex + 1}`}
+        >
+          <img
+            className="projectCaseImageSliderImage slider-image"
+            src={activeItem.src}
+            alt={activeItem.alt || `${label} ${currentIndex + 1}`}
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+
+        {hasMultiple ? (
+          <button
+            type="button"
+            className="projectCaseImageSliderArrow next"
+            onClick={showNext}
+            aria-label={`Show next ${label}`}
+          >
             <IconChevronRight />
           </button>
-        </div>
+        ) : null}
+      </div>
+
+      {activeItem.label || activeItem.caption ? (
+        <figcaption className="projectCaseCarouselCaption">{activeItem.label || activeItem.caption}</figcaption>
       ) : null}
-    </div>
+    </figure>
   );
 }
 
-function MediaGallery({ items, label, onOpen, className = "" }) {
-  if (!items.length) return null;
+function MediaCarousel({ slides, label, onOpen, className = "" }) {
+  return <MediaSlider items={slides} label={label} onOpen={onOpen} className={className} />;
+}
 
-  return (
-    <div className={`projectCaseMediaGallery ${className}`.trim()} aria-label={label}>
-      {items.map((item, index) => (
-        <figure className="projectCaseMediaFigure projectCaseSectionCard" key={`${item.src}-${index}`}>
-          <button
-            type="button"
-            className="projectCaseMediaButton"
-            onClick={() => onOpen?.(items, index)}
-            aria-label={`Open ${label} ${index + 1}`}
-          >
-            <img
-              src={item.src}
-              alt={item.alt || `${label} ${index + 1}`}
-              loading="lazy"
-              decoding="async"
-            />
-          </button>
-          {item.label || item.caption ? (
-            <figcaption className="projectCaseCarouselCaption">{item.label || item.caption}</figcaption>
-          ) : null}
-        </figure>
-      ))}
-    </div>
-  );
+function MediaGallery({ items, label, onOpen, className = "" }) {
+  return <MediaSlider items={items} label={label} onOpen={onOpen} className={className} />;
 }
 
 function FeatureMedia({ media, fallbackLabel, onOpen }) {
@@ -765,6 +806,7 @@ export default function CaseStudyDetail({ slug }) {
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const scrollRootRef = useRef(null);
   const navButtonRefs = useRef({});
+  const navTouchStateRef = useRef({ id: "", timestamp: 0, startX: 0, startY: 0, moved: false });
   const { socialLinks, whatsappNumber: siteWhatsAppNumber } = useSiteSettings();
 
   usePullToRefresh(scrollRootRef);
@@ -826,6 +868,103 @@ export default function CaseStudyDetail({ slug }) {
       block: "nearest",
     });
   }, [activeSection]);
+
+  const scrollToSection = (id) => {
+    const root = scrollRootRef.current;
+    const section = root?.querySelector(`[id="${id}"]`) || document.getElementById(id);
+    if (!section) return;
+
+    setActiveSection(id);
+
+    if (!root) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    const rootBounds = root.getBoundingClientRect();
+    const sectionBounds = section.getBoundingClientRect();
+    const sectionStyles = window.getComputedStyle(section);
+    const scrollOffset = Number.parseFloat(sectionStyles.scrollMarginTop || "0") || 0;
+    const targetTop = root.scrollTop + (sectionBounds.top - rootBounds.top) - scrollOffset;
+
+    root.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    const root = scrollRootRef.current;
+    if (!root || !project) return undefined;
+
+    const buttons = Array.from(root.querySelectorAll(".nav-tab"));
+    if (!buttons.length) return undefined;
+
+    const handleTouchStart = (event) => {
+      const touch = event.touches[0];
+      navTouchStateRef.current = {
+        id: event.currentTarget.getAttribute("data-target") || "",
+        timestamp: 0,
+        startX: touch?.clientX ?? 0,
+        startY: touch?.clientY ?? 0,
+        moved: false,
+      };
+    };
+
+    const handleTouchMove = (event) => {
+      const touch = event.touches[0];
+      const deltaX = Math.abs((touch?.clientX ?? 0) - navTouchStateRef.current.startX);
+      const deltaY = Math.abs((touch?.clientY ?? 0) - navTouchStateRef.current.startY);
+
+      if (deltaX > 10 || deltaY > 10) {
+        navTouchStateRef.current.moved = true;
+      }
+    };
+
+    const handleTouchCancel = () => {
+      navTouchStateRef.current.moved = true;
+    };
+
+    const handleActivate = (event) => {
+      const targetId = event.currentTarget.getAttribute("data-target");
+      if (!targetId) return;
+
+      if (event.type === "touchend") {
+        if (navTouchStateRef.current.moved) return;
+        event.preventDefault();
+        navTouchStateRef.current.timestamp = Date.now();
+        navTouchStateRef.current.id = targetId;
+        scrollToSection(targetId);
+        return;
+      }
+
+      const isSyntheticClickAfterTouch =
+        navTouchStateRef.current.id === targetId &&
+        Date.now() - navTouchStateRef.current.timestamp < 750;
+
+      if (isSyntheticClickAfterTouch) return;
+
+      scrollToSection(targetId);
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", handleActivate);
+      button.addEventListener("touchstart", handleTouchStart, { passive: true });
+      button.addEventListener("touchmove", handleTouchMove, { passive: true });
+      button.addEventListener("touchcancel", handleTouchCancel, { passive: true });
+      button.addEventListener("touchend", handleActivate, { passive: false });
+    });
+
+    return () => {
+      buttons.forEach((button) => {
+        button.removeEventListener("click", handleActivate);
+        button.removeEventListener("touchstart", handleTouchStart);
+        button.removeEventListener("touchmove", handleTouchMove);
+        button.removeEventListener("touchcancel", handleTouchCancel);
+        button.removeEventListener("touchend", handleActivate);
+      });
+    };
+  }, [project]);
 
   if (!project && isProjectLoading) {
     return (
@@ -1158,11 +1297,6 @@ export default function CaseStudyDetail({ slug }) {
         ...normalizeTextList(caseStudy.nextSteps),
       ]).slice(0, 4);
 
-  const scrollToSection = (id) => {
-    setActiveSection(id);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const openLightbox = (items, index = 0) => {
     setLightboxItems(items);
     setLightboxIndex(index);
@@ -1321,8 +1455,8 @@ export default function CaseStudyDetail({ slug }) {
                           <li className="projectCaseNavItem" key={section.id}>
                             <button
                               type="button"
-                              className={`projectCaseNavButton ${isActive ? "is-active" : ""}`.trim()}
-                              onClick={() => scrollToSection(section.id)}
+                              className={`projectCaseNavButton nav-tab ${isActive ? "is-active" : ""}`.trim()}
+                              data-target={section.id}
                               ref={(node) => {
                                 if (node) {
                                   navButtonRefs.current[section.id] = node;
@@ -1355,24 +1489,17 @@ export default function CaseStudyDetail({ slug }) {
                           className="projectCaseOverviewMedia"
                         />
                       ) : overviewGallery.length ? (
-                        <div className="projectCaseOverviewGallery" data-count={overviewGallery.length}>
-                          {overviewGallery.map((image, index) => (
-                            <button
-                              type="button"
-                              className={`projectCaseOverviewTile projectCaseOverviewTile--${index + 1}`.trim()}
-                              key={`${image.src}-${index}`}
-                              onClick={() => openLightbox(overviewGallery, index)}
-                              aria-label={`Open project image ${index + 1}`}
-                            >
-                              <img src={image.src} alt={image.alt || `${project.title} project image ${index + 1}`} loading="lazy" decoding="async" />
-                            </button>
-                          ))}
-                        </div>
+                        <MediaGallery
+                          items={overviewGallery}
+                          label="Overview image"
+                          onOpen={openLightbox}
+                          className="projectCaseOverviewMedia"
+                        />
                       ) : null}
                     </CaseSection>
 
                     <CaseSection
-                      id="scope"
+                      id="project-scope"
                       index={2}
                       label="Project Scope"
                       title="Scope & Setup"
@@ -1470,7 +1597,7 @@ export default function CaseStudyDetail({ slug }) {
                       )}
                     </CaseSection>
 
-                    <CaseSection id="results" index={7} label="Final Results" title="What We Shipped & What Changed" copy={resultsCopy}>
+                    <CaseSection id="final-results" index={7} label="Final Results" title="What We Shipped & What Changed" copy={resultsCopy}>
                       {resultCards.length ? (
                         <div className="projectCaseResultGrid">
                           {resultCards.map((card) => (

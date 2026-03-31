@@ -1,5 +1,6 @@
 .projectDetailsPage {
   --case-nav-width: 224px;
+  --case-section-scroll-offset: 110px;
   --case-ink: var(--text-primary);
   --case-muted: var(--text-muted);
   --case-muted-strong: var(--text-secondary);
@@ -436,6 +437,7 @@
 .projectDetailsPage .projectCaseNavButton {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
   width: 100%;
   padding: 10px 12px;
@@ -449,6 +451,13 @@
   font-size: 13px;
   cursor: pointer;
   max-width: 100%;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.projectDetailsPage .projectCaseNavButton > *,
+.projectDetailsPage .projectCaseNavButton > * * {
+  pointer-events: none;
 }
 
 .projectDetailsPage .projectCaseNavButton.is-active {
@@ -498,7 +507,7 @@
 }
 
 .projectDetailsPage .projectCaseSection {
-  scroll-margin-top: 110px;
+  scroll-margin-top: var(--case-section-scroll-offset);
   position: relative;
   width: 100%;
   max-width: 100%;
@@ -644,7 +653,8 @@
 }
 
 .projectDetailsPage .projectCaseFeatureMedia,
-.projectDetailsPage .projectCaseCarousel {
+.projectDetailsPage .projectCaseCarousel,
+.projectDetailsPage .projectCaseImageSlider {
   margin-top: 28px;
 }
 
@@ -658,6 +668,85 @@
 .projectDetailsPage .projectCaseOverviewMedia,
 .projectDetailsPage .projectCaseFinalGallery {
   grid-template-columns: 1fr;
+}
+
+.projectDetailsPage .projectCaseImageSlider {
+  width: 100%;
+  max-width: 100%;
+}
+
+.projectDetailsPage .projectCaseImageSlider.projectCaseOverviewMedia,
+.projectDetailsPage .projectCaseImageSlider.projectCaseFinalGallery {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.projectDetailsPage .projectCaseImageSliderViewport {
+  position: relative;
+  max-width: 100%;
+  padding: 0 52px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.projectDetailsPage .projectCaseImageSliderButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.projectDetailsPage .projectCaseImageSliderImage,
+.projectDetailsPage .slider-image {
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  margin: 0 auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid var(--case-border);
+  background: var(--case-surface-soft);
+  box-shadow: var(--case-shadow);
+}
+
+.projectDetailsPage .projectCaseImageSliderArrow,
+.projectDetailsPage .prev,
+.projectDetailsPage .next {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.projectDetailsPage .projectCaseImageSliderArrow.prev,
+.projectDetailsPage .prev {
+  left: 10px;
+}
+
+.projectDetailsPage .projectCaseImageSliderArrow.next,
+.projectDetailsPage .next {
+  right: 10px;
+}
+
+.projectDetailsPage .projectCaseImageSliderArrow svg {
+  width: 18px;
+  height: 18px;
 }
 
 .projectDetailsPage .projectCaseMediaButton,
@@ -708,12 +797,6 @@
   max-width: 760px;
   margin-left: auto;
   margin-right: auto;
-}
-
-.projectDetailsPage .projectCaseFinalGallery .projectCaseMediaFigure img {
-  max-width: 700px;
-  margin: 0 auto;
-  display: block;
 }
 
 .projectDetailsPage .projectCaseOverviewGallery {
@@ -1083,6 +1166,10 @@
 }
 
 @media (max-width: 1040px) {
+  .projectDetailsPage {
+    --case-section-scroll-offset: 146px;
+  }
+
   .projectDetailsPage .projectCaseHero {
     margin-left: 0;
     max-width: none;
@@ -1213,7 +1300,18 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .projectDetailsPage .projectCaseImageSliderImage,
+  .projectDetailsPage .slider-image {
+    max-width: 600px;
+  }
+}
+
 @media (max-width: 768px) {
+  .projectDetailsPage {
+    --case-section-scroll-offset: 136px;
+  }
+
   .projectDetailsPage .projectCaseSection {
     padding: 20px 16px;
   }
@@ -1227,8 +1325,8 @@
     grid-template-columns: 1fr;
   }
 
-  .projectDetailsPage .projectCaseFinalGallery .projectCaseMediaFigure img {
-    max-width: 100%;
+  .projectDetailsPage .projectCaseImageSliderViewport {
+    padding: 0 44px;
   }
 
   .projectDetailsPage .projectCaseNavList {
@@ -1292,6 +1390,12 @@
   .projectDetailsPage .projectCaseCarouselSlide img,
   .projectDetailsPage .projectCaseMediaFigure img {
     border-radius: 20px;
+  }
+
+  .projectDetailsPage .projectCaseImageSliderArrow {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
   }
 
   .projectDetailsPage .projectCaseLightbox {
