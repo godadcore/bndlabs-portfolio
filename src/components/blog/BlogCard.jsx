@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { formatBlogDate } from "../../lib/blogData";
 import "./blog-card.css";
 
 export default function BlogCard({
@@ -11,11 +12,12 @@ export default function BlogCard({
 
   if (!post) return null;
 
-  const { title, description, excerpt, image, thumbnail, slug } = post;
+  const { title, description, excerpt, image, thumbnail, slug, date } = post;
   const cardLabel = `Read ${title || "blog post"}`;
   const resolvedHref = slug ? `/blog/${slug}` : "/blog";
   const cardImage = image || thumbnail || "";
-  const cardText = description || excerpt || "New writing coming soon.";
+  const cardText = description || excerpt || "";
+  const publishedDate = formatBlogDate(date);
 
   const activateCard = () => {
     if (!resolvedHref) return;
@@ -50,7 +52,7 @@ export default function BlogCard({
           {cardImage ? (
             <img
               src={cardImage}
-              alt={title ? `${title} blog placeholder artwork` : "Blog placeholder artwork"}
+              alt={title ? `${title} blog cover image` : "Blog cover image"}
               loading={priority ? "eager" : "lazy"}
               fetchPriority={priority ? "high" : undefined}
               decoding="async"
@@ -65,9 +67,10 @@ export default function BlogCard({
       <div className="workCard__footer blogCard__footer">
         <div className="workCard__text">
           <div className="workCard__meta">
+            {publishedDate ? <p className="blogCard__date">{publishedDate}</p> : null}
             <h3 className="workCard__title">{title || "Untitled"}</h3>
           </div>
-          <p className="workCard__task">{cardText}</p>
+          {cardText ? <p className="workCard__task">{cardText}</p> : null}
           <Link
             className="blogCard__button"
             aria-label={cardLabel}

@@ -10,12 +10,23 @@ import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
 import "../work/work.css";
 import "./blog.css";
 
+const MOBILE_BREAKPOINT = 640;
+const MOBILE_POST_BATCH = 3;
+
 export default function Blog() {
-  const [posts, setPosts] = useState(() => getInitialPosts());
+  const initialPosts = getInitialPosts();
+  const [posts, setPosts] = useState(() => initialPosts);
+  const [isLoading, setIsLoading] = useState(() => initialPosts.length === 0);
+  const [vw, setVw] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  const [mobileVisibleCount, setMobileVisibleCount] = useState(MOBILE_POST_BATCH);
   const scrollRootRef = useRef(null);
   const motionScopeRef = useRef(null);
-  const featuredPost = posts[0] || null;
-  const gridPosts = featuredPost ? posts.slice(1) : posts;
+  const isMobile = vw <= MOBILE_BREAKPOINT;
+  const visiblePosts = isMobile ? posts.slice(0, mobileVisibleCount) : posts;
+  const hasPosts = posts.length > 0;
+  const canLoadMore = isMobile && visiblePosts.length < posts.length;
 
   usePullToRefresh(scrollRootRef);
 
@@ -25,11 +36,20 @@ export default function Blog() {
     loadAllPosts({ force: true }).then((loadedPosts) => {
       if (!isMounted || !Array.isArray(loadedPosts)) return;
       setPosts(loadedPosts);
+    }).finally(() => {
+      if (!isMounted) return;
+      setIsLoading(false);
     });
 
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => setVw(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   useEffect(() => {
@@ -65,7 +85,7 @@ export default function Blog() {
     });
 
     return () => io.disconnect();
-  }, []);
+  }, [visiblePosts.length, isLoading]);
 
   useEffect(() => {
     const root = scrollRootRef.current;
@@ -117,7 +137,7 @@ export default function Blog() {
       if (rafId) window.cancelAnimationFrame(rafId);
       parallaxCards.forEach((card) => card.style.removeProperty("--work-parallax-y"));
     };
-  }, []);
+  }, [visiblePosts.length]);
 
   return (
     <main className="page workPage blogPage">
@@ -151,65 +171,81 @@ export default function Blog() {
                     </p>
                   </div>
 
-                  {featuredPost ? (
-                    <div className="workCarouselStage blogFeatureStage workReveal workReveal--lift">
-                      <div className="workCarouselCardWrap blogCarouselCardWrap">
-                        <BlogCard
-                          post={featuredPost}
-                          className="blogCard--featured"
-                          priority
-                        />
-                      </div>
+                  <section className="workGridSection" aria-labelledby="blog-grid-title">
+                    <div className="workGridHead workReveal workReveal--soft">
+                      <h2 className="workGridTitle" id="blog-grid-title">
+                        Articles
+                      </h2>
                     </div>
-                  ) : null}
 
-                  {gridPosts.length ? (
-                    <section className="workGridSection" aria-labelledby="blog-grid-title">
-                      <div className="workGridHead workReveal workReveal--soft">
-                        <h2 className="workGridTitle" id="blog-grid-title">
-                          Articles
-                        </h2>
-                      </div>
+                    {visiblePosts.length ? (
+                      <>
+                        <div className="workProjectsGrid blogProjectsGrid">
+                          {visiblePosts.map((post, idx) => (
+                            <div
+                              key={post.id || post.slug || idx}
+                              className="workGridCard workParallax workReveal workReveal--card"
+                              style={{ "--reveal-order": idx }}
+                            >
+                              <BlogCard post={post} priority={idx === 0} />
+                            </div>
+                          ))}
+                        </div>
 
-                      <div className="workProjectsGrid blogProjectsGrid">
-                        {gridPosts.map((post, idx) => (
-                          <div
-                            key={post.id || post.slug || idx}
-                            className="workGridCard workParallax workReveal workReveal--card"
-                            style={{ "--reveal-order": idx }}
-                          >
-                            <BlogCard post={post} priority={idx === 0} />
+                        {canLoadMore ? (
+                          <div className="workLoadMoreWrap workReveal workReveal--soft">
+                            <button
+                              type="button"
+                              className="workLoadMoreBtn"
+                              onClick={() => {
+                                setMobileVisibleCount((current) => current + MOBILE_POST_BATCH);
+                              }}
+                            >
+                              Load More
+                            </button>
                           </div>
-                        ))}
+                        ) : null}
+                      </>
+                    ) : isLoading ? (
+                      <div className="workEmptyState workReveal workReveal--soft">
+                        <h2>Loading articles.</h2>
+                        <p>Fetching the latest posts from Sanity.</p>
+                      </div>
+                    ) : (
+                      <div className="workEmptyState workReveal workReveal--soft">
+                        <h2>No articles available yet.</h2>
+                        <p>Published blog posts will appear here once they are added.</p>
+                      </div>
+                    )}
+                  </section>
+
+                  {hasPosts ? (
+                    <section className="workFinalCtaSection" aria-label="Blog call to action">
+                      <div className="workFinalCtaCard workReveal workReveal--lift">
+                        <h2
+                          className="workFinalCtaTitle workReveal workReveal--soft"
+                          style={{ "--reveal-order": 0 }}
+                        >
+                          More writing is
+                          <br />
+                          on the way.
+                        </h2>
+                        <p
+                          className="workFinalCtaText workReveal workReveal--soft"
+                          style={{ "--reveal-order": 1 }}
+                        >
+                          Explore recent writing from the same product and interface perspective used across the rest of the portfolio.
+                        </p>
+                        <Link
+                          to="/contact"
+                          className="workFinalCtaBtn workReveal workReveal--soft"
+                          style={{ "--reveal-order": 2 }}
+                        >
+                          Get in touch
+                        </Link>
                       </div>
                     </section>
                   ) : null}
-
-                  <section className="workFinalCtaSection" aria-label="Blog call to action">
-                    <div className="workFinalCtaCard workReveal workReveal--lift">
-                      <h2
-                        className="workFinalCtaTitle workReveal workReveal--soft"
-                        style={{ "--reveal-order": 0 }}
-                      >
-                        More writing is
-                        <br />
-                        on the way.
-                      </h2>
-                      <p
-                        className="workFinalCtaText workReveal workReveal--soft"
-                        style={{ "--reveal-order": 1 }}
-                      >
-                        Explore recent writing from the same product and interface perspective used across the rest of the portfolio.
-                      </p>
-                      <Link
-                        to="/contact"
-                        className="workFinalCtaBtn workReveal workReveal--soft"
-                        style={{ "--reveal-order": 2 }}
-                      >
-                        Get in touch
-                      </Link>
-                    </div>
-                  </section>
                 </div>
               </div>
             </div>

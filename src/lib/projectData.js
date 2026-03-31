@@ -1,24 +1,46 @@
-import { getAllProjects, normalizeProject, safeLowerSlug } from "./projects";
+import { normalizeProject, safeLowerSlug } from "./projects";
 
 let cachedRemoteProjectsPromise = null;
 const PROJECTS_API_PATH = "/api/sanity/projects";
+const PROJECT_PLACEHOLDER_PATTERN = /picsum\.photos\/seed\//i;
 
 function isPublishedProject(project) {
   return String(project?.status ?? "published").trim().toLowerCase() === "published";
 }
 
-function getFallbackProjects() {
-  try {
-    return sortProjectsNewestFirst(getAllProjects().filter(isPublishedProject));
-  } catch (error) {
-    console.error("LOCAL_PROJECTS_FALLBACK_ERROR", {
-      message: error instanceof Error ? error.message : String(error),
-    });
-    return [];
-  }
+function hasProjectSummary(project) {
+  return Boolean(String(project?.summary ?? project?.description ?? "").trim());
 }
 
-let cachedProjectsSnapshot = getFallbackProjects();
+function hasProjectImage(project) {
+  const imageCandidates = [
+    project?.cover,
+    project?.image,
+    project?.thumbnail,
+  ]
+    .map((value) => String(value ?? "").trim())
+    .filter(Boolean);
+
+  return imageCandidates.some((value) => !PROJECT_PLACEHOLDER_PATTERN.test(value));
+}
+
+function hasProjectDate(project) {
+  return Boolean(String(project?.date ?? project?.createdAt ?? project?.updatedAt ?? "").trim());
+}
+
+function isDisplayableProject(project) {
+  return Boolean(
+    project?.title &&
+      project?.slug &&
+      project?.id &&
+      isPublishedProject(project) &&
+      hasProjectSummary(project) &&
+      hasProjectImage(project) &&
+      hasProjectDate(project)
+  );
+}
+
+let cachedProjectsSnapshot = [];
 
 function isValidProjectDate(value) {
   const parsed = new Date(value);
@@ -69,7 +91,7 @@ async function fetchProjectsFromSanity() {
     ? rawProjects
         .filter(Boolean)
         .map((project) => normalizeProject(project))
-        .filter((project) => project?.title && project?.slug && project?.id && isPublishedProject(project))
+        .filter(isDisplayableProject)
     : [];
 
   if (!normalizedProjects.length) {
@@ -77,7 +99,8 @@ async function fetchProjectsFromSanity() {
       reason: "empty_or_unusable_response",
       source: payload?.source || "unknown",
     });
-    return cachedProjectsSnapshot.length ? cachedProjectsSnapshot : getFallbackProjects();
+    cachedProjectsSnapshot = [];
+    return cachedProjectsSnapshot;
   }
 
   cachedProjectsSnapshot = sortProjectsNewestFirst(normalizedProjects);
@@ -96,7 +119,7 @@ export async function loadAllProjects(options = {}) {
       console.error("SANITY_PROJECTS_FETCH_ERROR", {
         message: error instanceof Error ? error.message : String(error),
       });
-      cachedProjectsSnapshot = getFallbackProjects();
+      cachedProjectsSnapshot = [];
       return cachedProjectsSnapshot;
     });
   }
@@ -117,5 +140,5 @@ export async function loadProjectBySlug(slug, options = {}) {
 
 export function resetProjectDataCache() {
   cachedRemoteProjectsPromise = null;
-  cachedProjectsSnapshot = getFallbackProjects();
+  cachedProjectsSnapshot = [];
 }

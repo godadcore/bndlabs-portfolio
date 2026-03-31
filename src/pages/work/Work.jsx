@@ -31,9 +31,9 @@ const ChevronRight = () => (
 
 export default function Work() {
   const navigate = useNavigate();
-  const [orderedProjects, setOrderedProjects] = useState(() =>
-    sortProjectsNewestFirst(getInitialProjects())
-  );
+  const initialProjects = sortProjectsNewestFirst(getInitialProjects());
+  const [orderedProjects, setOrderedProjects] = useState(() => initialProjects);
+  const [isLoading, setIsLoading] = useState(() => initialProjects.length === 0);
   const featuredProjects = useMemo(
     () => orderedProjects.slice(0, FEATURED_COUNT),
     [orderedProjects]
@@ -62,6 +62,9 @@ export default function Work() {
     loadAllProjects({ force: true }).then((loadedProjects) => {
       if (!isMounted || !Array.isArray(loadedProjects)) return;
       setOrderedProjects(sortProjectsNewestFirst(loadedProjects));
+    }).finally(() => {
+      if (!isMounted) return;
+      setIsLoading(false);
     });
 
     return () => {
@@ -456,12 +459,12 @@ export default function Work() {
                           </div>
                         ))}
                       </div>
-                    ) : (
+                    ) : !isLoading ? (
                       <div className="workEmptyState workReveal workReveal--soft">
                         <h2>No case studies available yet.</h2>
                         <p>Published projects will appear here once they are added.</p>
                       </div>
-                    )}
+                    ) : null}
                   </section>
 
                   <section className="workFinalCtaSection" aria-label="Start a project">

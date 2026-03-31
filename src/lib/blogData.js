@@ -4,52 +4,6 @@ import { sanitizeUrl } from "./urlSecurity.js";
 let cachedRemotePostsPromise = null;
 const POSTS_API_PATH = "/api/sanity/posts";
 
-export const BLOG_POST = {
-  slug: "why-i-keep-interfaces-simple",
-  title: "Why I Keep Interfaces Simple",
-  excerpt:
-    "A short note on reducing noise, choosing clearer patterns, and keeping product decisions easy to understand.",
-  date: "2026-03-18",
-  read_time: "3 min read",
-  tag: "Design",
-  thumb_url: "",
-  author: {
-    name: "BND Labs",
-    initials: "BL",
-    avatar_url: null,
-  },
-  content_blocks: [
-    {
-      type: "heading",
-      text: "Introduction",
-    },
-    {
-      type: "text",
-      html:
-        "<p>I like interfaces that explain themselves quickly. When a layout is clear, the copy can stay lighter, the visual hierarchy can do more work, and the product feels easier to trust.</p><p>This same thinking shapes how I approach portfolio pieces, landing pages, and product flows. I usually remove before I add.</p>",
-    },
-    {
-      type: "heading",
-      text: "What simplicity changes",
-    },
-    {
-      type: "text",
-      html:
-        "<p>Simple does not mean empty. It means every section has a job, every action has a reason to exist, and repeated patterns stay consistent enough that users do not need to relearn the interface on every screen.</p><p>That usually affects spacing first, then copy, then the number of competing visual accents on the page.</p>",
-    },
-    {
-      type: "heading",
-      text: "How I apply it",
-    },
-    {
-      type: "text",
-      html:
-        "<p>When I design, I look for the fastest path to clarity: a stronger heading, fewer decorative moves, and tighter content structure. If a screen still feels busy after that, the problem is usually not styling, it is prioritization.</p><p>This blog is meant to follow that same rule. One post, one clear structure, and a setup that can grow cleanly when the CMS is ready.</p>",
-    },
-  ],
-  next_post: null,
-};
-
 function firstString(...values) {
   for (const value of values) {
     const normalized = String(value ?? "").trim();
@@ -400,9 +354,30 @@ export function normalizePost(raw) {
   };
 }
 
-const NORMALIZED_BLOG_POST = normalizePost(BLOG_POST);
-const FALLBACK_POSTS = [NORMALIZED_BLOG_POST];
-let cachedPostsSnapshot = FALLBACK_POSTS;
+function hasPostImage(post) {
+  return Boolean(String(post?.image ?? post?.thumbnail ?? "").trim());
+}
+
+function hasPostExcerpt(post) {
+  return Boolean(String(post?.description ?? post?.excerpt ?? "").trim());
+}
+
+function hasPostDate(post) {
+  return Boolean(String(post?.date ?? post?.createdAt ?? post?.updatedAt ?? "").trim());
+}
+
+function isDisplayablePost(post) {
+  return Boolean(
+    post?.title &&
+      post?.slug &&
+      post?.id &&
+      hasPostImage(post) &&
+      hasPostExcerpt(post) &&
+      hasPostDate(post)
+  );
+}
+
+let cachedPostsSnapshot = [];
 
 function isValidPostDate(value) {
   const parsed = new Date(value);
@@ -432,10 +407,6 @@ export function sortPostsNewestFirst(items) {
   });
 }
 
-function getFallbackPosts() {
-  return sortPostsNewestFirst(FALLBACK_POSTS);
-}
-
 async function fetchPostsPayload() {
   const response = await fetch(POSTS_API_PATH, {
     headers: {
@@ -456,21 +427,22 @@ async function fetchPostsFromSanity() {
   const normalizedPosts = rawPosts
     .filter(Boolean)
     .map((post) => normalizePost(post))
-    .filter((post) => post?.title && post?.slug && post?.id);
+    .filter(isDisplayablePost);
 
   if (!normalizedPosts.length) {
     console.warn("SANITY_POSTS_EMPTY", {
       reason: "empty_or_unusable_response",
       source: payload?.source || "unknown",
     });
-    return cachedPostsSnapshot.length ? cachedPostsSnapshot : getFallbackPosts();
+    cachedPostsSnapshot = [];
+    return cachedPostsSnapshot;
   }
 
   cachedPostsSnapshot = sortPostsNewestFirst(normalizedPosts);
   return cachedPostsSnapshot;
 }
 
-export const BLOG_POSTS = getFallbackPosts().map((post) => normalizePostSummary(post));
+export const BLOG_POSTS = [];
 
 export function getInitialPosts() {
   return cachedPostsSnapshot;
@@ -495,7 +467,7 @@ export async function loadAllPosts(options = {}) {
       console.error("SANITY_POSTS_FETCH_ERROR", {
         message: error instanceof Error ? error.message : String(error),
       });
-      cachedPostsSnapshot = getFallbackPosts();
+      cachedPostsSnapshot = [];
       return cachedPostsSnapshot;
     });
   }
@@ -516,7 +488,7 @@ export async function loadPostBySlug(slug, options = {}) {
 
 export function resetBlogDataCache() {
   cachedRemotePostsPromise = null;
-  cachedPostsSnapshot = getFallbackPosts();
+  cachedPostsSnapshot = [];
 }
 
 export function formatBlogDate(value) {
