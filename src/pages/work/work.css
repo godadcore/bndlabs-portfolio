@@ -258,9 +258,24 @@
 
 .workPage .workCard__meta {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 0;
+}
+
+.workPage .workCard__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .workPage .workCard__title {
@@ -349,25 +364,39 @@
 
 .workPage .workProjectsGrid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
 .workPage .workProjectsGrid > .workGridCard {
-  grid-column: span 2;
-}
-
-.workPage .workProjectsGrid > .workGridCard:nth-child(5n + 4),
-.workPage .workProjectsGrid > .workGridCard:nth-child(5n + 5) {
-  grid-column: span 3;
+  grid-column: auto;
+  min-width: 0;
 }
 
 .workPage .workProjectsGrid .workCard {
   height: 100%;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+.workPage .workProjectsGrid .workCard:hover,
+.workPage .workProjectsGrid .workCard:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  filter: brightness(1.01);
 }
 
 .workPage .workProjectsGrid .workCard__image {
   height: clamp(270px, 23vw, 380px);
+}
+
+.workPage .workProjectsGrid .workCard__task {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .workPage .workGridCard.workParallax .workCard__image img {
@@ -424,6 +453,39 @@
 .workPage .workFinalCtaSection {
   max-width: 1260px;
   margin: 68px auto 0;
+}
+
+.workPage .workEmptyState {
+  display: flex;
+  min-height: 260px;
+  padding: 32px 24px;
+  border-radius: 28px;
+  border: 1px solid var(--border-regular);
+  background:
+    linear-gradient(180deg, rgba(var(--surface-rgb), 0.98), rgba(var(--surface-rgb), 0.96)),
+    var(--surface-soft);
+  box-shadow: var(--shadow-card);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.workPage .workEmptyState h2 {
+  margin: 0;
+  font-family: var(--fontHeading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--text-primary);
+}
+
+.workPage .workEmptyState p {
+  margin: 0;
+  max-width: 36ch;
+  color: var(--text-muted);
+  line-height: 1.7;
 }
 
 .workPage .workFinalCtaCard {
@@ -525,6 +587,10 @@
 @media (max-width: 1200px) {
   .workPage .workHeroShell--clean {
     padding: 42px 34px 64px;
+  }
+
+  .workPage .workProjectsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .workPage .workCarouselStage {
@@ -634,12 +700,12 @@
   }
 
   .workPage .workProjectsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
   }
 
   .workPage .workProjectsGrid > .workGridCard {
-    grid-column: span 1 !important;
+    grid-column: auto !important;
   }
 
   .workPage .workProjectsGrid .workCard__visual {
@@ -658,6 +724,10 @@
 @media (max-width: 640px) {
   .workPage .workHeroShell--clean {
     padding: 24px 20px 44px;
+  }
+
+  .workPage .workProjectsGrid {
+    grid-template-columns: 1fr;
   }
 
   .workPage .workHeroHeadingWrapClean {

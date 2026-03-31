@@ -3,9 +3,13 @@ import { getAllProjects, normalizeProject, safeLowerSlug } from "./projects";
 let cachedRemoteProjectsPromise = null;
 const PROJECTS_API_PATH = "/api/sanity/projects";
 
+function isPublishedProject(project) {
+  return String(project?.status ?? "published").trim().toLowerCase() === "published";
+}
+
 function getFallbackProjects() {
   try {
-    return sortProjectsNewestFirst(getAllProjects());
+    return sortProjectsNewestFirst(getAllProjects().filter(isPublishedProject));
   } catch (error) {
     console.error("LOCAL_PROJECTS_FALLBACK_ERROR", {
       message: error instanceof Error ? error.message : String(error),
@@ -65,7 +69,7 @@ async function fetchProjectsFromSanity() {
     ? rawProjects
         .filter(Boolean)
         .map((project) => normalizeProject(project))
-        .filter((project) => project?.title && project?.slug && project?.id)
+        .filter((project) => project?.title && project?.slug && project?.id && isPublishedProject(project))
     : [];
 
   if (!normalizedProjects.length) {

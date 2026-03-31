@@ -12,10 +12,6 @@ import "./work.css";
 const DRAG_THRESHOLD = 50;
 const FEATURED_COUNT = 5;
 const MOBILE_BREAKPOINT = 640;
-const MOBILE_GRID_BREAKPOINT = 767;
-const DESKTOP_INITIAL_VISIBLE_COUNT = 5;
-const MOBILE_INITIAL_VISIBLE_COUNT = 4;
-const LOAD_MORE_STEP = 3;
 
 const ChevronLeft = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -47,7 +43,6 @@ export default function Work() {
   const [current, setCurrent] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
-  const [loadMoreClicks, setLoadMoreClicks] = useState(0);
   const [vw, setVw] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1200
   );
@@ -74,8 +69,8 @@ export default function Work() {
     };
   }, []);
 
-  const isMobile = vw <= 640;
-  const isTablet = vw > 640 && vw <= 980;
+  const isMobile = vw <= MOBILE_BREAKPOINT;
+  const isTablet = vw > MOBILE_BREAKPOINT && vw <= 980;
   const activeIndex = totalFeatured
     ? ((current % totalFeatured) + totalFeatured) % totalFeatured
     : 0;
@@ -119,7 +114,7 @@ export default function Work() {
     });
 
     return () => io.disconnect();
-  }, [loadMoreClicks, orderedProjects.length, totalFeatured]);
+  }, [orderedProjects.length, totalFeatured]);
 
   useEffect(() => {
     const root = scrollRootRef.current;
@@ -171,7 +166,7 @@ export default function Work() {
       if (rafId) window.cancelAnimationFrame(rafId);
       parallaxCards.forEach((card) => card.style.removeProperty("--work-parallax-y"));
     };
-  }, [loadMoreClicks, orderedProjects.length]);
+  }, [orderedProjects.length]);
 
   const goTo = useCallback((idx) => {
     if (!totalFeatured) return;
@@ -323,20 +318,7 @@ export default function Work() {
     };
   };
 
-  const initialVisibleCount =
-    vw <= MOBILE_GRID_BREAKPOINT
-      ? MOBILE_INITIAL_VISIBLE_COUNT
-      : DESKTOP_INITIAL_VISIBLE_COUNT;
-  const visibleCount = Math.min(
-    initialVisibleCount + loadMoreClicks * LOAD_MORE_STEP,
-    orderedProjects.length
-  );
-  const visibleProjects = orderedProjects.slice(0, visibleCount);
-  const canLoadMore = visibleCount < orderedProjects.length;
-
-  const handleLoadMore = () => {
-    setLoadMoreClicks((prev) => prev + 1);
-  };
+  const hasProjects = orderedProjects.length > 0;
 
   return (
     <div className="page workPage">
@@ -459,30 +441,25 @@ export default function Work() {
 
                   <section className="workGridSection" aria-label="All projects">
                     <div className="workGridHead workReveal workReveal--soft">
-                      <h2 className="workGridTitle">Projects</h2>
+                      <h2 className="workGridTitle">Case Studies</h2>
                     </div>
 
-                    <div className="workProjectsGrid">
-                      {visibleProjects.map((project, idx) => (
-                        <div
-                          key={`${project.id || project.slug || "grid"}-${idx}`}
-                          className="workGridCard workParallax workReveal workReveal--card"
-                          style={{ "--reveal-order": idx }}
-                        >
-                          <WorkCard project={project} priority={idx < 2} fullCardLink />
-                        </div>
-                      ))}
-                    </div>
-
-                    {canLoadMore && (
-                      <div className="workLoadMoreWrap workReveal workReveal--soft">
-                        <button
-                          type="button"
-                          className="workLoadMoreBtn"
-                          onClick={handleLoadMore}
-                        >
-                          Load More
-                        </button>
+                    {hasProjects ? (
+                      <div className="workProjectsGrid">
+                        {orderedProjects.map((project, idx) => (
+                          <div
+                            key={`${project.id || project.slug || "grid"}-${idx}`}
+                            className="workGridCard workParallax workReveal workReveal--card"
+                            style={{ "--reveal-order": idx }}
+                          >
+                            <WorkCard project={project} priority={idx < 3} fullCardLink />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="workEmptyState workReveal workReveal--soft">
+                        <h2>No case studies available yet.</h2>
+                        <p>Published projects will appear here once they are added.</p>
                       </div>
                     )}
                   </section>

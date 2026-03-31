@@ -22,7 +22,7 @@ export default function Blog() {
   useEffect(() => {
     let isMounted = true;
 
-    loadAllPosts().then((loadedPosts) => {
+    loadAllPosts({ force: true }).then((loadedPosts) => {
       if (!isMounted || !Array.isArray(loadedPosts)) return;
       setPosts(loadedPosts);
     });

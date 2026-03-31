@@ -1,6 +1,6 @@
 import groq from "groq";
 
-export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(coalesce(publishedDate, date, _createdAt) desc, _createdAt desc, title asc) {
+export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy" && coalesce(status, "published") == "published"] | order(coalesce(publishedDate, date, _createdAt) desc, _createdAt desc, title asc) {
   _id,
   _type,
   _createdAt,
@@ -121,7 +121,7 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   }
 }`;
 
-export const publishedLegacyProjectsQuery = groq`*[_type == "project"] | order(coalesce(date, _createdAt) desc, _createdAt desc, title asc) {
+export const publishedLegacyProjectsQuery = groq`*[_type == "project" && coalesce(status, "published") == "published"] | order(coalesce(date, _createdAt) desc, _createdAt desc, title asc) {
   _id,
   _type,
   _createdAt,

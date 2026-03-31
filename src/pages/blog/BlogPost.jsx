@@ -16,7 +16,6 @@ import {
   getInitialPosts,
   getPostBySlug,
   loadAllPosts,
-  loadPostBySlug,
 } from "../../lib/blogData";
 import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
 import { sanitizeUrl } from "../../lib/urlSecurity";
@@ -162,20 +161,15 @@ function renderBlock(block, index) {
   return null;
 }
 
-function collectRelatedPosts(posts, currentPost, currentSlug) {
-  const relatedPosts = [];
-  const seenSlugs = new Set([String(currentPost?.slug || currentSlug || "").trim()]);
-  const candidates = [...(Array.isArray(posts) ? posts : []), currentPost?.nextPost].filter(Boolean);
+function selectRelatedPosts(posts, currentSlug) {
+  const normalizedCurrentSlug = String(currentSlug || "").trim();
 
-  candidates.forEach((candidate) => {
-    const candidateSlug = String(candidate?.slug || "").trim();
-    if (!candidateSlug || seenSlugs.has(candidateSlug)) return;
-
-    seenSlugs.add(candidateSlug);
-    relatedPosts.push(candidate);
-  });
-
-  return relatedPosts.slice(0, 3);
+  return (Array.isArray(posts) ? posts : [])
+    .filter((candidate) => {
+      const candidateSlug = String(candidate?.slug || "").trim();
+      return candidateSlug && candidateSlug !== normalizedCurrentSlug;
+    })
+    .slice(0, 2);
 }
 
 export default function BlogPost() {
@@ -196,14 +190,20 @@ function BlogPostContent({ slug }) {
   useEffect(() => {
     let isMounted = true;
 
-    Promise.all([loadPostBySlug(slug), loadAllPosts()])
-      .then(([loadedPost, loadedPosts]) => {
+    loadAllPosts({ force: true })
+      .then((loadedPosts) => {
         if (!isMounted) return;
-        setPost(loadedPost);
-        setActiveHeading(loadedPost?.headings?.[0]?.id || "");
+
         if (Array.isArray(loadedPosts)) {
           setPosts(loadedPosts);
         }
+
+        const loadedPost = Array.isArray(loadedPosts)
+          ? loadedPosts.find((candidate) => candidate.slug === slug || candidate.id === slug) || null
+          : null;
+
+        setPost(loadedPost || getPostBySlug(slug));
+        setActiveHeading((loadedPost || getPostBySlug(slug))?.headings?.[0]?.id || "");
       })
       .finally(() => {
         if (!isMounted) return;
@@ -244,8 +244,8 @@ function BlogPostContent({ slug }) {
   }, [post]);
 
   const hasContent = Boolean(post?.contentBlocks?.length);
-  const relatedPosts = collectRelatedPosts(posts, post, slug);
-  const hasRelatedPosts = relatedPosts.length >= 2;
+  const relatedPosts = selectRelatedPosts(posts, post?.slug || slug);
+  const hasRelatedPosts = relatedPosts.length > 0;
   const seoTitle = post?.title ? `${post.title} | Blog | ${SITE_NAME}` : `Blog Post | ${SITE_NAME}`;
   const seoDescription = post?.excerpt || "A blog post from Bndlabs.";
   const seoKeywords = post
@@ -314,9 +314,9 @@ function BlogPostContent({ slug }) {
 
                       {hasRelatedPosts ? (
                         <section className="blogPostMore" aria-labelledby="blog-post-more-title">
-                          <p className="blogPostMoreLabel">More Posts</p>
+                          <p className="blogPostMoreLabel">Related Posts</p>
                           <h2 className="blogPostMoreTitle" id="blog-post-more-title">
-                            Keep reading
+                            Latest from the blog
                           </h2>
 
                           <div className="blogPostMoreGrid">

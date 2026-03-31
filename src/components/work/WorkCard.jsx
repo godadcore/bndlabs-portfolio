@@ -25,6 +25,8 @@ export default function WorkCard({
   const {
     slug,
     title,
+    summary,
+    description,
     category,
     subtitle,
     tasks,
@@ -43,7 +45,13 @@ export default function WorkCard({
     tag1,
     tag2,
   ].filter((item, idx, arr) => item && arr.indexOf(item) === idx).slice(0, 3);
-  const taskLabel = taskParts.join(" / ") || "Product Design";
+  const categoryLabel = category || tag1 || tag2 || normalizedTasks[0] || "Case Study";
+  const taskLabel =
+    summary ||
+    description ||
+    subtitle ||
+    taskParts.join(" / ") ||
+    "Product design case study.";
   const href = slug ? `/work/${slug}` : "#";
   const cardLabel = `Open ${title || "project"}`;
 
@@ -99,6 +107,7 @@ export default function WorkCard({
         <div className="workCard__text">
           <div className="workCard__meta">
             <h3 className="workCard__title">{title || "Untitled"}</h3>
+            {categoryLabel ? <span className="workCard__eyebrow">{categoryLabel}</span> : null}
           </div>
           <p className="workCard__task">{taskLabel}</p>
         </div>
