@@ -28,11 +28,10 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   "heroImage": {
     "url": heroImage.asset->url
   },
-  images[]{
-    alt,
-    caption,
-    "url": image.asset->url
+  "overviewImage": {
+    "url": overviewImage.asset->url
   },
+  overviewText,
   sections[]{
     _key,
     _type,
@@ -72,34 +71,28 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   role,
   tools,
   timeline,
-  objectives[]{
+  problems[]{
     title,
-    text,
-    status
+    description
   },
+  researchText,
   researchImages[]{
-    alt,
-    caption,
-    "url": image.asset->url
+    "url": asset->url
   },
+  wireframeText,
   wireframeImages[]{
-    alt,
-    caption,
-    "url": image.asset->url
+    "url": asset->url
   },
+  prototypeText,
   prototypeImages[]{
-    alt,
-    caption,
-    "url": image.asset->url
+    "url": asset->url
   },
   results[]{
     metric,
     description
   },
-  finalGallery[]{
-    alt,
-    caption,
-    "url": image.asset->url
+  finalImages[]{
+    "url": asset->url
   }
 }`;
 

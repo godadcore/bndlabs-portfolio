@@ -6,34 +6,28 @@ import os from "node:os";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@sanity/client";
 import { BLOG_POST } from "../src/lib/blogData.js";
+import {
+  ensureSanityNoProxy,
+  getSanityConfigFromEnv,
+  getSanityWriteTokenFromEnv,
+  loadLocalEnvFiles,
+} from "../src/lib/sanity/nodeEnvironment.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
-const envFiles = [".env.local", ".env"];
-
-for (const envFile of envFiles) {
-  const envPath = path.join(rootDir, envFile);
-  try {
-    process.loadEnvFile?.(envPath);
-  } catch {
-    // Ignore missing or unreadable local env files.
-  }
-}
+loadLocalEnvFiles(rootDir);
 
 const studioDir = path.join(rootDir, "getbndlabs");
 const projectsDir = path.join(rootDir, "src", "content", "projects");
 const siteSettingsPath = path.join(rootDir, "src", "content", "site", "settings.json");
 
-const projectId = process.env.SANITY_PROJECT_ID || process.env.VITE_SANITY_PROJECT_ID || "u9ziwy8t";
-const dataset = process.env.SANITY_DATASET || process.env.VITE_SANITY_DATASET || "production";
-const apiVersion = process.env.SANITY_API_VERSION || process.env.VITE_SANITY_API_VERSION || "2026-03-10";
-const token =
-  process.env.SANITY_WRITE_TOKEN ||
-  process.env.SANITY_API_WRITE_TOKEN ||
-  process.env.SANITY_AUTH_TOKEN ||
-  "";
+const { projectId, dataset, apiVersion } = getSanityConfigFromEnv();
+const token = getSanityWriteTokenFromEnv();
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+
+ensureSanityNoProxy(projectId);
+
 const client = token
   ? createClient({
       projectId,

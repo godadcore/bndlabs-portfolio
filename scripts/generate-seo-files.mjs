@@ -4,32 +4,30 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@sanity/client";
 import { BLOG_POSTS } from "../src/lib/blogData.js";
 import { SITE_URL } from "../src/lib/site.js";
+import {
+  ensureSanityNoProxy,
+  getSanityConfigFromEnv,
+  getSanityReadTokenFromEnv,
+  loadLocalEnvFiles,
+} from "../src/lib/sanity/nodeEnvironment.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
-const envFiles = [".env.local", ".env"];
-
-for (const envFile of envFiles) {
-  const envPath = path.join(rootDir, envFile);
-  try {
-    process.loadEnvFile?.(envPath);
-  } catch {
-    // Ignore missing or unreadable local env files.
-  }
-}
+loadLocalEnvFiles(rootDir);
 
 const publicDir = path.join(rootDir, "public");
 const sitemapPath = path.join(publicDir, "sitemap.xml");
 const robotsPath = path.join(publicDir, "robots.txt");
-const sanityProjectId = process.env.SANITY_PROJECT_ID || process.env.VITE_SANITY_PROJECT_ID || "u9ziwy8t";
-const sanityDataset = process.env.SANITY_DATASET || process.env.VITE_SANITY_DATASET || "production";
-const sanityApiVersion = process.env.SANITY_API_VERSION || process.env.VITE_SANITY_API_VERSION || "2026-03-10";
-const sanityReadToken =
-  process.env.SANITY_API_READ_TOKEN ||
-  process.env.SANITY_READ_TOKEN ||
-  process.env.SANITY_WRITE_TOKEN ||
-  "";
+const {
+  projectId: sanityProjectId,
+  dataset: sanityDataset,
+  apiVersion: sanityApiVersion,
+} = getSanityConfigFromEnv();
+const sanityReadToken = getSanityReadTokenFromEnv();
+
+ensureSanityNoProxy(sanityProjectId);
+
 const sanityClient =
   sanityProjectId && sanityDataset
     ? createClient({

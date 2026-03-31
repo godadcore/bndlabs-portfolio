@@ -393,34 +393,6 @@ function buildInfoTable(section) {
   }, {});
 }
 
-function buildOverviewStats(project, caseStudy) {
-  const stats = Array.isArray(caseStudy?.stats)
-    ? caseStudy.stats
-        .map((item) => ({
-          value: firstString(item?.displayValue, item?.value),
-          label: firstString(item?.label),
-        }))
-        .filter((item) => item.value && item.label)
-    : [];
-  if (stats.length) return stats.slice(0, 3);
-
-  const highlights = Array.isArray(project?.highlights)
-    ? project.highlights
-        .map((item) => ({
-          value: firstString(item?.value),
-          label: firstString(item?.label),
-        }))
-        .filter((item) => item.value && item.label)
-    : [];
-  if (highlights.length) return highlights.slice(0, 3);
-
-  return [
-    { value: firstString(project?.category, caseStudy?.category, "Case Study"), label: "Category" },
-    { value: firstString(project?.client, caseStudy?.brandName, project?.title), label: "Client" },
-    { value: firstString(formatProjectDate(project?.date), formatStatus(project?.status)), label: "Published" },
-  ].filter((item) => item.value && item.label);
-}
-
 function buildObjectives(project, caseStudy) {
   const explicitObjectives = Array.isArray(caseStudy?.objectives)
     ? caseStudy.objectives
@@ -489,7 +461,7 @@ function buildResultCards(project, caseStudy) {
         }))
         .filter((item) => item.metric && item.description)
     : [];
-  if (results.length) return results.slice(0, 4);
+  if (results.length || caseStudy?.contentModel === "caseStudy") return results.slice(0, 4);
 
   const cards = [];
   if (caseStudy?.impact) {
@@ -516,6 +488,17 @@ function buildResultCards(project, caseStudy) {
     });
   }
   return uniqueBy(cards, (item) => `${item.metric}:${item.description}`).slice(0, 4);
+}
+
+function buildProblemItems(caseStudy) {
+  if (!Array.isArray(caseStudy?.problems)) return [];
+
+  return caseStudy.problems
+    .map((item, index) => ({
+      title: firstString(item?.title, `Problem ${index + 1}`),
+      description: firstString(item?.description),
+    }))
+    .filter((item) => item.title || item.description);
 }
 
 function MediaCarousel({ slides, label, onOpen }) {
@@ -560,6 +543,35 @@ function MediaCarousel({ slides, label, onOpen }) {
           </button>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function MediaGallery({ items, label, onOpen, className = "" }) {
+  if (!items.length) return null;
+
+  return (
+    <div className={`projectCaseMediaGallery ${className}`.trim()} aria-label={label}>
+      {items.map((item, index) => (
+        <figure className="projectCaseMediaFigure projectCaseSectionCard" key={`${item.src}-${index}`}>
+          <button
+            type="button"
+            className="projectCaseMediaButton"
+            onClick={() => onOpen?.(items, index)}
+            aria-label={`Open ${label} ${index + 1}`}
+          >
+            <img
+              src={item.src}
+              alt={item.alt || `${label} ${index + 1}`}
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          {item.label || item.caption ? (
+            <figcaption className="projectCaseCarouselCaption">{item.label || item.caption}</figcaption>
+          ) : null}
+        </figure>
+      ))}
     </div>
   );
 }
@@ -632,6 +644,15 @@ function ObjectiveItem({ title, text, done, tag }) {
         <span className={`projectCaseObjectiveTag ${done ? "is-done" : ""}`.trim()}>{tag}</span>
       </div>
     </li>
+  );
+}
+
+function ProblemCard({ title, description }) {
+  return (
+    <article className="projectCaseProblemCard projectCaseSectionCard">
+      {title ? <h3 className="projectCaseProblemTitle">{title}</h3> : null}
+      {description ? <p className="projectCaseProblemDescription">{description}</p> : null}
+    </article>
   );
 }
 
@@ -845,6 +866,7 @@ export default function CaseStudyDetail({ slug }) {
   }
 
   const caseStudy = project.caseStudy || {};
+  const isModernCaseStudy = caseStudy.contentModel === "caseStudy";
   const sections = Array.isArray(caseStudy.sections) ? caseStudy.sections.filter(Boolean) : [];
   const infoSection =
     sections.find(
@@ -911,88 +933,119 @@ export default function CaseStudyDetail({ slug }) {
     ...normalizeTextList(project.tags),
   ]).slice(0, 8);
 
-  const objectiveItems = buildObjectives(project, caseStudy);
+  const problemItems = isModernCaseStudy
+    ? buildProblemItems(caseStudy)
+    : buildObjectives(project, caseStudy);
   const resultCards = buildResultCards(project, caseStudy);
-  const sectionImages = flattenSectionImages(sections);
-  const galleryImages = normalizeImageList(project.gallery, `${project.title} gallery image`);
-  const caseImages = uniqueBy(
-    [
-      normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} hero image`),
-      ...normalizeImageList(caseStudy.images, `${project.title} project image`),
-      ...normalizeImageList(caseStudy.researchImages, `${project.title} research image`),
-      ...normalizeImageList(caseStudy.wireframeImages, `${project.title} wireframe image`),
-      ...normalizeImageList(caseStudy.prototypeImages, `${project.title} prototype image`),
-      ...normalizeImageList(caseStudy.finalGallery, `${project.title} final image`),
-      ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
-      ...sectionImages,
-      ...galleryImages,
-    ].filter(Boolean),
-    (item) => item.src
-  );
+  const overviewImage = normalizeImageItem(caseStudy.overviewImage, `${project.title} overview image`);
+  const sectionImages = isModernCaseStudy ? [] : flattenSectionImages(sections);
+  const galleryImages = isModernCaseStudy
+    ? []
+    : normalizeImageList(project.gallery, `${project.title} gallery image`);
+  const caseImages = isModernCaseStudy
+    ? []
+    : uniqueBy(
+        [
+          normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} hero image`),
+          ...normalizeImageList(caseStudy.images, `${project.title} project image`),
+          ...normalizeImageList(caseStudy.researchImages, `${project.title} research image`),
+          ...normalizeImageList(caseStudy.wireframeImages, `${project.title} wireframe image`),
+          ...normalizeImageList(caseStudy.prototypeImages, `${project.title} prototype image`),
+          ...normalizeImageList(caseStudy.finalGallery, `${project.title} final image`),
+          ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
+          ...sectionImages,
+          ...galleryImages,
+        ].filter(Boolean),
+        (item) => item.src
+      );
 
   const coverImage =
-    normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} cover image`) || caseImages[0] || null;
-  const overviewGallery = uniqueBy(
-    [
-      ...normalizeImageList(caseStudy.images, `${project.title} project image`),
-      ...sectionImages,
-      ...galleryImages,
-      coverImage,
-    ].filter(Boolean),
-    (item) => item.src
-  ).slice(0, 4);
-  const researchSlides = uniqueBy(
-    [
-      ...normalizeImageList(caseStudy.researchImages, `${project.title} research image`),
-      normalizeImageItem(caseStudy.journeyMapImage, `${project.title} journey map`),
-      ...caseImages,
-    ].filter(Boolean),
-    (item) => item.src
-  ).slice(0, 5);
-  const wireSlides = uniqueBy(
-    [
-      ...normalizeImageList(caseStudy.wireframeImages, `${project.title} wireframe image`),
-      normalizeImageItem(caseStudy.appmapImage, `${project.title} app map`),
-      normalizeImageItem(caseStudy.digitalWireImage, `${project.title} digital wireframe`),
-      ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
-      ...caseImages,
-    ].filter(Boolean),
-    (item) => item.src
-  ).slice(0, 5);
-  const finalSlides = uniqueBy(
-    [
-      ...normalizeImageList(caseStudy.finalGallery, `${project.title} final image`),
-      normalizeImageItem(caseStudy.mockupOverviewImage, `${project.title} mockup overview`),
-      ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
-      ...caseImages,
-    ].filter(Boolean),
-    (item) => item.src
-  ).slice(0, 6);
-
-  const wireImage =
-    normalizeImageItem(caseStudy.appmapImage, `${project.title} app map`) ||
-    normalizeImageItem(caseStudy.digitalWireImage, `${project.title} wireframe image`) ||
-    wireSlides[0] ||
-    coverImage;
-
-  const videoSection = sections.find((section) => section.type === "video") || null;
-  const audioSection = sections.find((section) => section.type === "audio") || null;
-  const protoImage =
-    normalizeImageItem(caseStudy.protoScreenImage || caseStudy.mockupOverviewImage, `${project.title} prototype image`) ||
-    finalSlides[0] ||
+    normalizeImageItem(caseStudy.heroImage || project.cover, `${project.title} cover image`) ||
+    overviewImage ||
+    caseImages[0] ||
     null;
-  const prototypeMedia = videoSection?.video?.src
-    ? {
-        kind: "video",
-        src: videoSection.video.src,
-        poster: firstString(videoSection.poster?.src),
-        caption: firstString(videoSection.video.caption, videoSection.heading),
-      }
-    : protoImage
-      ? { kind: "image", ...protoImage }
-      : audioSection?.audio?.src
-        ? { kind: "audio", src: audioSection.audio.src, caption: firstString(audioSection.audio.caption, audioSection.heading) }
-        : null;
+  const overviewGallery = isModernCaseStudy
+    ? overviewImage
+      ? [overviewImage]
+      : []
+    : uniqueBy(
+        [
+          ...normalizeImageList(caseStudy.images, `${project.title} project image`),
+          ...sectionImages,
+          ...galleryImages,
+          coverImage,
+        ].filter(Boolean),
+        (item) => item.src
+      ).slice(0, 4);
+  const researchSlides = isModernCaseStudy
+    ? normalizeImageList(caseStudy.researchImages, `${project.title} research image`)
+    : uniqueBy(
+        [
+          ...normalizeImageList(caseStudy.researchImages, `${project.title} research image`),
+          normalizeImageItem(caseStudy.journeyMapImage, `${project.title} journey map`),
+          ...caseImages,
+        ].filter(Boolean),
+        (item) => item.src
+      ).slice(0, 5);
+  const wireSlides = isModernCaseStudy
+    ? normalizeImageList(caseStudy.wireframeImages, `${project.title} wireframe image`)
+    : uniqueBy(
+        [
+          ...normalizeImageList(caseStudy.wireframeImages, `${project.title} wireframe image`),
+          normalizeImageItem(caseStudy.appmapImage, `${project.title} app map`),
+          normalizeImageItem(caseStudy.digitalWireImage, `${project.title} digital wireframe`),
+          ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
+          ...caseImages,
+        ].filter(Boolean),
+        (item) => item.src
+      ).slice(0, 5);
+  const prototypeSlides = isModernCaseStudy
+    ? normalizeImageList(caseStudy.prototypeImages, `${project.title} prototype image`)
+    : [];
+  const finalSlides = isModernCaseStudy
+    ? normalizeImageList(caseStudy.finalImages, `${project.title} final image`)
+    : uniqueBy(
+        [
+          ...normalizeImageList(caseStudy.finalGallery, `${project.title} final image`),
+          normalizeImageItem(caseStudy.mockupOverviewImage, `${project.title} mockup overview`),
+          ...normalizeImageList(caseStudy.mockupScreens, `${project.title} screen`),
+          ...caseImages,
+        ].filter(Boolean),
+        (item) => item.src
+      ).slice(0, 6);
+
+  const wireImage = isModernCaseStudy
+    ? null
+    : normalizeImageItem(caseStudy.appmapImage, `${project.title} app map`) ||
+      normalizeImageItem(caseStudy.digitalWireImage, `${project.title} wireframe image`) ||
+      wireSlides[0] ||
+      coverImage;
+
+  const videoSection = isModernCaseStudy
+    ? null
+    : sections.find((section) => section.type === "video") || null;
+  const audioSection = isModernCaseStudy
+    ? null
+    : sections.find((section) => section.type === "audio") || null;
+  const protoImage = isModernCaseStudy
+    ? null
+    : normalizeImageItem(caseStudy.protoScreenImage || caseStudy.mockupOverviewImage, `${project.title} prototype image`) ||
+      finalSlides[0] ||
+      null;
+  const prototypeMedia = isModernCaseStudy
+    ? null
+    : videoSection?.video?.src
+      ? {
+          kind: "video",
+          src: videoSection.video.src,
+          poster: firstString(videoSection.poster?.src),
+          caption: firstString(videoSection.video.caption, videoSection.heading),
+        }
+      : protoImage
+        ? { kind: "image", ...protoImage }
+        : audioSection?.audio?.src
+          ? { kind: "audio", src: audioSection.audio.src, caption: firstString(audioSection.audio.caption, audioSection.heading) }
+          : null;
 
   const scopeCards = [
     {
@@ -1016,45 +1069,61 @@ export default function CaseStudyDetail({ slug }) {
     },
   ];
 
-  const overviewCopy = firstString(caseStudy.overviewIntro, project.overview, caseStudy.description, project.description, project.summary);
-  const researchCopy = firstString(
-    caseStudy.researchIntro,
-    caseStudy.usabilityIntro,
-    project.problem,
-    "The project began with a close read of user friction, category patterns, and where the experience needed stronger guidance."
-  );
-  const problemCopy = firstString(
-    project.problem,
-    caseStudy.goal,
-    "The goal was to reduce confusion, create a stronger hierarchy, and give users a clearer path through the product."
-  );
-  const wireCopy = firstString(
-    caseStudy.wireframesIntro,
-    caseStudy.appmapDesc,
-    "The structure phase focused on information hierarchy, content flow, and deciding what each screen needed to communicate first."
-  );
-  const wireCopyTwo = firstString(
-    caseStudy.digitalWireDesc,
-    project.solution,
-    "The wireframe direction created a stronger foundation for layout, interaction states, and scalable implementation."
-  );
-  const prototypeCopy = firstString(
-    caseStudy.protoDesc,
-    caseStudy.designIntro,
-    project.result,
-    "The prototype turned the structure into an interactive flow that could be reviewed, refined, and prepared for handoff."
-  );
-  const resultsCopy = firstString(
-    caseStudy.outcomeIntro,
-    caseStudy.impact,
-    project.result,
-    "The final direction brought the system together into a clearer, more confident experience with measurable improvement."
-  );
-  const protoPoints = uniqueStrings([
-    ...normalizeTextList(caseStudy.protoList),
-    ...normalizeTextList(project.process?.map((item) => item?.description)),
-    ...normalizeTextList(caseStudy.nextSteps),
-  ]).slice(0, 4);
+  const overviewCopy = isModernCaseStudy
+    ? firstString(caseStudy.overviewText)
+    : firstString(caseStudy.overviewIntro, project.overview, caseStudy.description, project.description, project.summary);
+  const researchCopy = isModernCaseStudy
+    ? firstString(caseStudy.researchText)
+    : firstString(
+        caseStudy.researchIntro,
+        caseStudy.usabilityIntro,
+        project.problem,
+        "The project began with a close read of user friction, category patterns, and where the experience needed stronger guidance."
+      );
+  const problemCopy = isModernCaseStudy
+    ? ""
+    : firstString(
+        project.problem,
+        caseStudy.goal,
+        "The goal was to reduce confusion, create a stronger hierarchy, and give users a clearer path through the product."
+      );
+  const wireCopy = isModernCaseStudy
+    ? firstString(caseStudy.wireframeText)
+    : firstString(
+        caseStudy.wireframesIntro,
+        caseStudy.appmapDesc,
+        "The structure phase focused on information hierarchy, content flow, and deciding what each screen needed to communicate first."
+      );
+  const wireCopyTwo = isModernCaseStudy
+    ? ""
+    : firstString(
+        caseStudy.digitalWireDesc,
+        project.solution,
+        "The wireframe direction created a stronger foundation for layout, interaction states, and scalable implementation."
+      );
+  const prototypeCopy = isModernCaseStudy
+    ? firstString(caseStudy.prototypeText)
+    : firstString(
+        caseStudy.protoDesc,
+        caseStudy.designIntro,
+        project.result,
+        "The prototype turned the structure into an interactive flow that could be reviewed, refined, and prepared for handoff."
+      );
+  const resultsCopy = isModernCaseStudy
+    ? ""
+    : firstString(
+        caseStudy.outcomeIntro,
+        caseStudy.impact,
+        project.result,
+        "The final direction brought the system together into a clearer, more confident experience with measurable improvement."
+      );
+  const protoPoints = isModernCaseStudy
+    ? []
+    : uniqueStrings([
+        ...normalizeTextList(caseStudy.protoList),
+        ...normalizeTextList(project.process?.map((item) => item?.description)),
+        ...normalizeTextList(caseStudy.nextSteps),
+      ]).slice(0, 4);
 
   const scrollToSection = (id) => {
     setActiveSection(id);
@@ -1234,7 +1303,14 @@ export default function CaseStudyDetail({ slug }) {
 
                   <div className="projectCaseContent">
                     <CaseSection id="overview" index={1} label="Overview" title="About the Project" copy={overviewCopy}>
-                      {overviewGallery.length ? (
+                      {isModernCaseStudy ? (
+                        <MediaGallery
+                          items={overviewGallery}
+                          label="Overview image"
+                          onOpen={openLightbox}
+                          className="projectCaseOverviewMedia"
+                        />
+                      ) : overviewGallery.length ? (
                         <div className="projectCaseOverviewGallery" data-count={overviewGallery.length}>
                           {overviewGallery.map((image, index) => (
                             <button
@@ -1256,7 +1332,7 @@ export default function CaseStudyDetail({ slug }) {
                       index={2}
                       label="Project Scope"
                       title="Scope & Setup"
-                      copy="A breakdown of the role, tools, and timeline that shaped the project from kickoff to delivery."
+                      copy=""
                     >
                       <div className="projectCaseScopeGrid">
                         {scopeCards.map((card) => (
@@ -1266,59 +1342,108 @@ export default function CaseStudyDetail({ slug }) {
                     </CaseSection>
 
                     <CaseSection id="research" index={3} label="User Research" title="Understanding the Users" copy={researchCopy}>
-                      <MediaCarousel slides={researchSlides} label="Research slides" onOpen={openLightbox} />
+                      {isModernCaseStudy ? (
+                        <MediaGallery
+                          items={researchSlides}
+                          label="Research images"
+                          onOpen={openLightbox}
+                        />
+                      ) : (
+                        <MediaCarousel slides={researchSlides} label="Research slides" onOpen={openLightbox} />
+                      )}
                     </CaseSection>
 
                     <CaseSection id="problem" index={4} label="Problem & Goals" title="What We Set Out to Solve" copy={problemCopy}>
-                      <ul className="projectCaseObjectiveList">
-                        {objectiveItems.map((item) => (
-                          <ObjectiveItem key={`${item.title}-${item.text}`} title={item.title} text={item.text} done={item.done} tag={item.tag} />
-                        ))}
-                      </ul>
+                      {isModernCaseStudy ? (
+                        <div className="projectCaseProblemGrid">
+                          {problemItems.map((item) => (
+                            <ProblemCard
+                              key={`${item.title}-${item.description}`}
+                              title={item.title}
+                              description={item.description}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <ul className="projectCaseObjectiveList">
+                          {problemItems.map((item) => (
+                            <ObjectiveItem key={`${item.title}-${item.text}`} title={item.title} text={item.text} done={item.done} tag={item.tag} />
+                          ))}
+                        </ul>
+                      )}
                     </CaseSection>
 
-                    <CaseSection id="wireframe" index={5} label="Wireframe" title="Mapping the Structure" copy="">
-                      <div className="projectCaseSplitGrid">
-                        <FeatureMedia
-                          media={wireImage ? { kind: "image", ...wireImage } : null}
-                          fallbackLabel={`${project.title} wireframe image`}
+                    <CaseSection id="wireframe" index={5} label="Wireframe" title="Mapping the Structure" copy={wireCopy}>
+                      {isModernCaseStudy ? (
+                        <MediaGallery
+                          items={wireSlides}
+                          label="Wireframe images"
                           onOpen={openLightbox}
                         />
-                        <div className="projectCaseSplitCopy">
-                          <h3 className="projectCaseSplitTitle">Structure before polish</h3>
-                          <p className="projectCaseSplitText">{wireCopy}</p>
-                          <p className="projectCaseSplitText">{wireCopyTwo}</p>
-                        </div>
-                      </div>
-                      <MediaCarousel slides={wireSlides} label="Wireframe slides" onOpen={openLightbox} />
+                      ) : (
+                        <>
+                          <div className="projectCaseSplitGrid">
+                            <FeatureMedia
+                              media={wireImage ? { kind: "image", ...wireImage } : null}
+                              fallbackLabel={`${project.title} wireframe image`}
+                              onOpen={openLightbox}
+                            />
+                            <div className="projectCaseSplitCopy">
+                              <h3 className="projectCaseSplitTitle">Structure before polish</h3>
+                              <p className="projectCaseSplitText">{wireCopy}</p>
+                              <p className="projectCaseSplitText">{wireCopyTwo}</p>
+                            </div>
+                          </div>
+                          <MediaCarousel slides={wireSlides} label="Wireframe slides" onOpen={openLightbox} />
+                        </>
+                      )}
                     </CaseSection>
 
                     <CaseSection id="prototype" index={6} label="Prototype" title="Bringing it to Life" copy={prototypeCopy}>
-                      <div className="projectCasePrototypeGrid">
-                        <div className="projectCasePrototypeCard">
-                          <p className="projectCasePrototypeLabel">Key decisions</p>
-                          <ul className="projectCaseDecisionList">
-                            {protoPoints.map((point) => (
-                              <li className="projectCaseDecisionItem" key={point}>
-                                <span className="projectCaseDecisionMark" aria-hidden="true">
-                                  <IconCheck />
-                                </span>
-                                <span>{point}</span>
-                              </li>
-                            ))}
-                          </ul>
+                      {isModernCaseStudy ? (
+                        <MediaGallery
+                          items={prototypeSlides}
+                          label="Prototype images"
+                          onOpen={openLightbox}
+                        />
+                      ) : (
+                        <div className="projectCasePrototypeGrid">
+                          <div className="projectCasePrototypeCard">
+                            <p className="projectCasePrototypeLabel">Key decisions</p>
+                            <ul className="projectCaseDecisionList">
+                              {protoPoints.map((point) => (
+                                <li className="projectCaseDecisionItem" key={point}>
+                                  <span className="projectCaseDecisionMark" aria-hidden="true">
+                                    <IconCheck />
+                                  </span>
+                                  <span>{point}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <FeatureMedia media={prototypeMedia} fallbackLabel={`${project.title} prototype preview`} onOpen={openLightbox} />
                         </div>
-                        <FeatureMedia media={prototypeMedia} fallbackLabel={`${project.title} prototype preview`} onOpen={openLightbox} />
-                      </div>
+                      )}
                     </CaseSection>
 
                     <CaseSection id="results" index={7} label="Final Results" title="What We Shipped & What Changed" copy={resultsCopy}>
-                      <div className="projectCaseResultGrid">
-                        {resultCards.map((card) => (
-                          <ResultCard key={`${card.metric}-${card.description}`} metric={card.metric} description={card.description} />
-                        ))}
-                      </div>
-                      <MediaCarousel slides={finalSlides} label="Final project screens" onOpen={openLightbox} />
+                      {resultCards.length ? (
+                        <div className="projectCaseResultGrid">
+                          {resultCards.map((card) => (
+                            <ResultCard key={`${card.metric}-${card.description}`} metric={card.metric} description={card.description} />
+                          ))}
+                        </div>
+                      ) : null}
+                      {isModernCaseStudy ? (
+                        <MediaGallery
+                          items={finalSlides}
+                          label="Final project screens"
+                          onOpen={openLightbox}
+                          className="projectCaseFinalGallery"
+                        />
+                      ) : (
+                        <MediaCarousel slides={finalSlides} label="Final project screens" onOpen={openLightbox} />
+                      )}
                     </CaseSection>
                   </div>
                 </div>

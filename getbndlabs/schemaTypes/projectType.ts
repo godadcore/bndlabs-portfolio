@@ -48,6 +48,21 @@ const mediaArrayField = (name: string, title: string) =>
     ],
   })
 
+const imageArrayField = (name: string, title: string) =>
+  defineField({
+    name,
+    title,
+    type: 'array',
+    of: [
+      defineField({
+        name: `${name}Item`,
+        title: `${title} Item`,
+        type: 'image',
+        options: {hotspot: true},
+      }),
+    ],
+  })
+
 const tableRowsField = defineField({
   name: 'rows',
   title: 'Rows',
@@ -361,6 +376,18 @@ export const caseStudyType = defineType({
       options: {hotspot: true},
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'overviewImage',
+      title: 'Overview Image',
+      type: 'image',
+      options: {hotspot: true},
+    }),
+    defineField({
+      name: 'overviewText',
+      title: 'Overview Text',
+      type: 'text',
+      rows: 4,
+    }),
     mediaArrayField(
       'images',
       'Project Images',
@@ -425,57 +452,63 @@ export const caseStudyType = defineType({
     stringListField('tools', 'Tools'),
     stringListField('timeline', 'Timeline'),
     defineField({
-      name: 'objectives',
-      title: 'Problem & Goal Items',
+      name: 'problems',
+      title: 'Problems',
       type: 'array',
       of: [
         defineField({
-          name: 'objective',
-          title: 'Objective',
+          name: 'problem',
+          title: 'Problem',
           type: 'object',
           fields: [
             defineField({
               name: 'title',
-              title: 'Short Label',
+              title: 'Title',
               type: 'string',
             }),
             defineField({
-              name: 'text',
-              title: 'Objective Text',
+              name: 'description',
+              title: 'Description',
               type: 'text',
               rows: 3,
-            }),
-            defineField({
-              name: 'status',
-              title: 'Status',
-              type: 'string',
-              initialValue: 'Completed',
-              options: {
-                list: [
-                  {title: 'Completed', value: 'Completed'},
-                  {title: 'In Progress', value: 'In Progress'},
-                ],
-              },
             }),
           ],
           preview: {
             select: {
               title: 'title',
-              subtitle: 'status',
+              subtitle: 'description',
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Objective',
-                subtitle: subtitle || 'Completed',
+                title: title || 'Problem',
+                subtitle: subtitle || '',
               }
             },
           },
         }),
       ],
     }),
-    mediaArrayField('researchImages', 'Research Images'),
-    mediaArrayField('wireframeImages', 'Wireframe Images'),
-    mediaArrayField('prototypeImages', 'Prototype Images'),
+    defineField({
+      name: 'researchText',
+      title: 'Research Text',
+      type: 'text',
+      rows: 4,
+    }),
+    imageArrayField('researchImages', 'Research Images'),
+    defineField({
+      name: 'wireframeText',
+      title: 'Wireframe Text',
+      type: 'text',
+      rows: 4,
+    }),
+    imageArrayField('wireframeImages', 'Wireframe Images'),
+    defineField({
+      name: 'prototypeText',
+      title: 'Prototype Text',
+      type: 'text',
+      rows: 4,
+    }),
+    imageArrayField('prototypeImages', 'Prototype Images'),
     defineField({
       name: 'results',
       title: 'Results',
@@ -507,7 +540,7 @@ export const caseStudyType = defineType({
         }),
       ],
     }),
-    mediaArrayField('finalGallery', 'Final Gallery'),
+    imageArrayField('finalImages', 'Final Images'),
     stringListField('nextSteps', 'Next Steps'),
     stringListField('tasks', 'Tasks'),
     stringListField('tags', 'Tags'),

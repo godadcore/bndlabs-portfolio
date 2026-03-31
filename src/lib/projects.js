@@ -297,19 +297,6 @@ function normalizePortableText(value) {
   return value.filter((item) => item && typeof item === "object");
 }
 
-function portableTextToPlainText(value) {
-  return normalizePortableText(value)
-    .map((block) => {
-      if (block?._type !== "block" || !Array.isArray(block?.children)) return "";
-      return block.children
-        .map((child) => firstString(child?.text))
-        .join("")
-        .trim();
-    })
-    .filter(Boolean)
-    .join("\n\n");
-}
-
 function normalizeSanityImage(value, fallbackAlt = "") {
   if (!value) return null;
 
@@ -378,16 +365,15 @@ function normalizeCaseStudyResults(value) {
     .filter((item) => item.metric && item.description);
 }
 
-function normalizeCaseStudyObjectives(value) {
+function normalizeCaseStudyProblems(value) {
   if (!Array.isArray(value)) return [];
 
   return value
     .map((item) => ({
       title: firstString(item?.title, item?.label),
-      text: firstString(item?.text, item?.description),
-      status: firstString(item?.status),
+      description: firstString(item?.description, item?.text),
     }))
-    .filter((item) => item.text);
+    .filter((item) => item.title || item.description);
 }
 
 function normalizeSanityFile(value) {
@@ -618,9 +604,6 @@ function buildCaseStudySummaryTableSection(details) {
 }
 
 function buildModernCaseStudySections({
-  title,
-  description,
-  overviewText,
   role,
   tools,
   timeline,
@@ -628,12 +611,6 @@ function buildModernCaseStudySections({
   client,
   industry,
   status,
-  projectImages,
-  researchImages,
-  wireframeImages,
-  prototypeImages,
-  finalGallery,
-  results,
   sections,
 }) {
   const explicitSections = toObjectArray(sections)
@@ -662,81 +639,6 @@ function buildModernCaseStudySections({
 
   if (infoSection) {
     fallbackSections.push(infoSection);
-  }
-
-  const introImage =
-    projectImages[0] ||
-    researchImages[0] ||
-    wireframeImages[0] ||
-    prototypeImages[0] ||
-    finalGallery[0] ||
-    null;
-
-  const overviewSection = createStorySection({
-    id: "project-overview",
-    heading: "Project overview",
-    text: firstString(overviewText, description),
-    image: introImage,
-  });
-
-  if (overviewSection) {
-    fallbackSections.push(overviewSection);
-  }
-
-  const imageSets = [
-    {
-      id: "project-images",
-      heading: "Selected frames",
-      text: "A focused set of screens and visuals from the project story.",
-      frames: projectImages,
-    },
-    {
-      id: "research-frames",
-      heading: "Discovery frames",
-      text: "Research references and supporting visuals used to guide the early direction.",
-      frames: researchImages,
-    },
-    {
-      id: "wireframe-frames",
-      heading: "Structure and wireframes",
-      text: "Low-fidelity frames that clarified hierarchy, layout, and product flow.",
-      frames: wireframeImages,
-    },
-    {
-      id: "prototype-frames",
-      heading: "Prototype previews",
-      text: "Interactive previews that shaped the final interface direction.",
-      frames: prototypeImages,
-    },
-    {
-      id: "final-frames",
-      heading: "Final screens",
-      text: "Polished interface frames from the final case study.",
-      frames: finalGallery,
-    },
-  ];
-
-  imageSets.forEach((imageSet) => {
-    const section = createFramesSection(imageSet);
-    if (section) fallbackSections.push(section);
-  });
-
-  const resultRows = Array.isArray(results)
-    ? results
-        .map((item) => [firstString(item?.metric), firstString(item?.description)])
-        .filter((row) => row.some(Boolean))
-    : [];
-
-  const resultsSection = createTableSection({
-    id: "design-decisions",
-    heading: "Design decisions",
-    text: "A concise summary of the outcomes and choices that shaped the final solution.",
-    columns: ["Focus", "Details"],
-    rows: resultRows,
-  });
-
-  if (resultsSection) {
-    fallbackSections.push(resultsSection);
   }
 
   return fallbackSections.filter(Boolean);
@@ -826,17 +728,20 @@ function normalizeModernCaseStudy(raw) {
   const id = safeLowerSlug(raw?._id || raw?.id || slug || raw?.title);
   const title = firstString(raw?.title, "Untitled Case Study");
   const overviewBlocks = normalizePortableText(raw?.overview);
-  const overviewText = firstString(portableTextToPlainText(overviewBlocks), raw?.description);
-  const description = firstString(raw?.description, overviewText);
+  const overviewText = firstString(raw?.overviewText);
+  const description = firstString(raw?.description);
   const brandLogo = normalizeSanityImage(raw?.brandLogo, `${title} logo`);
   const heroImage = normalizeSanityImage(raw?.heroImage, `${title} hero image`);
-  const projectImages = normalizeSanityImageArray(raw?.images, title, "Project image");
+  const overviewImage = normalizeSanityImage(raw?.overviewImage, `${title} overview image`);
   const researchImages = normalizeSanityImageArray(raw?.researchImages, title, "Research image");
   const wireframeImages = normalizeSanityImageArray(raw?.wireframeImages, title, "Wireframe image");
   const prototypeImages = normalizeSanityImageArray(raw?.prototypeImages, title, "Prototype image");
-  const finalGallery = normalizeSanityImageArray(raw?.finalGallery, title, "Final gallery image");
+  const finalImages = normalizeSanityImageArray(raw?.finalImages, title, "Final image");
+  const researchText = firstString(raw?.researchText);
+  const wireframeText = firstString(raw?.wireframeText);
+  const prototypeText = firstString(raw?.prototypeText);
   const stats = normalizeCaseStudyStats(raw?.stats);
-  const objectives = normalizeCaseStudyObjectives(raw?.objectives);
+  const problems = normalizeCaseStudyProblems(raw?.problems);
   const results = normalizeCaseStudyResults(raw?.results);
   const role = toStringArray(raw?.role);
   const tools = toStringArray(raw?.tools);
@@ -847,11 +752,7 @@ function normalizeModernCaseStudy(raw) {
   const publishedDate = firstString(raw?.publishedDate, raw?.date, raw?._createdAt);
   const fallbackImage =
     heroImage?.src ||
-    projectImages[0]?.src ||
-    finalGallery[0]?.src ||
-    researchImages[0]?.src ||
-    wireframeImages[0]?.src ||
-    prototypeImages[0]?.src ||
+    overviewImage?.src ||
     makePlaceholderImage(slug || title);
   const liveUrl = sanitizeExternalUrl(firstString(raw?.liveUrl, raw?.liveProjectUrl));
   const prototypeUrl = sanitizeExternalUrl(firstString(raw?.prototypeUrl));
@@ -863,9 +764,6 @@ function normalizeModernCaseStudy(raw) {
   const client = firstString(raw?.client);
   const industry = firstString(raw?.industry, category);
   const normalizedSections = buildModernCaseStudySections({
-    title,
-    description,
-    overviewText,
     role,
     tools,
     timeline,
@@ -873,12 +771,6 @@ function normalizeModernCaseStudy(raw) {
     client,
     industry,
     status,
-    projectImages,
-    researchImages,
-    wireframeImages,
-    prototypeImages,
-    finalGallery,
-    results,
     sections: raw?.sections,
   });
   const displayTasks = uniqueStrings(
@@ -922,7 +814,7 @@ function normalizeModernCaseStudy(raw) {
     })),
     process: [],
     sections: normalizedSections,
-    gallery: finalGallery,
+    gallery: finalImages,
     nextSteps,
     liveProject: {
       enabled: Boolean(liveUrl),
@@ -931,30 +823,35 @@ function normalizeModernCaseStudy(raw) {
     },
     liveProjectUrl: liveUrl,
     caseStudy: {
+      contentModel: "caseStudy",
       brandLogo: brandLogo?.src || "",
       heroImage: heroImage?.src || fallbackImage,
       description,
       category,
       publishedDate,
       status,
-      images: projectImages,
+      overviewImage: overviewImage?.src ? overviewImage : null,
+      overviewText,
       sections: normalizedSections,
       overviewBlocks,
       stats,
       role,
       tools,
       timeline,
-      objectives,
+      problems,
       tasks,
       tags,
       client,
       industry,
       nextSteps,
+      researchText,
       researchImages,
+      wireframeText,
       wireframeImages,
+      prototypeText,
       prototypeImages,
       results,
-      finalGallery,
+      finalImages,
       liveUrl,
       liveProjectUrl: sanitizeExternalUrl(firstString(raw?.liveProjectUrl)),
       prototypeUrl,
@@ -1089,6 +986,7 @@ function normalizeCaseStudy(raw, project) {
   );
 
   return {
+    contentModel: "legacy",
     brandName: firstString(caseStudyRaw.brandName, project.client, project.title),
     region,
     year: firstString(caseStudyRaw.year, yearFromDate(project.date), "Recent"),
