@@ -2,9 +2,12 @@ import { normalizeProject, safeLowerSlug } from "./projects";
 
 let cachedRemoteProjectsPromise = null;
 const PROJECTS_API_PATH = "/api/sanity/projects";
-const PROJECT_PLACEHOLDER_PATTERN = /picsum\.photos\/seed\//i;
 
 function isPublishedProject(project) {
+  if (project?._type === "caseStudy" || project?.caseStudy?.contentModel === "caseStudy") {
+    return true;
+  }
+
   return String(project?.status ?? "published").trim().toLowerCase() === "published";
 }
 
@@ -21,7 +24,7 @@ function hasProjectImage(project) {
     .map((value) => String(value ?? "").trim())
     .filter(Boolean);
 
-  return imageCandidates.some((value) => !PROJECT_PLACEHOLDER_PATTERN.test(value));
+  return imageCandidates.length > 0;
 }
 
 function hasProjectDate(project) {
