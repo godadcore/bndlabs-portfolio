@@ -1,17 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import BlogCard from "../../components/blog/BlogCard";
 import AudioBlock from "../../components/blog-post/AudioBlock";
 import CalloutBlock from "../../components/blog-post/CalloutBlock";
 import CodeBlock from "../../components/blog-post/CodeBlock";
 import MediaBlock from "../../components/blog-post/MediaBlock";
-import NextPostCard from "../../components/blog-post/NextPostCard";
 import TableBlock from "../../components/blog-post/TableBlock";
 import TocSidebar from "../../components/blog-post/TocSidebar";
 import Footer from "../../components/layout/Footer";
 import Header from "../../components/layout/Header";
 import Seo from "../../components/seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
-import { formatBlogDate, getPostBySlug, loadPostBySlug } from "../../lib/blogData";
+import {
+  formatBlogDate,
+  getInitialPosts,
+  getPostBySlug,
+  loadAllPosts,
+  loadPostBySlug,
+} from "../../lib/blogData";
 import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
 import { sanitizeUrl } from "../../lib/urlSecurity";
 import "./blog-post.css";
@@ -156,6 +162,22 @@ function renderBlock(block, index) {
   return null;
 }
 
+function collectRelatedPosts(posts, currentPost, currentSlug) {
+  const relatedPosts = [];
+  const seenSlugs = new Set([String(currentPost?.slug || currentSlug || "").trim()]);
+  const candidates = [...(Array.isArray(posts) ? posts : []), currentPost?.nextPost].filter(Boolean);
+
+  candidates.forEach((candidate) => {
+    const candidateSlug = String(candidate?.slug || "").trim();
+    if (!candidateSlug || seenSlugs.has(candidateSlug)) return;
+
+    seenSlugs.add(candidateSlug);
+    relatedPosts.push(candidate);
+  });
+
+  return relatedPosts.slice(0, 3);
+}
+
 export default function BlogPost() {
   const { slug } = useParams();
   return <BlogPostContent key={slug || "blog-post"} slug={slug || ""} />;
@@ -163,32 +185,35 @@ export default function BlogPost() {
 
 function BlogPostContent({ slug }) {
   const initialPost = getPostBySlug(slug);
+  const [posts, setPosts] = useState(() => getInitialPosts());
   const [post, setPost] = useState(() => initialPost);
   const [isLoading, setIsLoading] = useState(() => !initialPost);
-  const [activeHeading, setActiveHeading] = useState("");
+  const [activeHeading, setActiveHeading] = useState(() => initialPost?.headings?.[0]?.id || "");
   const scrollRootRef = useRef(null);
 
   usePullToRefresh(scrollRootRef);
 
   useEffect(() => {
     let isMounted = true;
-    setIsLoading(true);
-    setPost(getPostBySlug(slug));
 
-    loadPostBySlug(slug).then((loadedPost) => {
-      if (!isMounted) return;
-      setPost(loadedPost);
-      setIsLoading(false);
-    });
+    Promise.all([loadPostBySlug(slug), loadAllPosts()])
+      .then(([loadedPost, loadedPosts]) => {
+        if (!isMounted) return;
+        setPost(loadedPost);
+        setActiveHeading(loadedPost?.headings?.[0]?.id || "");
+        if (Array.isArray(loadedPosts)) {
+          setPosts(loadedPosts);
+        }
+      })
+      .finally(() => {
+        if (!isMounted) return;
+        setIsLoading(false);
+      });
 
     return () => {
       isMounted = false;
     };
   }, [slug]);
-
-  useEffect(() => {
-    setActiveHeading(post?.headings?.[0]?.id || "");
-  }, [post]);
 
   useEffect(() => {
     const root = scrollRootRef.current;
@@ -219,6 +244,8 @@ function BlogPostContent({ slug }) {
   }, [post]);
 
   const hasContent = Boolean(post?.contentBlocks?.length);
+  const relatedPosts = collectRelatedPosts(posts, post, slug);
+  const hasRelatedPosts = relatedPosts.length >= 2;
   const seoTitle = post?.title ? `${post.title} | Blog | ${SITE_NAME}` : `Blog Post | ${SITE_NAME}`;
   const seoDescription = post?.excerpt || "A blog post from Bndlabs.";
   const seoKeywords = post
@@ -285,7 +312,29 @@ function BlogPostContent({ slug }) {
                         {post.contentBlocks.map((block, index) => renderBlock(block, index))}
                       </div>
 
-                      <NextPostCard post={post.nextPost} />
+                      {hasRelatedPosts ? (
+                        <section className="blogPostMore" aria-labelledby="blog-post-more-title">
+                          <p className="blogPostMoreLabel">More Posts</p>
+                          <h2 className="blogPostMoreTitle" id="blog-post-more-title">
+                            Keep reading
+                          </h2>
+
+                          <div className="blogPostMoreGrid">
+                            {relatedPosts.map((relatedPost, index) => (
+                              <div
+                                className="blogPostMoreCard"
+                                key={relatedPost.id || relatedPost.slug || index}
+                              >
+                                <BlogCard
+                                  post={relatedPost}
+                                  className="blogCard--related"
+                                  priority={index === 0}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </section>
+                      ) : null}
                     </>
                   ) : null}
 

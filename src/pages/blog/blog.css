@@ -3,11 +3,20 @@
 }
 
 .blogPage .workCarouselStage {
-  height: 560px;
+  height: auto;
+  min-height: 0;
+  align-items: flex-start;
+  overflow: visible;
 }
 
 .blogPage .blogCarouselCardWrap {
   width: min(100%, 940px);
+  max-width: 100%;
+  display: flex;
+}
+
+.blogPage .blogCarouselCardWrap > * {
+  flex: 1 1 auto;
 }
 
 .blogPage .workCarouselStage .workCard__visual {
@@ -15,7 +24,10 @@
 }
 
 .blogPage .workCarouselStage .workCard__image {
-  height: clamp(280px, 32vw, 420px);
+  height: auto;
+  min-height: clamp(240px, 32vw, 320px);
+  max-height: 420px;
+  aspect-ratio: 16 / 10;
 }
 
 .blogPage .workCarouselStage .workCard__footer {
@@ -26,8 +38,15 @@
   gap: 24px;
 }
 
+.blogPage .workProjectsGrid > .workGridCard {
+  min-width: 0;
+}
+
 .blogPage .workProjectsGrid .workCard__image {
-  height: clamp(235px, 20vw, 315px);
+  height: auto;
+  min-height: 230px;
+  max-height: 315px;
+  aspect-ratio: 4 / 3;
 }
 
 .blogPage .workProjectsGrid .workCard__task {
@@ -35,26 +54,19 @@
 }
 
 @media (max-width: 1200px) {
-  .blogPage .workCarouselStage {
-    height: 500px;
-  }
-
   .blogPage .blogCarouselCardWrap {
     width: min(100%, 820px);
   }
 }
 
 @media (max-width: 980px) {
-  .blogPage .workCarouselStage {
-    height: 420px;
-  }
-
   .blogPage .workCarouselStage .workCard__image {
-    height: 230px;
+    min-height: 230px;
   }
 
   .blogPage .workProjectsGrid .workCard__image {
-    height: clamp(320px, 82vw, 450px);
+    min-height: 280px;
+    max-height: 450px;
   }
 }
 
@@ -63,33 +75,29 @@
     max-width: 300px;
   }
 
-  .blogPage .workCarouselStage {
-    height: 460px;
-  }
-
   .blogPage .workCarouselStage .workCard__image {
-    height: clamp(260px, 70vw, 330px);
+    min-height: 240px;
+    max-height: 330px;
   }
 
   .blogPage .workProjectsGrid .workCard__image {
-    height: clamp(300px, 82vw, 420px);
+    min-height: 260px;
+    max-height: 420px;
   }
 }
 
 @media (max-width: 430px) {
-  .blogPage .workCarouselStage {
-    height: 400px;
-  }
-
   .blogPage .workCarouselStage .workCard__visual {
     padding: 10px 10px 0;
   }
 
   .blogPage .workCarouselStage .workCard__image {
-    height: 240px;
+    min-height: 220px;
+    max-height: 280px;
   }
 
   .blogPage .workProjectsGrid .workCard__image {
-    height: 300px;
+    min-height: 220px;
+    max-height: 300px;
   }
 }

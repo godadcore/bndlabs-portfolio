@@ -574,12 +574,14 @@
   line-height: 1.6;
 }
 
+.blogPostPage .blogPostMore,
 .blogPostPage .blogPostNext {
   margin-top: 64px;
   padding-top: 32px;
   border-top: 1px solid var(--border-regular);
 }
 
+.blogPostPage .blogPostMoreLabel,
 .blogPostPage .blogPostNextLabel {
   margin: 0 0 14px;
   color: var(--text-muted);
@@ -587,6 +589,34 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.blogPostPage .blogPostMoreTitle {
+  margin: 0;
+  font-family: var(--fontHeading);
+  color: var(--text-primary);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.blogPostPage .blogPostMoreGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.blogPostPage .blogPostMoreCard {
+  min-width: 0;
+}
+
+.blogPostPage .blogPostMoreGrid .workCard__image {
+  height: auto;
+  min-height: 220px;
+  max-height: 280px;
+  aspect-ratio: 4 / 3;
 }
 
 .blogPostPage .blogPostNextCard {
@@ -748,6 +778,10 @@
   }
 
   .blogPostPage .blogPostImageGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .blogPostPage .blogPostMoreGrid {
     grid-template-columns: 1fr;
   }
 

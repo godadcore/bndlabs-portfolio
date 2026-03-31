@@ -1,5 +1,40 @@
+.blogCard {
+  min-width: 0;
+  height: 100%;
+}
+
+.blogCard:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.blogCard .workCard__visual,
+.blogCard .workCard__footer {
+  width: 100%;
+}
+
+.blogCard .workCard__image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blogCard .workCard__image img {
+  object-fit: contain;
+  object-position: center;
+}
+
 .blogCard__footer {
-  align-items: flex-start;
+  align-items: stretch;
+}
+
+.blogCard .workCard__text {
+  height: 100%;
+}
+
+.blogCard .workCard__title,
+.blogCard .workCard__task {
+  overflow-wrap: anywhere;
 }
 
 .blogCard__button {
@@ -8,7 +43,7 @@
   justify-content: center;
   align-self: flex-start;
   min-height: 42px;
-  margin-top: 14px;
+  margin-top: auto;
   padding: 0 18px;
   border-radius: 999px;
   background: var(--accent);

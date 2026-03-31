@@ -1,7 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./blog-card.css";
 
-export default function BlogCard({ post, className = "", priority = false }) {
+export default function BlogCard({
+  post,
+  className = "",
+  priority = false,
+  fullCardLink = true,
+}) {
+  const navigate = useNavigate();
+
   if (!post) return null;
 
   const { title, description, excerpt, image, thumbnail, slug } = post;
@@ -10,8 +17,34 @@ export default function BlogCard({ post, className = "", priority = false }) {
   const cardImage = image || thumbnail || "";
   const cardText = description || excerpt || "New writing coming soon.";
 
+  const activateCard = () => {
+    if (!resolvedHref) return;
+    navigate(resolvedHref);
+  };
+
+  const handleCardClick = (event) => {
+    if (!fullCardLink) return;
+    if (event.target instanceof Element && event.target.closest("a")) return;
+    activateCard();
+  };
+
+  const handleCardKeyDown = (event) => {
+    if (!fullCardLink) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    activateCard();
+  };
+
   return (
-    <article className={`workCard blogCard ${className}`.trim()}>
+    <article
+      className={`workCard blogCard ${className}`.trim()}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      role={fullCardLink ? "link" : undefined}
+      tabIndex={fullCardLink ? 0 : undefined}
+      aria-label={fullCardLink ? cardLabel : undefined}
+      style={fullCardLink ? { cursor: "pointer" } : undefined}
+    >
       <div className="workCard__visual">
         <div className="workCard__image">
           {cardImage ? (
