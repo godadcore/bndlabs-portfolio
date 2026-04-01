@@ -282,6 +282,93 @@
   font-size: 16.5px;
 }
 
+.projectDetailsPage .projectCaseRichText {
+  display: block;
+}
+
+.projectDetailsPage .projectCaseRichText > :first-child {
+  margin-top: 0;
+}
+
+.projectDetailsPage .projectCaseRichText > :last-child {
+  margin-bottom: 0;
+}
+
+.projectDetailsPage .projectCaseRichText > * + * {
+  margin-top: 12px;
+}
+
+.projectDetailsPage .projectCaseRichText p,
+.projectDetailsPage .projectCaseRichText ul,
+.projectDetailsPage .projectCaseRichText ol,
+.projectDetailsPage .projectCaseRichText blockquote,
+.projectDetailsPage .projectCaseRichText h1,
+.projectDetailsPage .projectCaseRichText h2,
+.projectDetailsPage .projectCaseRichText h3,
+.projectDetailsPage .projectCaseRichText h4 {
+  margin-bottom: 0;
+}
+
+.projectDetailsPage .projectCaseRichText ul,
+.projectDetailsPage .projectCaseRichText ol {
+  padding-left: 1.2rem;
+}
+
+.projectDetailsPage .projectCaseRichText li + li {
+  margin-top: 6px;
+}
+
+.projectDetailsPage .projectCaseRichText a {
+  color: var(--accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.16em;
+}
+
+.projectDetailsPage .projectCaseRichText strong,
+.projectDetailsPage .projectCaseRichText b {
+  color: var(--case-ink);
+}
+
+.projectDetailsPage .projectCaseRichText h1,
+.projectDetailsPage .projectCaseRichText h2,
+.projectDetailsPage .projectCaseRichText h3,
+.projectDetailsPage .projectCaseRichText h4 {
+  font-family: var(--fontHeading);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--case-ink);
+}
+
+.projectDetailsPage .projectCaseRichText h1 {
+  font-size: 1.45em;
+}
+
+.projectDetailsPage .projectCaseRichText h2 {
+  font-size: 1.32em;
+}
+
+.projectDetailsPage .projectCaseRichText h3 {
+  font-size: 1.18em;
+}
+
+.projectDetailsPage .projectCaseRichText h4 {
+  font-size: 1.08em;
+}
+
+.projectDetailsPage .projectCaseRichText blockquote {
+  padding-left: 14px;
+  border-left: 2px solid var(--case-border-strong);
+  color: var(--case-ink);
+}
+
+.projectDetailsPage .projectCaseRichText code {
+  padding: 0.08em 0.4em;
+  border-radius: 0.45em;
+  background: rgba(var(--accent-rgb), 0.08);
+  font-size: 0.95em;
+}
+
 .projectDetailsPage .projectCaseActions {
   margin-top: 28px;
 }
@@ -769,6 +856,48 @@
   overflow: hidden;
 }
 
+.projectDetailsPage .projectCaseTableWrap {
+  margin-top: 28px;
+  overflow: auto;
+  background: var(--case-surface);
+}
+
+.projectDetailsPage .projectCaseTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.projectDetailsPage .projectCaseTable th,
+.projectDetailsPage .projectCaseTable td {
+  padding: 16px 18px;
+  text-align: left;
+  font-family: var(--fontUi);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--case-muted-strong);
+  vertical-align: top;
+}
+
+.projectDetailsPage .projectCaseTable thead th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--case-muted);
+  border-bottom: 1px solid var(--case-border);
+}
+
+.projectDetailsPage .projectCaseTable tbody tr + tr td,
+.projectDetailsPage .projectCaseTable tbody tr + tr th {
+  border-top: 1px solid var(--case-border);
+}
+
+.projectDetailsPage .projectCaseTable tbody th {
+  width: 32%;
+  font-weight: 600;
+  color: var(--case-ink);
+}
+
 .projectDetailsPage .projectCaseFeatureMedia,
 .projectDetailsPage .projectCaseCarouselSlide,
 .projectDetailsPage .projectCaseMediaFigure {
@@ -1037,6 +1166,17 @@
   font-size: 14px;
   line-height: 1.65;
   color: var(--case-muted);
+}
+
+.projectDetailsPage .projectCaseRelated {
+  margin-top: 56px;
+  padding-top: 56px;
+  border-top: 1px solid var(--case-border);
+}
+
+.projectDetailsPage .projectCaseRelated .workGridSection {
+  max-width: none;
+  margin: 0;
 }
 
 .projectDetailsPage .projectCaseClosing {
@@ -1356,7 +1496,9 @@
   .projectDetailsPage .projectCaseListItem,
   .projectDetailsPage .projectCaseDecisionItem,
   .projectDetailsPage .projectCaseMetaValue,
-  .projectDetailsPage .projectCaseClosingText {
+  .projectDetailsPage .projectCaseClosingText,
+  .projectDetailsPage .projectCaseTable th,
+  .projectDetailsPage .projectCaseTable td {
     font-size: 14px;
   }
 }
@@ -1372,6 +1514,11 @@
   }
 
   .projectDetailsPage .projectCaseSection + .projectCaseSection {
+    margin-top: 40px;
+    padding-top: 40px;
+  }
+
+  .projectDetailsPage .projectCaseRelated {
     margin-top: 40px;
     padding-top: 40px;
   }

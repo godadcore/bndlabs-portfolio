@@ -4,20 +4,48 @@ import "./blog-card.css";
 
 export default function BlogCard({
   post,
+  project = null,
   className = "",
   priority = false,
   fullCardLink = true,
+  href = "",
+  linkLabel = "",
 }) {
   const navigate = useNavigate();
+  const content = project || post;
+  const isProjectCard = Boolean(project);
 
-  if (!post) return null;
+  if (!content) return null;
 
-  const { title, description, excerpt, image, thumbnail, slug, date } = post;
-  const cardLabel = `Read ${title || "blog post"}`;
-  const resolvedHref = slug ? `/blog/${slug}` : "/blog";
-  const cardImage = image || thumbnail || "";
-  const cardText = description || excerpt || "";
-  const publishedDate = formatBlogDate(date);
+  const {
+    title,
+    description,
+    excerpt,
+    summary,
+    subtitle,
+    image,
+    thumbnail,
+    cover,
+    slug,
+    date,
+  } = content;
+  const cardLabel = isProjectCard
+    ? `Open ${title || "case study"}`
+    : `Read ${title || "blog post"}`;
+  const resolvedHref =
+    href ||
+    (isProjectCard ? (slug ? `/work/${slug}` : "/work") : slug ? `/blog/${slug}` : "/blog");
+  const cardImage = image || thumbnail || cover || "";
+  const cardText = description || excerpt || summary || subtitle || "";
+  const publishedDate = isProjectCard ? "" : formatBlogDate(date);
+  const ctaLabel = linkLabel || (isProjectCard ? "View Case Study" : "Read More");
+  const imageAlt = isProjectCard
+    ? title
+      ? `${title} case study cover image`
+      : "Case study cover image"
+    : title
+      ? `${title} blog cover image`
+      : "Blog cover image";
 
   const activateCard = () => {
     if (!resolvedHref) return;
@@ -52,7 +80,7 @@ export default function BlogCard({
           {cardImage ? (
             <img
               src={cardImage}
-              alt={title ? `${title} blog cover image` : "Blog cover image"}
+              alt={imageAlt}
               loading={priority ? "eager" : "lazy"}
               fetchPriority={priority ? "high" : undefined}
               decoding="async"
@@ -76,7 +104,7 @@ export default function BlogCard({
             aria-label={cardLabel}
             to={resolvedHref}
           >
-            Read More
+            {ctaLabel}
           </Link>
         </div>
       </div>

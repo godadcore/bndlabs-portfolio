@@ -42,11 +42,18 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   sections[]{
     _key,
     _type,
+    icon,
     title,
+    heading,
     body,
+    description,
+    text,
     alt,
     caption,
     columns,
+    headers,
+    videoUrl,
+    audioUrl,
     rows[]{
       cells
     },
@@ -70,9 +77,24 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
         url
       }
     },
+    images[]{
+      alt,
+      caption,
+      asset->{
+        url
+      },
+      image{
+        asset->{
+          url
+        }
+      }
+    },
     frames[]{
       alt,
       caption,
+      asset->{
+        url
+      },
       image{
         asset->{
           url

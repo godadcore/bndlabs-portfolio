@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import BlogCard from "../blog/BlogCard";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import Seo from "../seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { loadAllProjects } from "../../lib/projectData";
+import { richTextToHtml, richTextToPlainText } from "../../lib/richText.js";
 import {
   BASE_KEYWORDS,
   SITE_NAME,
@@ -12,7 +14,11 @@ import {
   buildProjectSeoKeywords,
 } from "../../lib/site";
 import { useSiteSettings } from "../../providers/siteSettingsContext.js";
+import "../../pages/work/work.css";
+import "../../pages/blog/blog.css";
 import "../../pages/work/ProjectDetails.css";
+
+const RELATED_CASE_STUDIES_MOBILE_BREAKPOINT = 640;
 
 const NAV_SECTIONS = [
   { id: "overview", label: "Overview", Icon: IconOverview },
@@ -111,6 +117,70 @@ function IconResults() {
       />
     </svg>
   );
+}
+
+function getNamedSectionIcon(name) {
+  switch (normalizeSectionToken(name)) {
+    case "overview":
+    case "about":
+    case "intro":
+      return IconOverview;
+    case "scope":
+    case "details":
+    case "project-scope":
+      return IconScope;
+    case "research":
+    case "discovery":
+      return IconResearch;
+    case "problem":
+    case "challenge":
+    case "goals":
+      return IconProblem;
+    case "wireframe":
+    case "wireframes":
+    case "flow":
+    case "structure":
+      return IconWireframe;
+    case "prototype":
+    case "testing":
+    case "interaction":
+      return IconPrototype;
+    case "results":
+    case "outcomes":
+    case "final":
+      return IconResults;
+    default:
+      return null;
+  }
+}
+
+function resolveFlexibleSectionIcon(section) {
+  const explicitIcon = getNamedSectionIcon(section?.icon);
+  if (explicitIcon) return explicitIcon;
+
+  const content = `${firstString(section?.heading)} ${firstString(section?.id)}`.toLowerCase();
+
+  if (/(overview|about|intro|summary)/.test(content)) return IconOverview;
+  if (/(scope|setup|details|stack|tool|timeline|table)/.test(content) || section?.type === "table") return IconScope;
+  if (/(research|discovery|insight|finding|audit|persona)/.test(content)) return IconResearch;
+  if (/(problem|challenge|goal)/.test(content)) return IconProblem;
+  if (/(wire|frame|flow|structure|map)/.test(content) || section?.type === "frames") return IconWireframe;
+  if (/(prototype|test|audio|video|motion)/.test(content) || section?.type === "video" || section?.type === "audio") return IconPrototype;
+  if (/(result|outcome|impact|final|launch|delivery)/.test(content)) return IconResults;
+
+  return section?.type === "story" ? IconOverview : IconScope;
+}
+
+function buildFlexibleSectionMeta(section, index) {
+  const label = firstString(section?.heading, `Section ${index + 1}`);
+  const token = normalizeSectionToken(firstString(section?.id, section?.heading, label));
+
+  return {
+    ...section,
+    navLabel: label,
+    renderId: `project-section-${token || index + 1}-${index + 1}`,
+    Icon: resolveFlexibleSectionIcon(section),
+  };
 }
 
 function normalizeWhatsAppNumber(value) {
@@ -297,12 +367,106 @@ function uniqueBy(items, getKey) {
   });
 }
 
+function normalizeSectionToken(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getProjectTimestamp(project) {
+  const candidates = [project?.date, project?.createdAt, project?.updatedAt];
+
+  for (const value of candidates) {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.getTime();
+    }
+  }
+
+  return 0;
+}
+
+function buildProjectSignalSet(project) {
+  return new Set(
+    uniqueStrings([
+      firstString(project?.category),
+      firstString(project?.industry),
+      ...normalizeTextList(project?.tasks),
+      ...normalizeTextList(project?.tags),
+      ...normalizeTextList(project?.caseStudy?.tasks),
+      ...normalizeTextList(project?.caseStudy?.tags),
+      ...normalizeTextList(project?.caseStudy?.role),
+      ...normalizeTextList(project?.caseStudy?.tools),
+    ]).map((item) => item.toLowerCase())
+  );
+}
+
+function buildRelatedProjects(currentProject, projects, limit) {
+  if (!currentProject || !Array.isArray(projects) || limit < 1) return [];
+
+  const currentSignals = buildProjectSignalSet(currentProject);
+  const currentCategory = firstString(currentProject.category).toLowerCase();
+  const currentIndustry = firstString(currentProject.industry).toLowerCase();
+
+  return [...projects]
+    .filter((candidate) => {
+      if (!candidate) return false;
+      if (!candidate.slug && !candidate.id) return false;
+      if (candidate.slug && candidate.slug === currentProject.slug) return false;
+      if (candidate.id && candidate.id === currentProject.id) return false;
+      return true;
+    })
+    .map((candidate) => {
+      let score = 0;
+      const candidateCategory = firstString(candidate.category).toLowerCase();
+      const candidateIndustry = firstString(candidate.industry).toLowerCase();
+
+      if (currentCategory && candidateCategory && currentCategory === candidateCategory) {
+        score += 4;
+      }
+
+      if (currentIndustry && candidateIndustry && currentIndustry === candidateIndustry) {
+        score += 3;
+      }
+
+      const candidateSignals = buildProjectSignalSet(candidate);
+      candidateSignals.forEach((signal) => {
+        if (currentSignals.has(signal)) {
+          score += 1;
+        }
+      });
+
+      return {
+        project: candidate,
+        score,
+        timestamp: getProjectTimestamp(candidate),
+      };
+    })
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.timestamp !== a.timestamp) return b.timestamp - a.timestamp;
+      return String(a.project?.title || "").localeCompare(String(b.project?.title || ""), undefined, {
+        sensitivity: "base",
+      });
+    })
+    .slice(0, limit)
+    .map((item) => item.project);
+}
+
 function normalizeTextList(value) {
   if (Array.isArray(value)) {
     return uniqueStrings(
       value.map((item) =>
         typeof item === "object"
-          ? firstString(item?.title, item?.label, item?.text, item?.description)
+          ? firstString(
+              item?.title,
+              item?.label,
+              richTextToPlainText(item?.text),
+              richTextToPlainText(item?.description),
+              richTextToPlainText(item?.content)
+            )
           : item
       )
     );
@@ -405,7 +569,10 @@ function buildObjectives(project, caseStudy) {
     ? caseStudy.objectives
         .map((item) => ({
           title: firstString(item?.title, item?.label, "Goal"),
-          text: firstString(item?.text, item?.description),
+          text: firstString(
+            richTextToPlainText(item?.text),
+            richTextToPlainText(item?.description)
+          ),
           status: /progress/i.test(firstString(item?.status))
             ? "in_progress"
             : /complete|done|live/i.test(firstString(item?.status))
@@ -429,13 +596,19 @@ function buildObjectives(project, caseStudy) {
 
   const painPoints = Array.isArray(caseStudy?.painPoints) ? caseStudy.painPoints : [];
   painPoints.forEach((item) => {
-    const text = firstString(item?.text, item?.description);
+    const text = firstString(
+      richTextToPlainText(item?.text),
+      richTextToPlainText(item?.description)
+    );
     if (text) items.push({ title: firstString(item?.title, "Focus area"), text });
   });
 
   const findings = Array.isArray(caseStudy?.usabilityFindings) ? caseStudy.usabilityFindings : [];
   findings.slice(0, 2).forEach((item) => {
-    const text = firstString(item?.text, item?.description);
+    const text = firstString(
+      richTextToPlainText(item?.text),
+      richTextToPlainText(item?.description)
+    );
     if (text) items.push({ title: firstString(item?.title, "Research insight"), text });
   });
 
@@ -464,9 +637,9 @@ function buildResultCards(project, caseStudy) {
     ? caseStudy.results
         .map((item) => ({
           metric: firstString(item?.metric, item?.value),
-          description: firstString(item?.description, item?.text),
+          description: item?.descriptionContent || item?.description || item?.text,
         }))
-        .filter((item) => item.metric && item.description)
+        .filter((item) => item.metric && richTextToPlainText(item.description))
     : [];
   if (results.length || caseStudy?.contentModel === "caseStudy") return results.slice(0, 4);
 
@@ -503,9 +676,9 @@ function buildProblemItems(caseStudy) {
   return caseStudy.problems
     .map((item, index) => ({
       title: firstString(item?.title, `Problem ${index + 1}`),
-      description: firstString(item?.description),
+      description: item?.descriptionContent || item?.description,
     }))
-    .filter((item) => item.title || item.description);
+    .filter((item) => item.title || richTextToPlainText(item.description));
 }
 
 function MediaSlider({ items, label, onOpen, className = "" }) {
@@ -699,7 +872,10 @@ function ProblemCard({ title, description }) {
   return (
     <article className="projectCaseProblemCard projectCaseSectionCard">
       {title ? <h3 className="projectCaseProblemTitle">{title}</h3> : null}
-      {description ? <p className="projectCaseProblemDescription">{description}</p> : null}
+      <RichTextContent
+        value={description}
+        className="projectCaseProblemDescription projectCaseRichText"
+      />
     </article>
   );
 }
@@ -708,17 +884,165 @@ function ResultCard({ metric, description }) {
   return (
     <article className="projectCaseResultCard">
       <p className="projectCaseResultMetric">{metric}</p>
-      <p className="projectCaseResultDescription">{description}</p>
+      <RichTextContent
+        value={description}
+        className="projectCaseResultDescription projectCaseRichText"
+      />
     </article>
   );
 }
 
+function normalizeContentEntries(value) {
+  if (value == null) return [];
+
+  if (Array.isArray(value)) {
+    const looksLikePortableText = value.some(
+      (item) => item && typeof item === "object" && (item._type || item.children)
+    );
+
+    if (looksLikePortableText) {
+      return richTextToPlainText(value) ? [value] : [];
+    }
+
+    return value.flatMap((item) => normalizeContentEntries(item));
+  }
+
+  if (richTextToPlainText(value)) {
+    return [value];
+  }
+
+  return [];
+}
+
+function RichTextContent({ value, className = "", as = "div" }) {
+  const html = richTextToHtml(value);
+  if (!html) return null;
+
+  const Tag = as;
+  return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+function CaseStudyTable({ columns, rows }) {
+  const normalizedColumns = Array.isArray(columns)
+    ? columns.map((column) => String(column ?? "").trim()).filter(Boolean)
+    : [];
+  const normalizedRows = Array.isArray(rows)
+    ? rows.filter((row) => Array.isArray(row) && row.some((cell) => String(cell ?? "").trim()))
+    : [];
+
+  if (!normalizedColumns.length && !normalizedRows.length) return null;
+
+  return (
+    <div className="projectCaseTableWrap projectCaseSectionCard">
+      <table className="projectCaseTable">
+        {normalizedColumns.length ? (
+          <thead>
+            <tr>
+              {normalizedColumns.map((column) => (
+                <th key={column} scope="col">
+                  {column}
+                </th>
+              ))}
+            </tr>
+          </thead>
+        ) : null}
+        <tbody>
+          {normalizedRows.map((row, rowIndex) => (
+            <tr key={`table-row-${rowIndex}`}>
+              {row.map((cell, cellIndex) => {
+                const value = String(cell ?? "").trim();
+                const CellTag =
+                  !normalizedColumns.length && cellIndex === 0 ? "th" : "td";
+
+                return (
+                  <CellTag
+                    key={`table-cell-${rowIndex}-${cellIndex}`}
+                    {...(CellTag === "th" ? { scope: "row" } : {})}
+                  >
+                    {value}
+                  </CellTag>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function FlexibleCaseStudySection({ section, index, onOpen }) {
+  const title = firstString(section?.heading, section?.navLabel, `Section ${index}`);
+  const label = firstString(section?.navLabel, title);
+  const fallbackLabel = `${title} media`;
+
+  let content = null;
+
+  if (section?.type === "story" && section?.image?.src) {
+    content = (
+      <FeatureMedia
+        media={{ kind: "image", ...section.image }}
+        fallbackLabel={fallbackLabel}
+        onOpen={onOpen}
+      />
+    );
+  } else if (section?.type === "frames") {
+    content = (
+      <MediaGallery
+        items={Array.isArray(section.frames) ? section.frames : []}
+        label={fallbackLabel}
+        onOpen={onOpen}
+      />
+    );
+  } else if (section?.type === "video" && section?.video?.src) {
+    content = (
+      <FeatureMedia
+        media={{
+          kind: "video",
+          src: section.video.src,
+          poster: firstString(section.poster?.src),
+          caption: firstString(section.video.caption, section.heading),
+        }}
+        fallbackLabel={fallbackLabel}
+        onOpen={onOpen}
+      />
+    );
+  } else if (section?.type === "audio" && section?.audio?.src) {
+    content = (
+      <FeatureMedia
+        media={{
+          kind: "audio",
+          src: section.audio.src,
+          caption: firstString(section.audio.caption, section.heading),
+        }}
+        fallbackLabel={fallbackLabel}
+        onOpen={onOpen}
+      />
+    );
+  } else if (section?.type === "table") {
+    content = (
+      <CaseStudyTable
+        columns={section.table?.columns}
+        rows={section.table?.rows}
+      />
+    );
+  }
+
+  return (
+    <CaseSection
+      id={section.renderId}
+      index={index}
+      label={label}
+      title={title}
+      copy={section.content || section.text}
+    >
+      {content}
+    </CaseSection>
+  );
+}
+
 function CaseSection({ id, index, label, title, copy, children }) {
-  const copyLines = Array.isArray(copy)
-    ? uniqueStrings(copy.map((item) => firstString(item)))
-    : firstString(copy)
-      ? [firstString(copy)]
-      : [];
+  const copyItems = normalizeContentEntries(copy);
 
   return (
     <section className="projectCaseSection" id={id}>
@@ -727,13 +1051,13 @@ function CaseSection({ id, index, label, title, copy, children }) {
         {String(index).padStart(2, "0")} / {label}
       </p>
       <h2 className="projectCaseSectionTitle">{title}</h2>
-      {copyLines.map((line, lineIndex) => (
-        <p
-          className={`projectCaseLead ${lineIndex > 0 ? "projectCaseLead--secondary" : ""}`.trim()}
+      {copyItems.map((item, lineIndex) => (
+        <RichTextContent
+          as="div"
+          className={`projectCaseLead projectCaseRichText ${lineIndex > 0 ? "projectCaseLead--secondary" : ""}`.trim()}
           key={`${id}-copy-${lineIndex}`}
-        >
-          {line}
-        </p>
+          value={item}
+        />
       ))}
       {children}
     </section>
@@ -799,17 +1123,28 @@ function Lightbox({ items, index, onClose, onNext, onPrev }) {
 }
 
 export default function CaseStudyDetail({ slug }) {
+  const [allProjects, setAllProjects] = useState([]);
   const [project, setProject] = useState(null);
   const [isProjectLoading, setIsProjectLoading] = useState(true);
   const [activeSection, setActiveSection] = useState("overview");
   const [lightboxItems, setLightboxItems] = useState([]);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [viewportWidth, setViewportWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
   const scrollRootRef = useRef(null);
   const navButtonRefs = useRef({});
   const navTouchStateRef = useRef({ id: "", timestamp: 0, startX: 0, startY: 0, moved: false });
   const { socialLinks, whatsappNumber: siteWhatsAppNumber } = useSiteSettings();
 
   usePullToRefresh(scrollRootRef);
+
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -821,6 +1156,7 @@ export default function CaseStudyDetail({ slug }) {
     loadAllProjects().then((loadedProjects) => {
       if (!isMounted) return;
       const safeProjects = Array.isArray(loadedProjects) ? loadedProjects : [];
+      setAllProjects(safeProjects);
       const normalizedSlug = String(slug || "").trim().toLowerCase();
       const loadedProject =
         safeProjects.find((item) => item.slug === normalizedSlug || item.id === normalizedSlug) ||
@@ -1042,10 +1378,29 @@ export default function CaseStudyDetail({ slug }) {
   const sections = Array.isArray(caseStudy.sections) ? caseStudy.sections.filter(Boolean) : [];
   const infoSection =
     sections.find(
+      (section) => section?.isAutoSummary === true
+    ) ||
+    sections.find(
       (section) =>
         section.type === "table" &&
         /(project details|project-details|summary|details)/i.test(`${section.id || ""} ${section.heading || ""}`)
     ) || null;
+  const flexibleSections = sections
+    .filter((section) => section && section !== infoSection)
+    .map((section, index) => buildFlexibleSectionMeta(section, index));
+  const navSections = [
+    ...NAV_SECTIONS,
+    ...flexibleSections.map((section) => ({
+      id: section.renderId,
+      label: section.navLabel,
+      Icon: section.Icon,
+    })),
+  ];
+  const relatedProjects = buildRelatedProjects(
+    project,
+    allProjects,
+    viewportWidth <= RELATED_CASE_STUDIES_MOBILE_BREAKPOINT ? 2 : 3
+  );
   const infoTable = buildInfoTable(infoSection);
 
   const roleItems = uniqueStrings([
@@ -1242,10 +1597,14 @@ export default function CaseStudyDetail({ slug }) {
   ];
 
   const overviewCopy = isModernCaseStudy
-    ? [firstString(caseStudy.overviewText), firstString(caseStudy.overviewDescription)].filter(Boolean)
+    ? [
+        caseStudy.overviewTextContent || caseStudy.overviewText,
+        caseStudy.overviewDescriptionContent || caseStudy.overviewDescription,
+        caseStudy.overviewBlocks,
+      ].filter((item) => Boolean(richTextToPlainText(item)))
     : firstString(caseStudy.overviewIntro, project.overview, caseStudy.description, project.description, project.summary);
   const researchCopy = isModernCaseStudy
-    ? firstString(caseStudy.researchText)
+    ? caseStudy.researchTextContent || caseStudy.researchText
     : firstString(
         caseStudy.researchIntro,
         caseStudy.usabilityIntro,
@@ -1260,7 +1619,7 @@ export default function CaseStudyDetail({ slug }) {
         "The goal was to reduce confusion, create a stronger hierarchy, and give users a clearer path through the product."
       );
   const wireCopy = isModernCaseStudy
-    ? firstString(caseStudy.wireframeText)
+    ? caseStudy.wireframeTextContent || caseStudy.wireframeText
     : firstString(
         caseStudy.wireframesIntro,
         caseStudy.appmapDesc,
@@ -1274,7 +1633,7 @@ export default function CaseStudyDetail({ slug }) {
         "The wireframe direction created a stronger foundation for layout, interaction states, and scalable implementation."
       );
   const prototypeCopy = isModernCaseStudy
-    ? firstString(caseStudy.prototypeText)
+    ? caseStudy.prototypeTextContent || caseStudy.prototypeText
     : firstString(
         caseStudy.protoDesc,
         caseStudy.designIntro,
@@ -1370,9 +1729,10 @@ export default function CaseStudyDetail({ slug }) {
                     ) : (
                       <p className="projectCaseBrandName">{brandName}</p>
                     )}
-                    <p className="projectCaseDescription">
-                      {firstString(caseStudy.description, project.description, project.summary)}
-                    </p>
+                    <RichTextContent
+                      value={caseStudy.descriptionContent || caseStudy.description || project.description || project.summary}
+                      className="projectCaseDescription projectCaseRichText"
+                    />
                   </div>
 
                   <div className="projectCaseActions">
@@ -1448,9 +1808,9 @@ export default function CaseStudyDetail({ slug }) {
                 <div className="projectCaseBody">
                   <aside className="projectCaseNav" aria-label="Case study sections">
                     <ul className="projectCaseNavList">
-                      {NAV_SECTIONS.map((section, index) => {
+                      {navSections.map((section, index) => {
                         const isActive = activeSection === section.id;
-                        const completed = NAV_SECTIONS.findIndex((item) => item.id === activeSection) > index;
+                        const completed = navSections.findIndex((item) => item.id === activeSection) > index;
                         return (
                           <li className="projectCaseNavItem" key={section.id}>
                             <button
@@ -1470,7 +1830,7 @@ export default function CaseStudyDetail({ slug }) {
                               </span>
                               <span>{section.label}</span>
                             </button>
-                            {index < NAV_SECTIONS.length - 1 ? (
+                            {index < navSections.length - 1 ? (
                               <span className={`projectCaseNavConnector ${completed ? "is-complete" : ""}`.trim()} aria-hidden="true" />
                             ) : null}
                           </li>
@@ -1561,8 +1921,14 @@ export default function CaseStudyDetail({ slug }) {
                             />
                             <div className="projectCaseSplitCopy">
                               <h3 className="projectCaseSplitTitle">Structure before polish</h3>
-                              <p className="projectCaseSplitText">{wireCopy}</p>
-                              <p className="projectCaseSplitText">{wireCopyTwo}</p>
+                              <RichTextContent
+                                value={wireCopy}
+                                className="projectCaseSplitText projectCaseRichText"
+                              />
+                              <RichTextContent
+                                value={wireCopyTwo}
+                                className="projectCaseSplitText projectCaseRichText"
+                              />
                             </div>
                           </div>
                           <MediaCarousel slides={wireSlides} label="Wireframe slides" onOpen={openLightbox} />
@@ -1616,6 +1982,44 @@ export default function CaseStudyDetail({ slug }) {
                         <MediaCarousel slides={finalSlides} label="Final project screens" onOpen={openLightbox} />
                       )}
                     </CaseSection>
+
+                    {flexibleSections.map((section, sectionIndex) => (
+                      <FlexibleCaseStudySection
+                        key={section.renderId}
+                        section={section}
+                        index={NAV_SECTIONS.length + sectionIndex + 1}
+                        onOpen={openLightbox}
+                      />
+                    ))}
+
+                    {relatedProjects.length ? (
+                      <section className="projectCaseRelated" aria-labelledby="related-case-studies-title">
+                        <div className="workPage blogPage">
+                          <section className="workGridSection">
+                            <div className="workGridHead">
+                              <h2 className="workGridTitle" id="related-case-studies-title">
+                                Related Case Studies
+                              </h2>
+                            </div>
+
+                            <div className="workProjectsGrid blogProjectsGrid">
+                              {relatedProjects.map((relatedProject, relatedIndex) => (
+                                <div
+                                  className="workGridCard"
+                                  key={relatedProject.id || relatedProject.slug || relatedIndex}
+                                >
+                                  <BlogCard
+                                    project={relatedProject}
+                                    priority={relatedIndex === 0}
+                                    fullCardLink
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </section>
+                        </div>
+                      </section>
+                    ) : null}
                   </div>
                 </div>
 

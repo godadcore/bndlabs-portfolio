@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
 const stringListField = (name: string, title: string) =>
   defineField({
@@ -7,6 +7,89 @@ const stringListField = (name: string, title: string) =>
     type: 'array',
     of: [{type: 'string'}],
   })
+
+const richTextBlocks = [
+  defineArrayMember({
+    type: 'block',
+    styles: [
+      {title: 'Normal', value: 'normal'},
+      {title: 'Heading 1', value: 'h1'},
+      {title: 'Heading 2', value: 'h2'},
+      {title: 'Heading 3', value: 'h3'},
+      {title: 'Heading 4', value: 'h4'},
+      {title: 'Quote', value: 'blockquote'},
+    ],
+    lists: [
+      {title: 'Bullet', value: 'bullet'},
+      {title: 'Numbered', value: 'number'},
+    ],
+    marks: {
+      decorators: [
+        {title: 'Bold', value: 'strong'},
+        {title: 'Italic', value: 'em'},
+        {title: 'Underline', value: 'underline'},
+        {title: 'Code', value: 'code'},
+      ],
+      annotations: [
+        defineArrayMember({
+          name: 'link',
+          title: 'Link',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'href',
+              title: 'URL or path',
+              type: 'string',
+              description: 'Use a full URL like https://example.com or an internal path like /work.',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'href',
+            },
+            prepare({title}) {
+              return {
+                title: title || 'Link',
+              }
+            },
+          },
+        }),
+      ],
+    },
+  }),
+]
+
+const richTextField = (
+  name: string,
+  title: string,
+  description?: string,
+) =>
+  defineField({
+    name,
+    title,
+    type: 'array',
+    ...(description ? {description} : {}),
+    of: richTextBlocks,
+  })
+
+const sectionIconField = defineField({
+  name: 'icon',
+  title: 'Icon',
+  type: 'string',
+  description: 'Optional icon hint used for sidebar section navigation on the frontend.',
+  options: {
+    list: [
+      {title: 'Overview', value: 'overview'},
+      {title: 'Project Scope', value: 'project-scope'},
+      {title: 'Research', value: 'research'},
+      {title: 'Problem', value: 'problem'},
+      {title: 'Wireframe', value: 'wireframe'},
+      {title: 'Prototype', value: 'prototype'},
+      {title: 'Results', value: 'results'},
+    ],
+  },
+})
 
 const mediaArrayField = (name: string, title: string) =>
   defineField({
@@ -89,27 +172,26 @@ const tableRowsField = defineField({
 
 const storySectionType = defineField({
   name: 'storySection',
-  title: 'Image Section',
+  title: 'Flexible Content Section',
   type: 'object',
   fields: [
+    sectionIconField,
     defineField({
       name: 'title',
       title: 'Heading',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'body',
-      title: 'Short Paragraph',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField(
+      'body',
+      'Content',
+      'Optional rich text. Leave the image empty for a text-only section, or leave content light for a full-width image section.',
+    ),
     defineField({
       name: 'image',
       title: 'Image',
       type: 'image',
       options: {hotspot: true},
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'alt',
@@ -125,7 +207,6 @@ const storySectionType = defineField({
   preview: {
     select: {
       title: 'title',
-      subtitle: 'body',
       media: 'image',
     },
   },
@@ -136,24 +217,19 @@ const frameGroupSectionType = defineField({
   title: 'Grouped Frames',
   type: 'object',
   fields: [
+    sectionIconField,
     defineField({
       name: 'title',
       title: 'Heading',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'body',
-      title: 'Short Paragraph',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('body', 'Content'),
     mediaArrayField('frames', 'Frames'),
   ],
   preview: {
     select: {
       title: 'title',
-      subtitle: 'body',
       media: 'frames.0.image',
     },
   },
@@ -164,18 +240,14 @@ const videoSectionType = defineField({
   title: 'Video Section',
   type: 'object',
   fields: [
+    sectionIconField,
     defineField({
       name: 'title',
       title: 'Heading',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'body',
-      title: 'Short Paragraph',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('body', 'Content'),
     defineField({
       name: 'video',
       title: 'Video File',
@@ -218,18 +290,14 @@ const audioSectionType = defineField({
   title: 'Voice Note Section',
   type: 'object',
   fields: [
+    sectionIconField,
     defineField({
       name: 'title',
       title: 'Heading',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'body',
-      title: 'Short Paragraph',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('body', 'Content'),
     defineField({
       name: 'audio',
       title: 'Audio File',
@@ -264,18 +332,14 @@ const tableSectionType = defineField({
   title: 'Table Section',
   type: 'object',
   fields: [
+    sectionIconField,
     defineField({
       name: 'title',
       title: 'Heading',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'body',
-      title: 'Short Paragraph',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('body', 'Content'),
     stringListField('columns', 'Column Headers'),
     tableRowsField,
   ],
@@ -321,8 +385,8 @@ export const caseStudyType = defineType({
     defineField({
       name: 'description',
       title: 'Short Intro',
-      type: 'text',
-      rows: 4,
+      type: 'array',
+      of: richTextBlocks,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -382,18 +446,8 @@ export const caseStudyType = defineType({
       type: 'image',
       options: {hotspot: true},
     }),
-    defineField({
-      name: 'overviewText',
-      title: 'Overview Text',
-      type: 'text',
-      rows: 4,
-    }),
-    defineField({
-      name: 'overviewDescription',
-      title: 'Overview Description',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('overviewText', 'Overview Text'),
+    richTextField('overviewDescription', 'Overview Description'),
     mediaArrayField(
       'images',
       'Project Images',
@@ -416,7 +470,7 @@ export const caseStudyType = defineType({
       name: 'overview',
       title: 'Overview',
       type: 'array',
-      of: [{type: 'block'}],
+      of: richTextBlocks,
     }),
     defineField({
       name: 'stats',
@@ -475,8 +529,8 @@ export const caseStudyType = defineType({
             defineField({
               name: 'description',
               title: 'Description',
-              type: 'text',
-              rows: 3,
+              type: 'array',
+              of: richTextBlocks,
             }),
           ],
           preview: {
@@ -494,26 +548,11 @@ export const caseStudyType = defineType({
         }),
       ],
     }),
-    defineField({
-      name: 'researchText',
-      title: 'Research Text',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('researchText', 'Research Text'),
     imageArrayField('researchImages', 'Research Images'),
-    defineField({
-      name: 'wireframeText',
-      title: 'Wireframe Text',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('wireframeText', 'Wireframe Text'),
     imageArrayField('wireframeImages', 'Wireframe Images'),
-    defineField({
-      name: 'prototypeText',
-      title: 'Prototype Text',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('prototypeText', 'Prototype Text'),
     imageArrayField('prototypeImages', 'Prototype Images'),
     defineField({
       name: 'results',
@@ -533,8 +572,8 @@ export const caseStudyType = defineType({
             defineField({
               name: 'description',
               title: 'Description',
-              type: 'text',
-              rows: 3,
+              type: 'array',
+              of: richTextBlocks,
             }),
           ],
           preview: {

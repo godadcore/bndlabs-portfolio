@@ -1,6 +1,10 @@
 // Single source of truth for Projects.
 // Decap CMS writes JSON files into src/content/projects/.
 
+import {
+  normalizeRichTextValue,
+  richTextToPlainText,
+} from "./richText.js";
 import { sanitizeExternalUrl, sanitizeUrl } from "./urlSecurity.js";
 
 /**
@@ -67,6 +71,23 @@ function firstString(...values) {
   return "";
 }
 
+function firstPlainText(...values) {
+  for (const value of values) {
+    const normalized = richTextToPlainText(value);
+    if (normalized) return normalized;
+  }
+  return "";
+}
+
+function firstRichTextValue(...values) {
+  for (const value of values) {
+    const normalized = normalizeRichTextValue(value);
+    if (Array.isArray(normalized) && normalized.length) return normalized;
+    if (typeof normalized === "string" && normalized) return normalized;
+  }
+  return "";
+}
+
 function uniqueStrings(values) {
   return values
     .map((item) => String(item ?? "").trim())
@@ -118,7 +139,7 @@ function normalizeTextCards(value, fallbackItems) {
   const items = source
     .map((item, index) => ({
       title: firstString(item?.title, item?.label, fallbackItems[index]?.title, `Item ${index + 1}`),
-      text: firstString(
+      text: firstPlainText(
         item?.text,
         item?.description,
         item?.body,
@@ -360,7 +381,8 @@ function normalizeCaseStudyResults(value) {
   return value
     .map((item) => ({
       metric: firstString(item?.metric, item?.value),
-      description: firstString(item?.description, item?.text),
+      description: firstPlainText(item?.description, item?.text),
+      descriptionContent: firstRichTextValue(item?.description, item?.text),
     }))
     .filter((item) => item.metric && item.description);
 }
@@ -371,7 +393,8 @@ function normalizeCaseStudyProblems(value) {
   return value
     .map((item) => ({
       title: firstString(item?.title, item?.label),
-      description: firstString(item?.description, item?.text),
+      description: firstPlainText(item?.description, item?.text),
+      descriptionContent: firstRichTextValue(item?.description, item?.text),
     }))
     .filter((item) => item.title || item.description);
 }
@@ -420,7 +443,7 @@ function createCaseStudySectionId(value, fallback) {
   return safeLowerSlug(value) || fallback;
 }
 
-function createStorySection({ id, heading, text, image }) {
+function createStorySection({ id, heading, text, content, image }) {
   if (!image?.src && !heading && !text) return null;
 
   return {
@@ -428,11 +451,12 @@ function createStorySection({ id, heading, text, image }) {
     type: "story",
     heading,
     text,
+    content,
     image: image?.src ? image : null,
   };
 }
 
-function createFramesSection({ id, heading, text, frames }) {
+function createFramesSection({ id, heading, text, content, frames }) {
   const normalizedFrames = Array.isArray(frames) ? frames.filter((item) => item?.src) : [];
   if (!normalizedFrames.length) return null;
 
@@ -441,11 +465,12 @@ function createFramesSection({ id, heading, text, frames }) {
     type: "frames",
     heading,
     text,
+    content,
     frames: normalizedFrames,
   };
 }
 
-function createVideoSection({ id, heading, text, video, poster }) {
+function createVideoSection({ id, heading, text, content, video, poster }) {
   if (!video?.src) return null;
 
   return {
@@ -453,12 +478,13 @@ function createVideoSection({ id, heading, text, video, poster }) {
     type: "video",
     heading,
     text,
+    content,
     video,
     poster: poster?.src ? poster : null,
   };
 }
 
-function createAudioSection({ id, heading, text, audio }) {
+function createAudioSection({ id, heading, text, content, audio }) {
   if (!audio?.src) return null;
 
   return {
@@ -466,11 +492,12 @@ function createAudioSection({ id, heading, text, audio }) {
     type: "audio",
     heading,
     text,
+    content,
     audio,
   };
 }
 
-function createTableSection({ id, heading, text, columns, rows }) {
+function createTableSection({ id, heading, text, content, columns, rows }) {
   const normalizedColumns = toStringArray(columns);
   const normalizedRows = normalizeTableRows(rows);
 
@@ -481,6 +508,7 @@ function createTableSection({ id, heading, text, columns, rows }) {
     type: "table",
     heading,
     text,
+    content,
     table: {
       columns: normalizedColumns,
       rows: normalizedRows,
@@ -492,7 +520,9 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
   if (!section || typeof section !== "object") return null;
 
   const heading = firstString(section?.heading, section?.title, `Section ${index + 1}`);
-  const text = firstString(section?.body, section?.description, section?.text);
+  const content = firstRichTextValue(section?.body, section?.description, section?.text);
+  const text = richTextToPlainText(content);
+  const icon = firstString(section?.icon);
   const id = createCaseStudySectionId(
     section?._key || heading || `${projectTitle}-section-${index + 1}`,
     `section-${index + 1}`
@@ -503,21 +533,30 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
     Array.isArray(section?.columns) ||
     Array.isArray(section?.rows)
   ) {
-    return createTableSection({
+    const tableSection = createTableSection({
       id,
       heading,
       text,
+      content,
       columns: section?.columns || section?.headers,
       rows: section?.rows,
     });
+
+    return tableSection
+      ? {
+          ...tableSection,
+          icon,
+        }
+      : null;
   }
 
   if (section?._type === "audioSection" || section?.audio || section?.audioUrl) {
     const audio = normalizeSanityFile(section?.audio || section?.audioUrl);
-    return createAudioSection({
+    const audioSection = createAudioSection({
       id,
       heading,
       text,
+      content,
       audio: audio
         ? {
             ...audio,
@@ -525,14 +564,22 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
           }
         : null,
     });
+
+    return audioSection
+      ? {
+          ...audioSection,
+          icon,
+        }
+      : null;
   }
 
   if (section?._type === "videoSection" || section?.video || section?.videoUrl) {
     const video = normalizeSanityFile(section?.video || section?.videoUrl);
-    return createVideoSection({
+    const videoSection = createVideoSection({
       id,
       heading,
       text,
+      content,
       video: video
         ? {
             ...video,
@@ -541,6 +588,13 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
         : null,
       poster: normalizeSanityImage(section?.poster),
     });
+
+    return videoSection
+      ? {
+          ...videoSection,
+          icon,
+        }
+      : null;
   }
 
   const frames = normalizeSanityImageArray(
@@ -550,25 +604,48 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
   );
 
   if (section?._type === "frameGroupSection" || frames.length > 1) {
-    return createFramesSection({
+    const frameSection = createFramesSection({
       id,
       heading,
       text,
+      content,
       frames,
     });
+
+    return frameSection
+      ? {
+          ...frameSection,
+          icon,
+        }
+      : null;
   }
 
   const image = normalizeSanityImage(
     section?.image || (frames.length === 1 ? frames[0] : null),
     `${heading || projectTitle} image`
   );
+  const storyImage = image
+    ? {
+        ...image,
+        alt: firstString(section?.alt, image.alt),
+        caption: firstString(section?.caption, image.caption),
+      }
+    : null;
 
-  return createStorySection({
+  const storySection = createStorySection({
     id,
     heading,
     text,
-    image,
+    content,
+    image: storyImage,
   });
+
+  return storySection
+    ? {
+        ...storySection,
+        icon,
+      }
+    : null;
 }
 
 function buildCaseStudyInfoRows({
@@ -594,13 +671,20 @@ function buildCaseStudySummaryTableSection(details) {
   const rows = buildCaseStudyInfoRows(details);
   if (!rows.length) return null;
 
-  return createTableSection({
+  const section = createTableSection({
     id: "project-details",
     heading: "Project details",
     text: "A quick summary of the role, tools, duration, and platform behind the work.",
     columns: ["Item", "Details"],
     rows,
   });
+
+  return section
+    ? {
+        ...section,
+        isAutoSummary: true,
+      }
+    : null;
 }
 
 function buildModernCaseStudySections({
@@ -729,9 +813,12 @@ function normalizeModernCaseStudy(raw) {
   const id = safeLowerSlug(raw?._id || raw?.id || slug || raw?.title);
   const title = firstString(raw?.title, "Untitled Case Study");
   const overviewBlocks = normalizePortableText(raw?.overview);
-  const overviewText = firstString(raw?.overviewText);
-  const overviewDescription = firstString(raw?.overviewDescription);
-  const description = firstString(raw?.description);
+  const descriptionContent = firstRichTextValue(raw?.description);
+  const description = richTextToPlainText(descriptionContent);
+  const overviewTextContent = firstRichTextValue(raw?.overviewText);
+  const overviewText = richTextToPlainText(overviewTextContent);
+  const overviewDescriptionContent = firstRichTextValue(raw?.overviewDescription);
+  const overviewDescription = richTextToPlainText(overviewDescriptionContent);
   const brandLogo = normalizeSanityImage(raw?.brandLogo, `${title} logo`);
   const heroImage = normalizeSanityImage(raw?.heroImage, `${title} hero image`);
   const overviewImage = normalizeSanityImage(raw?.overviewImage, `${title} overview image`);
@@ -739,9 +826,12 @@ function normalizeModernCaseStudy(raw) {
   const wireframeImages = normalizeSanityImageArray(raw?.wireframeImages, title, "Wireframe image");
   const prototypeImages = normalizeSanityImageArray(raw?.prototypeImages, title, "Prototype image");
   const finalImages = normalizeSanityImageArray(raw?.finalImages, title, "Final image");
-  const researchText = firstString(raw?.researchText);
-  const wireframeText = firstString(raw?.wireframeText);
-  const prototypeText = firstString(raw?.prototypeText);
+  const researchTextContent = firstRichTextValue(raw?.researchText);
+  const researchText = richTextToPlainText(researchTextContent);
+  const wireframeTextContent = firstRichTextValue(raw?.wireframeText);
+  const wireframeText = richTextToPlainText(wireframeTextContent);
+  const prototypeTextContent = firstRichTextValue(raw?.prototypeText);
+  const prototypeText = richTextToPlainText(prototypeTextContent);
   const stats = normalizeCaseStudyStats(raw?.stats);
   const problems = normalizeCaseStudyProblems(raw?.problems);
   const results = normalizeCaseStudyResults(raw?.results);
@@ -830,12 +920,15 @@ function normalizeModernCaseStudy(raw) {
       brandLogo: brandLogo?.src || "",
       heroImage: heroImage?.src || fallbackImage,
       description,
+      descriptionContent,
       category,
       publishedDate,
       status,
       overviewImage: overviewImage?.src ? overviewImage : null,
       overviewText,
+      overviewTextContent,
       overviewDescription,
+      overviewDescriptionContent,
       sections: normalizedSections,
       overviewBlocks,
       stats,
@@ -849,10 +942,13 @@ function normalizeModernCaseStudy(raw) {
       industry,
       nextSteps,
       researchText,
+      researchTextContent,
       researchImages,
       wireframeText,
+      wireframeTextContent,
       wireframeImages,
       prototypeText,
+      prototypeTextContent,
       prototypeImages,
       results,
       finalImages,
