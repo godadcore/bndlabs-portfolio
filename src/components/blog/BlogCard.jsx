@@ -1,6 +1,30 @@
 import { Link, useNavigate } from "react-router-dom";
 import { formatBlogDate } from "../../lib/blogData";
+import { richTextToInlineHtml } from "../../lib/richText.js";
 import "./blog-card.css";
+
+function InlineRichText({ value, fallback = "", className = "", as: Tag = "span" }) {
+  const html = richTextToInlineHtml(value || fallback);
+  if (!html) return null;
+
+  return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+function pickRichTextValue(...entries) {
+  for (const entry of entries) {
+    const text = String(entry?.text || "").trim();
+    const content = entry?.content || text;
+
+    if (text) {
+      return {
+        text,
+        content,
+      };
+    }
+  }
+
+  return { text: "", content: "" };
+}
 
 export default function BlogCard({
   post,
@@ -36,7 +60,16 @@ export default function BlogCard({
     href ||
     (isProjectCard ? (slug ? `/work/${slug}` : "/work") : slug ? `/blog/${slug}` : "/blog");
   const cardImage = image || thumbnail || cover || "";
-  const cardText = description || excerpt || summary || subtitle || "";
+  const titleValue = pickRichTextValue(
+    { text: title, content: content.titleContent },
+    { text: title, content: content.title }
+  );
+  const cardTextValue = pickRichTextValue(
+    { text: description, content: content.descriptionContent },
+    { text: excerpt, content: content.excerptContent },
+    { text: summary, content: content.summaryContent },
+    { text: subtitle, content: content.subtitleContent }
+  );
   const publishedDate = isProjectCard ? "" : formatBlogDate(date);
   const ctaLabel = linkLabel || (isProjectCard ? "View Case Study" : "Read More");
   const imageAlt = isProjectCard
@@ -96,9 +129,15 @@ export default function BlogCard({
         <div className="workCard__text">
           <div className="workCard__meta">
             {publishedDate ? <p className="blogCard__date">{publishedDate}</p> : null}
-            <h3 className="workCard__title">{title || "Untitled"}</h3>
+            <h3 className="workCard__title">
+              <InlineRichText value={titleValue.content} fallback={titleValue.text || "Untitled"} />
+            </h3>
           </div>
-          {cardText ? <p className="workCard__task">{cardText}</p> : null}
+          {cardTextValue.text ? (
+            <p className="workCard__task">
+              <InlineRichText value={cardTextValue.content} fallback={cardTextValue.text} />
+            </p>
+          ) : null}
           <Link
             className="blogCard__button"
             aria-label={cardLabel}

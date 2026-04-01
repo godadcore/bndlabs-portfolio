@@ -1,4 +1,11 @@
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
+import {
+  portableTextToPlainText,
+  richInlineField,
+  richInlineListField,
+  richTextBlocks,
+  richTextField,
+} from './richTextFields'
 
 const stringListField = (name: string, title: string) =>
   defineField({
@@ -6,71 +13,6 @@ const stringListField = (name: string, title: string) =>
     title,
     type: 'array',
     of: [{type: 'string'}],
-  })
-
-const richTextBlocks = [
-  defineArrayMember({
-    type: 'block',
-    styles: [
-      {title: 'Normal', value: 'normal'},
-      {title: 'Heading 1', value: 'h1'},
-      {title: 'Heading 2', value: 'h2'},
-      {title: 'Heading 3', value: 'h3'},
-      {title: 'Heading 4', value: 'h4'},
-      {title: 'Quote', value: 'blockquote'},
-    ],
-    lists: [
-      {title: 'Bullet', value: 'bullet'},
-      {title: 'Numbered', value: 'number'},
-    ],
-    marks: {
-      decorators: [
-        {title: 'Bold', value: 'strong'},
-        {title: 'Italic', value: 'em'},
-        {title: 'Underline', value: 'underline'},
-        {title: 'Code', value: 'code'},
-      ],
-      annotations: [
-        defineArrayMember({
-          name: 'link',
-          title: 'Link',
-          type: 'object',
-          fields: [
-            defineField({
-              name: 'href',
-              title: 'URL or path',
-              type: 'string',
-              description: 'Use a full URL like https://example.com or an internal path like /work.',
-              validation: (Rule) => Rule.required(),
-            }),
-          ],
-          preview: {
-            select: {
-              title: 'href',
-            },
-            prepare({title}) {
-              return {
-                title: title || 'Link',
-              }
-            },
-          },
-        }),
-      ],
-    },
-  }),
-]
-
-const richTextField = (
-  name: string,
-  title: string,
-  description?: string,
-) =>
-  defineField({
-    name,
-    title,
-    type: 'array',
-    ...(description ? {description} : {}),
-    of: richTextBlocks,
   })
 
 const sectionIconField = defineField({
@@ -117,7 +59,8 @@ const mediaArrayField = (name: string, title: string) =>
           defineField({
             name: 'caption',
             title: 'Caption',
-            type: 'string',
+            type: 'array',
+            of: richTextBlocks,
           }),
         ],
         preview: {
@@ -125,6 +68,13 @@ const mediaArrayField = (name: string, title: string) =>
             title: 'caption',
             subtitle: 'alt',
             media: 'image',
+          },
+          prepare({title, subtitle, media}) {
+            return {
+              title: portableTextToPlainText(title) || subtitle || 'Media item',
+              subtitle: subtitle || '',
+              media,
+            }
           },
         },
       }),
@@ -155,14 +105,14 @@ const tableRowsField = defineField({
       name: 'tableRow',
       title: 'Row',
       type: 'object',
-      fields: [stringListField('cells', 'Cell Values')],
+      fields: [richInlineListField('cells', 'Cell Values', 'cell', 'Cell')],
       preview: {
         select: {
-          title: 'cells.0',
+          title: 'cells',
         },
         prepare({title}) {
           return {
-            title: title || 'Table row',
+            title: portableTextToPlainText(title) || 'Table row',
           }
         },
       },
@@ -176,12 +126,7 @@ const storySectionType = defineField({
   type: 'object',
   fields: [
     sectionIconField,
-    defineField({
-      name: 'title',
-      title: 'Heading',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
+    richInlineField('title', 'Heading'),
     richTextField(
       'body',
       'Content',
@@ -198,16 +143,18 @@ const storySectionType = defineField({
       title: 'Alt Text',
       type: 'string',
     }),
-    defineField({
-      name: 'caption',
-      title: 'Caption',
-      type: 'string',
-    }),
+    richInlineField('caption', 'Caption'),
   ],
   preview: {
     select: {
       title: 'title',
       media: 'image',
+    },
+    prepare({title, media}) {
+      return {
+        title: portableTextToPlainText(title) || 'Flexible content section',
+        media,
+      }
     },
   },
 })
@@ -218,12 +165,7 @@ const frameGroupSectionType = defineField({
   type: 'object',
   fields: [
     sectionIconField,
-    defineField({
-      name: 'title',
-      title: 'Heading',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
+    richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     mediaArrayField('frames', 'Frames'),
   ],
@@ -231,6 +173,12 @@ const frameGroupSectionType = defineField({
     select: {
       title: 'title',
       media: 'frames.0.image',
+    },
+    prepare({title, media}) {
+      return {
+        title: portableTextToPlainText(title) || 'Grouped frames',
+        media,
+      }
     },
   },
 })
@@ -241,12 +189,7 @@ const videoSectionType = defineField({
   type: 'object',
   fields: [
     sectionIconField,
-    defineField({
-      name: 'title',
-      title: 'Heading',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
+    richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     defineField({
       name: 'video',
@@ -263,11 +206,7 @@ const videoSectionType = defineField({
       type: 'image',
       options: {hotspot: true},
     }),
-    defineField({
-      name: 'caption',
-      title: 'Caption',
-      type: 'string',
-    }),
+    richInlineField('caption', 'Caption'),
   ],
   preview: {
     select: {
@@ -277,8 +216,8 @@ const videoSectionType = defineField({
     },
     prepare({title, subtitle, media}) {
       return {
-        title,
-        subtitle: subtitle || 'Video section',
+        title: portableTextToPlainText(title) || 'Video section',
+        subtitle: portableTextToPlainText(subtitle) || 'Video section',
         media,
       }
     },
@@ -291,12 +230,7 @@ const audioSectionType = defineField({
   type: 'object',
   fields: [
     sectionIconField,
-    defineField({
-      name: 'title',
-      title: 'Heading',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
+    richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     defineField({
       name: 'audio',
@@ -307,11 +241,7 @@ const audioSectionType = defineField({
       },
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'caption',
-      title: 'Caption',
-      type: 'string',
-    }),
+    richInlineField('caption', 'Caption'),
   ],
   preview: {
     select: {
@@ -320,8 +250,8 @@ const audioSectionType = defineField({
     },
     prepare({title, subtitle}) {
       return {
-        title,
-        subtitle: subtitle || 'Voice note section',
+        title: portableTextToPlainText(title) || 'Voice note section',
+        subtitle: portableTextToPlainText(subtitle) || 'Voice note section',
       }
     },
   },
@@ -333,25 +263,22 @@ const tableSectionType = defineField({
   type: 'object',
   fields: [
     sectionIconField,
-    defineField({
-      name: 'title',
-      title: 'Heading',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
+    richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
-    stringListField('columns', 'Column Headers'),
+    richInlineListField('columns', 'Column Headers', 'column', 'Column'),
     tableRowsField,
   ],
   preview: {
     select: {
       title: 'title',
-      subtitle: 'columns.0',
+      subtitle: 'columns',
     },
     prepare({title, subtitle}) {
       return {
-        title,
-        subtitle: subtitle ? `Starts with ${subtitle}` : 'Table section',
+        title: portableTextToPlainText(title) || 'Table section',
+        subtitle: portableTextToPlainText(subtitle)
+          ? `Starts with ${portableTextToPlainText(subtitle)}`
+          : 'Table section',
       }
     },
   },
@@ -365,14 +292,17 @@ export const caseStudyType = defineType({
     defineField({
       name: 'title',
       title: 'Project Title',
-      type: 'string',
+      type: 'array',
+      of: richTextBlocks,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {source: 'title'},
+      options: {
+        source: (doc) => portableTextToPlainText(doc?.title),
+      },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -389,11 +319,7 @@ export const caseStudyType = defineType({
       of: richTextBlocks,
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'string',
-    }),
+    richInlineField('category', 'Category'),
     defineField({
       name: 'publishedDate',
       title: 'Published Date',
@@ -487,11 +413,7 @@ export const caseStudyType = defineType({
               title: 'Value',
               type: 'number',
             }),
-            defineField({
-              name: 'label',
-              title: 'Label',
-              type: 'string',
-            }),
+            richInlineField('label', 'Label'),
           ],
           preview: {
             select: {
@@ -500,7 +422,7 @@ export const caseStudyType = defineType({
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Stat',
+                title: portableTextToPlainText(title) || 'Stat',
                 subtitle: subtitle != null ? String(subtitle) : '',
               }
             },
@@ -508,9 +430,9 @@ export const caseStudyType = defineType({
         }),
       ],
     }),
-    stringListField('role', 'Role'),
-    stringListField('tools', 'Tools'),
-    stringListField('timeline', 'Timeline'),
+    richInlineListField('role', 'Role', 'roleItem', 'Role Item'),
+    richInlineListField('tools', 'Tools', 'toolItem', 'Tool Item'),
+    richInlineListField('timeline', 'Timeline', 'timelineItem', 'Timeline Item'),
     defineField({
       name: 'problems',
       title: 'Problems',
@@ -521,11 +443,7 @@ export const caseStudyType = defineType({
           title: 'Problem',
           type: 'object',
           fields: [
-            defineField({
-              name: 'title',
-              title: 'Title',
-              type: 'string',
-            }),
+            richInlineField('title', 'Title'),
             defineField({
               name: 'description',
               title: 'Description',
@@ -540,8 +458,8 @@ export const caseStudyType = defineType({
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Problem',
-                subtitle: subtitle || '',
+                title: portableTextToPlainText(title) || 'Problem',
+                subtitle: portableTextToPlainText(subtitle) || '',
               }
             },
           },
@@ -564,11 +482,7 @@ export const caseStudyType = defineType({
           title: 'Result',
           type: 'object',
           fields: [
-            defineField({
-              name: 'metric',
-              title: 'Metric',
-              type: 'string',
-            }),
+            richInlineField('metric', 'Metric'),
             defineField({
               name: 'description',
               title: 'Description',
@@ -581,24 +495,22 @@ export const caseStudyType = defineType({
               title: 'metric',
               subtitle: 'description',
             },
+            prepare({title, subtitle}) {
+              return {
+                title: portableTextToPlainText(title) || 'Result',
+                subtitle: portableTextToPlainText(subtitle) || '',
+              }
+            },
           },
         }),
       ],
     }),
     imageArrayField('finalImages', 'Final Images'),
-    stringListField('nextSteps', 'Next Steps'),
-    stringListField('tasks', 'Tasks'),
-    stringListField('tags', 'Tags'),
-    defineField({
-      name: 'client',
-      title: 'Client',
-      type: 'string',
-    }),
-    defineField({
-      name: 'industry',
-      title: 'Industry',
-      type: 'string',
-    }),
+    richInlineListField('nextSteps', 'Next Steps', 'nextStepItem', 'Next Step'),
+    richInlineListField('tasks', 'Tasks', 'taskItem', 'Task'),
+    richInlineListField('tags', 'Tags', 'tagItem', 'Tag'),
+    richInlineField('client', 'Client'),
+    richInlineField('industry', 'Industry'),
     defineField({
       name: 'date',
       title: 'Legacy Date',
@@ -628,8 +540,11 @@ export const caseStudyType = defineType({
     prepare({title, subtitle, status, media}) {
       const parts = [subtitle, status].filter(Boolean)
       return {
-        title,
-        subtitle: parts.join(' | '),
+        title: portableTextToPlainText(title) || 'Untitled case study',
+        subtitle: parts
+          .map((part) => portableTextToPlainText(part) || String(part))
+          .filter(Boolean)
+          .join(' | '),
         media,
       }
     },

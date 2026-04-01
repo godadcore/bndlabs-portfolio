@@ -1,4 +1,10 @@
 import { safeLowerSlug } from "./projects.js";
+import {
+  normalizeRichTextValue,
+  richTextToHtml,
+  richTextToInlineHtml,
+  richTextToPlainText,
+} from "./richText.js";
 import { sanitizeUrl } from "./urlSecurity.js";
 
 let cachedRemotePostsPromise = null;
@@ -6,6 +12,32 @@ const POSTS_API_PATH = "/api/sanity/posts";
 
 function firstString(...values) {
   for (const value of values) {
+    if (Array.isArray(value)) {
+      const normalizedArrayValue = richTextToPlainText(value);
+      if (normalizedArrayValue) return normalizedArrayValue;
+      continue;
+    }
+
+    if (value && typeof value === "object") {
+      const slugValue = String(value.current ?? value.slug ?? "").trim();
+      if (slugValue) return slugValue;
+
+      const richContentValue = firstPlainText(
+        value.content,
+        value.text,
+        value.title,
+        value.label,
+        value.value,
+        value.description,
+        value.body,
+        value.name,
+        value.initials
+      );
+      if (richContentValue) return richContentValue;
+
+      continue;
+    }
+
     const normalized = String(value ?? "").trim();
     if (normalized) return normalized;
   }
@@ -13,11 +45,86 @@ function firstString(...values) {
   return "";
 }
 
+function firstPlainText(...values) {
+  for (const value of values) {
+    const normalized =
+      typeof value === "string" && looksLikeHtml(value)
+        ? stripHtml(value)
+        : richTextToPlainText(value);
+    if (normalized) return normalized;
+  }
+
+  return "";
+}
+
+function firstRichTextValue(...values) {
+  for (const value of values) {
+    const normalized = normalizeRichTextValue(value);
+    if (Array.isArray(normalized) && normalized.length) return normalized;
+    if (typeof normalized === "string" && normalized) return normalized;
+  }
+
+  return "";
+}
+
+function looksLikeHtml(value) {
+  return /<[^>]+>/.test(String(value ?? "").trim());
+}
+
+function renderHtmlValue(value, { inline = false } = {}) {
+  if (value == null) return "";
+
+  if (Array.isArray(value)) {
+    return inline ? richTextToInlineHtml(value) : richTextToHtml(value);
+  }
+
+  if (value && typeof value === "object") {
+    if (Array.isArray(value.content)) {
+      return inline ? richTextToInlineHtml(value.content) : richTextToHtml(value.content);
+    }
+  }
+
+  const normalized = String(value ?? "").trim();
+  if (!normalized) return "";
+  if (looksLikeHtml(normalized)) return normalized;
+
+  return inline ? richTextToInlineHtml(normalized) : richTextToHtml(normalized);
+}
+
+function firstRenderedHtml(values, options = {}) {
+  for (const value of values) {
+    const html = renderHtmlValue(value, options);
+    if (html) return html;
+  }
+
+  return "";
+}
+
+function firstInlineHtml(...values) {
+  return firstRenderedHtml(values, { inline: true });
+}
+
+function firstBlockHtml(...values) {
+  return firstRenderedHtml(values, { inline: false });
+}
+
 function toStringArray(value) {
   if (!Array.isArray(value)) return [];
 
   return value
-    .map((item) => String(item ?? "").trim())
+    .map((item) =>
+      typeof item === "object"
+        ? firstString(
+            item?.content,
+            item?.text,
+            item?.title,
+            item?.label,
+            item?.value,
+            item?.description,
+            item?.body
+          )
+        : String(item ?? "").trim()
+    )
     .filter(Boolean);
 }
 
@@ -26,15 +133,6 @@ function stripHtml(value) {
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function slugifyHeading(value, fallback = "section") {
@@ -52,17 +150,65 @@ function toInitials(name) {
   return parts.map((part) => part.charAt(0).toUpperCase()).join("") || "BL";
 }
 
-function formatParagraphHtml(value) {
-  const normalized = String(value ?? "").trim();
-  if (!normalized) return "";
-  if (/<p[\s>]/i.test(normalized)) return normalized;
+function normalizeInlineContentItem(value) {
+  if (value == null) return null;
 
-  return normalized
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
-    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
-    .join("");
+  const content =
+    typeof value === "object" && !Array.isArray(value)
+      ? firstRichTextValue(
+          value?.content,
+          value?.text,
+          value?.title,
+          value?.label,
+          value?.value,
+          value?.description,
+          value?.body,
+          value?.name,
+          value?.initials
+        )
+      : firstRichTextValue(value);
+  const text =
+    typeof value === "object" && !Array.isArray(value)
+      ? firstPlainText(
+          value?.content,
+          value?.text,
+          value?.title,
+          value?.label,
+          value?.value,
+          value?.description,
+          value?.body,
+          value?.name,
+          value?.initials
+        )
+      : firstPlainText(value);
+  const html =
+    typeof value === "object" && !Array.isArray(value)
+      ? firstInlineHtml(
+          value?.content,
+          value?.text,
+          value?.title,
+          value?.label,
+          value?.value,
+          value?.description,
+          value?.body,
+          value?.name,
+          value?.initials
+        )
+      : firstInlineHtml(value);
+
+  if (!text && !html) return null;
+
+  return {
+    text: text || stripHtml(html),
+    content: content || text || "",
+    html,
+  };
+}
+
+function normalizeInlineContentList(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value.map((item) => normalizeInlineContentItem(item)).filter(Boolean);
 }
 
 function normalizeImageEntry(item, index) {
@@ -73,10 +219,14 @@ function normalizeImageEntry(item, index) {
   });
   if (!url) return null;
 
+  const captionContent = firstRichTextValue(item.caption);
+
   return {
     url,
     alt: firstString(item.alt, `Blog media ${index + 1}`),
-    caption: firstString(item.caption),
+    caption: firstPlainText(item.caption),
+    captionContent,
+    captionHtml: firstInlineHtml(captionContent || item.caption),
   };
 }
 
@@ -86,7 +236,7 @@ function normalizeTableRows(rows) {
   return rows
     .map((row) => {
       if (Array.isArray(row)) {
-        return row.map((cell) => String(cell ?? "").trim());
+        return row.map((cell) => normalizeInlineContentItem(cell)).filter(Boolean);
       }
 
       if (row && typeof row === "object") {
@@ -95,12 +245,12 @@ function normalizeTableRows(rows) {
           : Array.isArray(row.columns)
             ? row.columns
             : [];
-        return cells.map((cell) => String(cell ?? "").trim());
+        return cells.map((cell) => normalizeInlineContentItem(cell)).filter(Boolean);
       }
 
       return [];
     })
-    .filter((row) => row.some(Boolean));
+    .filter((row) => row.some((cell) => cell?.text || cell?.html));
 }
 
 function blockTypeFromRaw(rawType) {
@@ -126,25 +276,34 @@ function normalizeContentBlock(block, index) {
   if (!type) return null;
 
   if (type === "text") {
-    const html = formatParagraphHtml(firstString(block.html, block.body, block.text));
-    if (!html) return null;
+    const html = firstBlockHtml(block.content, block.body, block.html, block.text);
+    const plainText = firstPlainText(
+      block.content,
+      block.body,
+      block.text,
+      looksLikeHtml(block.html) ? stripHtml(block.html) : ""
+    );
+    if (!html && !plainText) return null;
 
     return {
       id: `text-${index}`,
       type,
       html,
-      plainText: stripHtml(html),
+      plainText: plainText || stripHtml(html),
     };
   }
 
   if (type === "heading") {
-    const text = firstString(block.text, block.title);
+    const content = firstRichTextValue(block.text, block.title);
+    const text = firstPlainText(block.text, block.title);
     if (!text) return null;
 
     return {
       id: slugifyHeading(text, `section-${index}`),
       type,
       text,
+      content,
+      html: firstInlineHtml(content || text),
     };
   }
 
@@ -167,7 +326,9 @@ function normalizeContentBlock(block, index) {
             {
               url: singleUrl,
               alt: firstString(block.alt, `Blog image ${index + 1}`),
-              caption: firstString(block.caption),
+              caption: firstPlainText(block.caption),
+              captionContent: firstRichTextValue(block.caption),
+              captionHtml: firstInlineHtml(block.caption),
             },
           ],
     };
@@ -184,7 +345,9 @@ function normalizeContentBlock(block, index) {
       type,
       url,
       alt: firstString(block.alt, `Blog GIF ${index + 1}`),
-      caption: firstString(block.caption),
+      caption: firstPlainText(block.caption),
+      captionContent: firstRichTextValue(block.caption),
+      captionHtml: firstInlineHtml(block.caption),
     };
   }
 
@@ -198,7 +361,9 @@ function normalizeContentBlock(block, index) {
       id: `video-${index}`,
       type,
       url,
-      caption: firstString(block.caption),
+      caption: firstPlainText(block.caption),
+      captionContent: firstRichTextValue(block.caption),
+      captionHtml: firstInlineHtml(block.caption),
     };
   }
 
@@ -209,14 +374,18 @@ function normalizeContentBlock(block, index) {
     return {
       id: `code-${index}`,
       type,
-      language: firstString(block.language, "Code"),
-      filename: firstString(block.filename, `snippet-${index + 1}.txt`),
+      language: firstPlainText(block.language, "Code"),
+      languageContent: firstRichTextValue(block.language),
+      languageHtml: firstInlineHtml(block.language, "Code"),
+      filename: firstPlainText(block.filename, `snippet-${index + 1}.txt`),
+      filenameContent: firstRichTextValue(block.filename),
+      filenameHtml: firstInlineHtml(block.filename, `snippet-${index + 1}.txt`),
       code,
     };
   }
 
   if (type === "table") {
-    const headers = toStringArray(block.headers);
+    const headers = normalizeInlineContentList(block.headers);
     const rows = normalizeTableRows(block.rows);
     if (!headers.length && !rows.length) return null;
 
@@ -238,19 +407,26 @@ function normalizeContentBlock(block, index) {
       id: `audio-${index}`,
       type,
       url,
+      caption: firstPlainText(block.caption),
+      captionContent: firstRichTextValue(block.caption),
+      captionHtml: firstInlineHtml(block.caption),
     };
   }
 
   if (type === "callout") {
-    const body = firstString(block.body, block.text);
+    const body = firstPlainText(block.body, block.text);
     if (!body) return null;
 
     return {
       id: `callout-${index}`,
       type,
       emoji: firstString(block.emoji, "Note"),
-      title: firstString(block.title),
+      title: firstPlainText(block.title),
+      titleContent: firstRichTextValue(block.title),
+      titleHtml: firstInlineHtml(block.title),
       body,
+      bodyContent: firstRichTextValue(block.body, block.text),
+      bodyHtml: firstBlockHtml(block.body, block.text),
     };
   }
 
@@ -259,15 +435,20 @@ function normalizeContentBlock(block, index) {
 
 function postExcerptFromBlocks(contentBlocks) {
   const firstTextBlock = contentBlocks.find((block) => block?.type === "text");
-  return firstTextBlock ? stripHtml(firstTextBlock.html).slice(0, 180) : "";
+  return firstTextBlock ? firstTextBlock.plainText.slice(0, 180) : "";
 }
 
 function normalizeAuthor(author) {
-  const name = firstString(author?.name, "BND Labs");
+  const nameContent = firstRichTextValue(author?.name);
+  const name = firstPlainText(author?.name, "BND Labs");
 
   return {
     name,
-    initials: firstString(author?.initials, toInitials(name)),
+    nameContent,
+    nameHtml: firstInlineHtml(nameContent || name),
+    initials: firstPlainText(author?.initials, toInitials(name)),
+    initialsContent: firstRichTextValue(author?.initials),
+    initialsHtml: firstInlineHtml(author?.initials, toInitials(name)),
     avatarUrl: sanitizeUrl(firstString(author?.avatar_url, author?.avatarUrl), {
       allowRelative: true,
     }),
@@ -275,8 +456,8 @@ function normalizeAuthor(author) {
 }
 
 export function normalizePostSummary(raw) {
-  const slug = safeLowerSlug(raw?.slug || raw?.id || raw?.title);
-  const title = firstString(raw?.title, "Untitled");
+  const plainTitle = firstPlainText(raw?.title, "Untitled");
+  const slug = safeLowerSlug(raw?.slug || raw?.id || plainTitle);
   const thumbnail = firstString(
     raw?.thumb_url,
     raw?.thumbnail,
@@ -288,26 +469,40 @@ export function normalizePostSummary(raw) {
     raw?.coverImageUrl
   );
   const author = normalizeAuthor(raw?.author);
-  const excerpt = firstString(
+  const excerpt = firstPlainText(
     raw?.excerpt,
     raw?.description,
     stripHtml(raw?.summary),
     stripHtml(raw?.content),
     stripHtml(raw?.html)
   );
+  const titleContent = firstRichTextValue(raw?.title);
+  const excerptContent = firstRichTextValue(raw?.excerpt, raw?.description, raw?.summary);
+  const readTimeContent = firstRichTextValue(raw?.read_time, raw?.readTime);
+  const tagContent = firstRichTextValue(raw?.tag);
 
   return {
-    id: firstString(raw?.id, slug, title),
+    id: firstString(raw?.id, slug, plainTitle),
     slug,
-    title,
+    title: plainTitle,
+    titleContent,
+    titleHtml: firstInlineHtml(titleContent || plainTitle),
     description: excerpt,
+    descriptionContent: excerptContent,
+    descriptionHtml: firstBlockHtml(excerptContent || excerpt),
     excerpt,
+    excerptContent,
+    excerptHtml: firstBlockHtml(excerptContent || excerpt),
     image: sanitizeUrl(thumbnail, { allowRelative: true }),
     thumbnail: sanitizeUrl(thumbnail, { allowRelative: true }),
     href: slug ? `/blog/${slug}` : "/blog",
     date: firstString(raw?.date, raw?._createdAt),
-    readTime: firstString(raw?.read_time, raw?.readTime, "5 min read"),
-    tag: firstString(raw?.tag, "Blog"),
+    readTime: firstPlainText(raw?.read_time, raw?.readTime, "5 min read"),
+    readTimeContent,
+    readTimeHtml: firstInlineHtml(readTimeContent || raw?.read_time || raw?.readTime || "5 min read"),
+    tag: firstPlainText(raw?.tag, "Blog"),
+    tagContent,
+    tagHtml: firstInlineHtml(tagContent || raw?.tag || "Blog"),
     author,
   };
 }
@@ -338,6 +533,7 @@ export function normalizePost(raw) {
     .map((block) => ({
       id: block.id,
       text: block.text,
+      html: block.html,
     }));
   const nextPost = raw?.next_post ? normalizePostSummary(raw.next_post) : null;
   const excerpt = firstString(summary.excerpt, postExcerptFromBlocks(contentBlocks));

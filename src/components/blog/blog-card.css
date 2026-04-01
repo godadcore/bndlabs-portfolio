@@ -43,6 +43,12 @@
   overflow-wrap: anywhere;
 }
 
+.blogCard .workCard__title a,
+.blogCard .workCard__task a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .blogCard .workCard__title {
   display: -webkit-box;
   -webkit-line-clamp: 3;

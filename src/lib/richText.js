@@ -229,6 +229,23 @@ function renderPortableTextHtml(blocks) {
   return htmlParts.join("");
 }
 
+function renderPortableTextInlineHtml(blocks) {
+  return blocks
+    .map((block) => {
+      if (!block || typeof block !== "object") {
+        return textWithBreaksToHtml(block);
+      }
+
+      if (block._type === "block" && Array.isArray(block.children)) {
+        return renderPortableTextChildren(block.children, block.markDefs);
+      }
+
+      return textWithBreaksToHtml(block.text ?? "");
+    })
+    .filter(Boolean)
+    .join("<br />");
+}
+
 function renderPlainTextHtml(value) {
   const normalizedValue = normalizeLineBreaks(value).trim();
   if (!normalizedValue) return "";
@@ -248,4 +265,13 @@ export function richTextToHtml(value) {
   if (typeof normalizedValue === "string") return renderPlainTextHtml(normalizedValue);
 
   return renderPortableTextHtml(normalizedValue);
+}
+
+export function richTextToInlineHtml(value) {
+  const normalizedValue = normalizeRichTextValue(value);
+
+  if (!normalizedValue) return "";
+  if (typeof normalizedValue === "string") return textWithBreaksToHtml(normalizedValue);
+
+  return renderPortableTextInlineHtml(normalizedValue);
 }

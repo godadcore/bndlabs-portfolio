@@ -18,7 +18,7 @@ import {
   loadAllPosts,
 } from "../../lib/blogData";
 import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
-import { sanitizeUrl } from "../../lib/urlSecurity";
+import { sanitizeBlogHtml } from "../../components/blog-post/utils";
 import "./blog-post.css";
 
 function AuthorAvatar({ author }) {
@@ -36,101 +36,31 @@ function AuthorAvatar({ author }) {
 function TextBlock({ block }) {
   if (!block?.html) return null;
 
-  const sanitizedHtml = sanitizeHtmlFragment(block.html);
+  const sanitizedHtml = sanitizeBlogHtml(block.html);
   if (!sanitizedHtml) return null;
 
   return <div className="blogPostText" dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
 }
 
-function sanitizeHtmlFragment(value) {
-  const rawHtml = String(value ?? "").trim();
-  if (!rawHtml) return "";
+function InlineHtml({ html, className = "", as: Tag = "span" }) {
+  const sanitizedHtml = sanitizeBlogHtml(html);
+  if (!sanitizedHtml) return null;
 
-  if (typeof window === "undefined" || typeof DOMParser === "undefined") {
-    return rawHtml.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
-  }
-
-  const allowedTags = new Set([
-    "a",
-    "b",
-    "blockquote",
-    "br",
-    "code",
-    "em",
-    "i",
-    "li",
-    "ol",
-    "p",
-    "strong",
-    "u",
-    "ul",
-  ]);
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(`<body>${rawHtml}</body>`, "text/html");
-
-  const sanitizeNode = (node) => {
-    if (node.nodeType === window.Node.TEXT_NODE) {
-      return doc.createTextNode(node.textContent || "");
-    }
-
-    if (node.nodeType !== window.Node.ELEMENT_NODE) {
-      return null;
-    }
-
-    const tagName = node.nodeName.toLowerCase();
-    const childNodes = Array.from(node.childNodes)
-      .map(sanitizeNode)
-      .filter(Boolean);
-
-    if (!allowedTags.has(tagName)) {
-      const fragment = doc.createDocumentFragment();
-      childNodes.forEach((childNode) => fragment.appendChild(childNode));
-      return fragment;
-    }
-
-    const sanitizedElement = doc.createElement(tagName);
-
-    if (tagName === "a") {
-      const safeHref = sanitizeUrl(node.getAttribute("href"), {
-        allowRelative: true,
-        allowedProtocols: ["http:", "https:", "mailto:", "tel:"],
-      });
-
-      if (!safeHref) {
-        const fragment = doc.createDocumentFragment();
-        childNodes.forEach((childNode) => fragment.appendChild(childNode));
-        return fragment;
-      }
-
-      sanitizedElement.setAttribute("href", safeHref);
-
-      if (/^https?:/i.test(safeHref)) {
-        sanitizedElement.setAttribute("target", "_blank");
-        sanitizedElement.setAttribute("rel", "noreferrer noopener");
-      }
-    }
-
-    childNodes.forEach((childNode) => sanitizedElement.appendChild(childNode));
-    return sanitizedElement;
-  };
-
-  const wrapper = doc.createElement("div");
-  Array.from(doc.body.childNodes)
-    .map(sanitizeNode)
-    .filter(Boolean)
-    .forEach((node) => wrapper.appendChild(node));
-
-  return wrapper.innerHTML.trim();
+  return <Tag className={className} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
 }
 
 function renderBlock(block, index) {
   if (!block) return null;
 
   if (block.type === "heading") {
+    const headingHtml = sanitizeBlogHtml(block.html);
     return (
-      <h2 className="blogPostSectionHeading" id={block.id} key={block.id}>
-        {block.text}
-      </h2>
+      <h2
+        className="blogPostSectionHeading"
+        id={block.id}
+        key={block.id}
+        dangerouslySetInnerHTML={{ __html: headingHtml || block.text }}
+      />
     );
   }
 
@@ -287,21 +217,35 @@ function BlogPostContent({ slug }) {
                       <div className="blogPostMeta">
                         {formatBlogDate(post.date) ? <span>{formatBlogDate(post.date)}</span> : null}
                         {formatBlogDate(post.date) && post.readTime ? <span className="blogPostMetaDot" /> : null}
-                        {post.readTime ? <span>{post.readTime}</span> : null}
+                        {post.readTime ? (
+                          <InlineHtml as="span" html={post.readTimeHtml || post.readTime} />
+                        ) : null}
                         {post.tag ? (
                           <>
                             {(formatBlogDate(post.date) || post.readTime) ? <span className="blogPostMetaDot" /> : null}
-                            <span className="blogPostMetaTag">{post.tag}</span>
+                            <InlineHtml
+                              as="span"
+                              className="blogPostMetaTag"
+                              html={post.tagHtml || post.tag}
+                            />
                           </>
                         ) : null}
                       </div>
 
-                      <h1 className="blogPostTitle">{post.title}</h1>
+                      <InlineHtml
+                        as="h1"
+                        className="blogPostTitle"
+                        html={post.titleHtml || post.title}
+                      />
 
                       <div className="blogPostAuthorRow">
                         <AuthorAvatar author={post.author} />
                         <div className="blogPostAuthorInfo">
-                          <p className="blogPostAuthorName">{post.author?.name || "Bodunde Emmanuel"}</p>
+                          <InlineHtml
+                            as="p"
+                            className="blogPostAuthorName"
+                            html={post.author?.nameHtml || post.author?.name || "Bodunde Emmanuel"}
+                          />
                           <p className="blogPostAuthorDate">
                             {formatBlogDate(post.date) ? `Posted on ${formatBlogDate(post.date)}` : "Published on BND Labs"}
                           </p>

@@ -1,4 +1,11 @@
-import { toggleVideo } from "./utils";
+import { sanitizeBlogHtml, toggleVideo } from "./utils";
+
+function MediaCaption({ html, fallback = "" }) {
+  const sanitizedHtml = sanitizeBlogHtml(html || fallback);
+  if (!sanitizedHtml) return null;
+
+  return <div className="blogPostMediaCaption" dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+}
 
 function MediaImage({ item }) {
   if (!item?.url) return null;
@@ -6,7 +13,7 @@ function MediaImage({ item }) {
   return (
     <div className="blogPostMediaBlock">
       <img src={item.url} alt={item.alt || "Blog media"} loading="lazy" decoding="async" />
-      {item.caption ? <div className="blogPostMediaCaption">{item.caption}</div> : null}
+      <MediaCaption html={item.captionHtml} fallback={item.caption} />
     </div>
   );
 }
@@ -35,7 +42,7 @@ export default function MediaBlock({ block, videoIndex = 0 }) {
     return (
       <div className="blogPostMediaBlock">
         <img src={block.url} alt={block.alt || "Blog GIF"} loading="lazy" decoding="async" />
-        {block.caption ? <div className="blogPostMediaCaption">{block.caption}</div> : null}
+        <MediaCaption html={block.captionHtml} fallback={block.caption} />
       </div>
     );
   }
@@ -57,7 +64,7 @@ export default function MediaBlock({ block, videoIndex = 0 }) {
             <path d="M8 5v14l11-7z" />
           </svg>
         </button>
-        {block.caption ? <div className="blogPostMediaCaption">{block.caption}</div> : null}
+        <MediaCaption html={block.captionHtml} fallback={block.caption} />
       </div>
     );
   }

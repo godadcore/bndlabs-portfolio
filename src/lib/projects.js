@@ -42,8 +42,10 @@ import { sanitizeExternalUrl, sanitizeUrl } from "./urlSecurity.js";
 
 export function safeLowerSlug(value) {
   const normalizedValue =
-    value && typeof value === "object"
-      ? value.current || value.slug || ""
+    value && typeof value === "object" && !Array.isArray(value)
+      ? value.current || value.slug || richTextToPlainText(value.content) || ""
+      : Array.isArray(value)
+        ? richTextToPlainText(value)
       : value;
 
   return String(normalizedValue || "")
@@ -65,6 +67,30 @@ function yearFromDate(value) {
 
 function firstString(...values) {
   for (const value of values) {
+    if (Array.isArray(value)) {
+      const normalizedArrayValue = richTextToPlainText(value);
+      if (normalizedArrayValue) return normalizedArrayValue;
+      continue;
+    }
+
+    if (value && typeof value === "object") {
+      const slugValue = String(value.current ?? value.slug ?? "").trim();
+      if (slugValue) return slugValue;
+
+      const richContentValue = firstPlainText(
+        value.content,
+        value.text,
+        value.title,
+        value.label,
+        value.value,
+        value.description,
+        value.body
+      );
+      if (richContentValue) return richContentValue;
+
+      continue;
+    }
+
     const normalized = String(value ?? "").trim();
     if (normalized) return normalized;
   }
@@ -97,7 +123,75 @@ function uniqueStrings(values) {
 
 function toStringArray(value) {
   if (!Array.isArray(value)) return [];
-  return uniqueStrings(value);
+  return uniqueStrings(
+    value.map((item) =>
+      typeof item === "object"
+        ? firstString(
+            item?.content,
+            item?.text,
+            item?.title,
+            item?.label,
+            item?.value,
+            item?.description,
+            item?.body
+          )
+        : item
+    )
+  );
+}
+
+function normalizeInlineContentItem(value) {
+  if (value == null) return null;
+
+  const content =
+    typeof value === "object" && !Array.isArray(value)
+      ? firstRichTextValue(
+          value?.content,
+          value?.text,
+          value?.title,
+          value?.label,
+          value?.value,
+          value?.description,
+          value?.body
+        )
+      : firstRichTextValue(value);
+  const text =
+    typeof value === "object" && !Array.isArray(value)
+      ? firstPlainText(
+          value?.content,
+          value?.text,
+          value?.title,
+          value?.label,
+          value?.value,
+          value?.description,
+          value?.body
+        )
+      : firstPlainText(value);
+
+  if (!text) return null;
+
+  return {
+    text,
+    content: content || text,
+  };
+}
+
+function normalizeInlineContentList(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => normalizeInlineContentItem(item))
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(/\r?\n|,|\/|•/g)
+      .map((item) => normalizeInlineContentItem(item))
+      .filter(Boolean);
+  }
+
+  const item = normalizeInlineContentItem(value);
+  return item ? [item] : [];
 }
 
 function toObjectArray(value) {
@@ -343,7 +437,8 @@ function normalizeSanityImage(value, fallbackAlt = "") {
   return {
     src,
     alt: firstString(value?.alt, value?.image?.alt, fallbackAlt),
-    caption: firstString(value?.caption),
+    caption: firstPlainText(value?.caption),
+    captionContent: firstRichTextValue(value?.caption),
   };
 }
 
@@ -369,7 +464,8 @@ function normalizeCaseStudyStats(value) {
 
       return {
         value: Number.isFinite(numericValue) ? numericValue : null,
-        label: firstString(item?.label),
+        label: firstPlainText(item?.label),
+        labelContent: firstRichTextValue(item?.label),
       };
     })
     .filter((item) => item.label && item.value != null);
@@ -380,7 +476,8 @@ function normalizeCaseStudyResults(value) {
 
   return value
     .map((item) => ({
-      metric: firstString(item?.metric, item?.value),
+      metric: firstPlainText(item?.metric, item?.value),
+      metricContent: firstRichTextValue(item?.metric, item?.value),
       description: firstPlainText(item?.description, item?.text),
       descriptionContent: firstRichTextValue(item?.description, item?.text),
     }))
@@ -392,7 +489,8 @@ function normalizeCaseStudyProblems(value) {
 
   return value
     .map((item) => ({
-      title: firstString(item?.title, item?.label),
+      title: firstPlainText(item?.title, item?.label),
+      titleContent: firstRichTextValue(item?.title, item?.label),
       description: firstPlainText(item?.description, item?.text),
       descriptionContent: firstRichTextValue(item?.description, item?.text),
     }))
@@ -421,7 +519,9 @@ function normalizeTableRows(value) {
   return value
     .map((row) => {
       if (Array.isArray(row)) {
-        return row.map((cell) => String(cell ?? "").trim());
+        return row
+          .map((cell) => normalizeInlineContentItem(cell))
+          .filter(Boolean);
       }
 
       if (row && typeof row === "object") {
@@ -431,12 +531,14 @@ function normalizeTableRows(value) {
             ? row.columns
             : [];
 
-        return cells.map((cell) => String(cell ?? "").trim());
+        return cells
+          .map((cell) => normalizeInlineContentItem(cell))
+          .filter(Boolean);
       }
 
       return [];
     })
-    .filter((row) => row.some(Boolean));
+    .filter((row) => row.some((cell) => cell?.text));
 }
 
 function createCaseStudySectionId(value, fallback) {
@@ -498,7 +600,7 @@ function createAudioSection({ id, heading, text, content, audio }) {
 }
 
 function createTableSection({ id, heading, text, content, columns, rows }) {
-  const normalizedColumns = toStringArray(columns);
+  const normalizedColumns = normalizeInlineContentList(columns);
   const normalizedRows = normalizeTableRows(rows);
 
   if (!normalizedColumns.length && !normalizedRows.length) return null;
@@ -519,7 +621,8 @@ function createTableSection({ id, heading, text, content, columns, rows }) {
 function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
   if (!section || typeof section !== "object") return null;
 
-  const heading = firstString(section?.heading, section?.title, `Section ${index + 1}`);
+  const headingContent = firstRichTextValue(section?.heading, section?.title);
+  const heading = firstPlainText(section?.heading, section?.title, `Section ${index + 1}`);
   const content = firstRichTextValue(section?.body, section?.description, section?.text);
   const text = richTextToPlainText(content);
   const icon = firstString(section?.icon);
@@ -545,6 +648,7 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
     return tableSection
       ? {
           ...tableSection,
+          headingContent,
           icon,
         }
       : null;
@@ -560,7 +664,8 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
       audio: audio
         ? {
             ...audio,
-            caption: firstString(section?.caption, audio.caption),
+            caption: firstPlainText(section?.caption, audio.caption),
+            captionContent: firstRichTextValue(section?.caption, audio.captionContent, audio.caption),
           }
         : null,
     });
@@ -568,6 +673,7 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
     return audioSection
       ? {
           ...audioSection,
+          headingContent,
           icon,
         }
       : null;
@@ -583,7 +689,8 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
       video: video
         ? {
             ...video,
-            caption: firstString(section?.caption, video.caption),
+            caption: firstPlainText(section?.caption, video.caption),
+            captionContent: firstRichTextValue(section?.caption, video.captionContent, video.caption),
           }
         : null,
       poster: normalizeSanityImage(section?.poster),
@@ -592,6 +699,7 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
     return videoSection
       ? {
           ...videoSection,
+          headingContent,
           icon,
         }
       : null;
@@ -628,7 +736,8 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
     ? {
         ...image,
         alt: firstString(section?.alt, image.alt),
-        caption: firstString(section?.caption, image.caption),
+        caption: firstPlainText(section?.caption, image.caption),
+        captionContent: firstRichTextValue(section?.caption, image.captionContent, image.caption),
       }
     : null;
 
@@ -643,6 +752,7 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
   return storySection
     ? {
         ...storySection,
+        headingContent,
         icon,
       }
     : null;
@@ -811,7 +921,8 @@ function normalizeModernCaseStudy(raw) {
 
   const slug = safeLowerSlug(raw?.slug || raw?.id || raw?.title);
   const id = safeLowerSlug(raw?._id || raw?.id || slug || raw?.title);
-  const title = firstString(raw?.title, "Untitled Case Study");
+  const titleContent = firstRichTextValue(raw?.title);
+  const title = firstPlainText(raw?.title, "Untitled Case Study");
   const overviewBlocks = normalizePortableText(raw?.overview);
   const descriptionContent = firstRichTextValue(raw?.description);
   const description = richTextToPlainText(descriptionContent);
@@ -835,6 +946,12 @@ function normalizeModernCaseStudy(raw) {
   const stats = normalizeCaseStudyStats(raw?.stats);
   const problems = normalizeCaseStudyProblems(raw?.problems);
   const results = normalizeCaseStudyResults(raw?.results);
+  const roleItems = normalizeInlineContentList(raw?.role);
+  const toolsItems = normalizeInlineContentList(raw?.tools);
+  const timelineItems = normalizeInlineContentList(raw?.timeline);
+  const tasksItems = normalizeInlineContentList(raw?.tasks);
+  const tagsItems = normalizeInlineContentList(raw?.tags);
+  const nextStepItems = normalizeInlineContentList(raw?.nextSteps);
   const role = toStringArray(raw?.role);
   const tools = toStringArray(raw?.tools);
   const timeline = toStringArray(raw?.timeline);
@@ -851,10 +968,13 @@ function normalizeModernCaseStudy(raw) {
   const twitterUrl = sanitizeExternalUrl(firstString(raw?.twitterUrl));
   const whatsappNumber = firstString(raw?.whatsappNumber);
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber);
-  const category = firstString(raw?.category, raw?.industry, "Case Study");
+  const categoryContent = firstRichTextValue(raw?.category, raw?.industry);
+  const category = firstPlainText(raw?.category, raw?.industry, "Case Study");
   const status = firstString(raw?.status, "Concept");
-  const client = firstString(raw?.client);
-  const industry = firstString(raw?.industry, category);
+  const clientContent = firstRichTextValue(raw?.client);
+  const client = firstPlainText(raw?.client);
+  const industryContent = firstRichTextValue(raw?.industry, raw?.category);
+  const industry = firstPlainText(raw?.industry, raw?.category, category);
   const normalizedSections = buildModernCaseStudySections({
     title,
     role,
@@ -882,19 +1002,30 @@ function normalizeModernCaseStudy(raw) {
     createdAt: firstString(raw?._createdAt),
     updatedAt: firstString(raw?._updatedAt),
     title,
+    titleContent,
     subtitle: description,
+    subtitleContent: descriptionContent,
     summary: description,
+    summaryContent: descriptionContent,
     description,
+    descriptionContent,
     category,
+    categoryContent,
     tasks: displayTasks,
+    taskItems: tasksItems,
+    tasksItems,
     tags: uniqueStrings(tags.length ? tags : [...role, ...tools, ...timeline]),
+    tagItems: tagsItems,
+    tagsItems,
     tag1: role[0] || category,
     tag2: tools[0] || status,
     image: fallbackImage,
     cover: heroImage?.src || fallbackImage,
     thumbnail: fallbackImage,
     client,
+    clientContent,
     industry,
+    industryContent,
     status,
     date: publishedDate,
     overview: firstString(overviewText, overviewDescription),
@@ -919,9 +1050,12 @@ function normalizeModernCaseStudy(raw) {
       contentModel: "caseStudy",
       brandLogo: brandLogo?.src || "",
       heroImage: heroImage?.src || fallbackImage,
+      title,
+      titleContent,
       description,
       descriptionContent,
       category,
+      categoryContent,
       publishedDate,
       status,
       overviewImage: overviewImage?.src ? overviewImage : null,
@@ -933,14 +1067,22 @@ function normalizeModernCaseStudy(raw) {
       overviewBlocks,
       stats,
       role,
+      roleItems,
       tools,
+      toolsItems,
       timeline,
+      timelineItems,
       problems,
       tasks,
+      tasksItems,
       tags,
+      tagsItems,
       client,
+      clientContent,
       industry,
+      industryContent,
       nextSteps,
+      nextStepItems,
       researchText,
       researchTextContent,
       researchImages,
@@ -1006,7 +1148,12 @@ function normalizeCaseStudy(raw, project) {
     ...project.gallery.map((item) => item.src),
   ]);
   const region = firstString(caseStudyRaw.region, raw?.region, raw?.location, "Global");
-  const goal = firstString(
+  const goalContent = firstRichTextValue(
+    raw?.goal,
+    caseStudyRaw.goal,
+    project.solution
+  );
+  const goal = firstPlainText(
     raw?.goal,
     caseStudyRaw.goal,
     project.solution,
@@ -1064,18 +1211,112 @@ function normalizeCaseStudy(raw, project) {
   );
   const whatsappNumber = firstString(caseStudyRaw.whatsappNumber, raw?.whatsappNumber);
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber);
-  const learned = firstString(
+  const learnedContent = firstRichTextValue(
+    outcomesRaw?.learned,
+    caseStudyRaw.learned,
+    raw?.learned
+  );
+  const learned = firstPlainText(
     outcomesRaw?.learned,
     caseStudyRaw.learned,
     raw?.learned,
     "The project reinforced how much stronger a product becomes when structure, testing, and visual refinement are treated as one connected system."
   );
-  const impact = firstString(
+  const impactContent = firstRichTextValue(
+    outcomesRaw?.impact,
+    caseStudyRaw.impact,
+    outcomeFromHighlights,
+    project.result
+  );
+  const impact = firstPlainText(
     outcomesRaw?.impact,
     caseStudyRaw.impact,
     outcomeFromHighlights,
     project.result,
     "The final direction created a clearer and more scalable experience ready for continued iteration."
+  );
+  const overviewIntroContent = firstRichTextValue(
+    raw?.description,
+    caseStudyRaw.overviewIntro,
+    raw?.overviewIntro,
+    project.overview,
+    project.summary,
+    project.description
+  );
+  const myRoleContent = firstRichTextValue(
+    raw?.my_role,
+    caseStudyRaw.myRole,
+    raw?.myRole,
+    raw?.role,
+    roleFromHighlights
+  );
+  const researchIntroContent = firstRichTextValue(
+    userResearchRaw?.method,
+    raw?.discovery,
+    caseStudyRaw.researchIntro,
+    raw?.researchIntro
+  );
+  const journeyGoalContent = firstRichTextValue(
+    journeyMapping?.goal,
+    caseStudyRaw.journeyGoal,
+    goalContent || goal
+  );
+  const wireframesIntroContent = firstRichTextValue(
+    structureSection?.intro,
+    raw?.discovery,
+    caseStudyRaw.wireframesIntro,
+    raw?.wireframesIntro
+  );
+  const appmapDescContent = firstRichTextValue(
+    structureSection?.description,
+    structureSection?.intro,
+    caseStudyRaw.appmapDesc,
+    project.process[1]?.description,
+    project.sections[0]?.body
+  );
+  const digitalWireDescContent = firstRichTextValue(
+    designSection?.description,
+    designSection?.intro,
+    caseStudyRaw.digitalWireDesc,
+    project.sections[1]?.body,
+    project.process[2]?.description,
+    processRoot?.integration
+  );
+  const usabilityIntroContent = firstRichTextValue(
+    userResearchRaw?.method,
+    raw?.discovery,
+    caseStudyRaw.usabilityIntro,
+    raw?.usabilityIntro,
+    project.result
+  );
+  const designIntroContent = firstRichTextValue(
+    designSection?.intro,
+    caseStudyRaw.designIntro,
+    raw?.designIntro,
+    project.solution
+  );
+  const mockupsDescContent = firstRichTextValue(
+    designSection?.mockups,
+    designSection?.intro,
+    caseStudyRaw.mockupsDesc,
+    project.sections[1]?.body,
+    project.solution
+  );
+  const protoDescContent = firstRichTextValue(
+    deliverySection?.intro,
+    deliverySection?.description,
+    caseStudyRaw.protoDesc,
+    raw?.protoDesc,
+    processRoot?.integration,
+    project.result
+  );
+  const outcomeIntroContent = firstRichTextValue(
+    outcomesRaw?.intro,
+    raw?.outcomes,
+    caseStudyRaw.outcomeIntro,
+    raw?.outcomeIntro,
+    project.result,
+    project.summary
   );
   const normalizedSections = buildLegacyCaseStudySections(
     project,
@@ -1091,7 +1332,7 @@ function normalizeCaseStudy(raw, project) {
     region,
     year: firstString(caseStudyRaw.year, yearFromDate(project.date), "Recent"),
     heroImage: firstString(caseStudyRaw.heroImage, project.cover, project.image, fallbackImages[0]),
-    overviewIntro: firstString(
+    overviewIntro: firstPlainText(
       raw?.description,
       caseStudyRaw.overviewIntro,
       raw?.overviewIntro,
@@ -1099,8 +1340,10 @@ function normalizeCaseStudy(raw, project) {
       project.summary,
       project.description
     ),
+    overviewIntroContent,
     goal,
-    myRole: firstString(
+    goalContent,
+    myRole: firstPlainText(
       raw?.my_role,
       caseStudyRaw.myRole,
       raw?.myRole,
@@ -1109,17 +1352,20 @@ function normalizeCaseStudy(raw, project) {
       project.tasks.slice(0, 2).join(" / "),
       "Product Designer"
     ),
+    myRoleContent,
     responsibilities: fallbackResponsibilities,
-    researchIntro: firstString(
+    researchIntro: firstPlainText(
       userResearchRaw?.method,
       raw?.discovery,
       caseStudyRaw.researchIntro,
       raw?.researchIntro,
       `Research focused on understanding where the ${project.industry || "product"} experience created friction and what needed to change to make ${project.title} feel clearer, faster, and easier to trust.`
     ),
+    researchIntroContent,
     painPoints,
     personas: normalizePersonas(personaSource, fallbackPersona),
-    journeyGoal: firstString(journeyMapping?.goal, caseStudyRaw.journeyGoal, goal),
+    journeyGoal: firstPlainText(journeyMapping?.goal, caseStudyRaw.journeyGoal, goal),
+    journeyGoalContent,
     journeyMapImage: firstString(
       journeyMapping?.image,
       caseStudyRaw.journeyMapImage,
@@ -1128,14 +1374,15 @@ function normalizeCaseStudy(raw, project) {
       project.sections[0]?.image,
       fallbackImages[0]
     ),
-    wireframesIntro: firstString(
+    wireframesIntro: firstPlainText(
       structureSection?.intro,
       raw?.discovery,
       caseStudyRaw.wireframesIntro,
       raw?.wireframesIntro,
       `The early design phase translated research into a clearer structure, making it easier to define content hierarchy, core screens, and the overall product flow.`
     ),
-    appmapDesc: firstString(
+    wireframesIntroContent,
+    appmapDesc: firstPlainText(
       structureSection?.description,
       structureSection?.intro,
       caseStudyRaw.appmapDesc,
@@ -1143,6 +1390,7 @@ function normalizeCaseStudy(raw, project) {
       project.sections[0]?.body,
       "The app map clarified how users should move through the product and which screens needed to carry the most important information."
     ),
+    appmapDescContent,
     appmapImage: firstString(
       structureSection?.image,
       caseStudyRaw.appmapImage,
@@ -1150,7 +1398,7 @@ function normalizeCaseStudy(raw, project) {
       project.gallery[1]?.src,
       fallbackImages[0]
     ),
-    digitalWireDesc: firstString(
+    digitalWireDesc: firstPlainText(
       designSection?.description,
       designSection?.intro,
       caseStudyRaw.digitalWireDesc,
@@ -1159,6 +1407,7 @@ function normalizeCaseStudy(raw, project) {
       integrationNote,
       "Digital wireframes translated the structure into a clearer interface and helped validate content priority before visual refinement."
     ),
+    digitalWireDescContent,
     digitalWireImage: firstString(
       designSection?.image,
       caseStudyRaw.digitalWireImage,
@@ -1166,7 +1415,7 @@ function normalizeCaseStudy(raw, project) {
       project.gallery[2]?.src,
       fallbackImages[0]
     ),
-    usabilityIntro: firstString(
+    usabilityIntro: firstPlainText(
       userResearchRaw?.method,
       raw?.discovery,
       caseStudyRaw.usabilityIntro,
@@ -1174,15 +1423,17 @@ function normalizeCaseStudy(raw, project) {
       project.result,
       "Usability review helped surface where the experience needed stronger guidance, clearer feedback, and more consistent states."
     ),
+    usabilityIntroContent,
     usabilityFindings,
-    designIntro: firstString(
+    designIntro: firstPlainText(
       designSection?.intro,
       caseStudyRaw.designIntro,
       raw?.designIntro,
       project.solution,
       "The final design phase focused on refining hierarchy, strengthening consistency, and preparing the product for a polished handoff."
     ),
-    mockupsDesc: firstString(
+    designIntroContent,
+    mockupsDesc: firstPlainText(
       designSection?.mockups,
       designSection?.intro,
       caseStudyRaw.mockupsDesc,
@@ -1190,6 +1441,7 @@ function normalizeCaseStudy(raw, project) {
       project.solution,
       "The mockups brought the structure to life with a more considered visual system, stronger hierarchy, and implementation-ready states."
     ),
+    mockupsDescContent,
     mockupOverviewImage: firstString(
       designSection?.overview_image,
       caseStudyRaw.mockupOverviewImage,
@@ -1198,7 +1450,7 @@ function normalizeCaseStudy(raw, project) {
       fallbackImages[0]
     ),
     mockupScreens: normalizeMockupScreens(designSection?.screens || caseStudyRaw.mockupScreens, fallbackImages),
-    protoDesc: firstString(
+    protoDesc: firstPlainText(
       deliverySection?.intro,
       deliverySection?.description,
       caseStudyRaw.protoDesc,
@@ -1207,6 +1459,7 @@ function normalizeCaseStudy(raw, project) {
       project.result,
       "The high-fidelity prototype connected the main screens into a single flow so the final interactions could be reviewed more realistically."
     ),
+    protoDescContent,
     protoScreenImage: firstString(
       deliverySection?.prototype_screen,
       caseStudyRaw.protoScreenImage,
@@ -1221,7 +1474,7 @@ function normalizeCaseStudy(raw, project) {
           "Reduced friction across the most important interaction states.",
           "Prepared a more consistent prototype for handoff and iteration.",
         ],
-    outcomeIntro: firstString(
+    outcomeIntro: firstPlainText(
       outcomesRaw?.intro,
       raw?.outcomes,
       caseStudyRaw.outcomeIntro,
@@ -1229,8 +1482,11 @@ function normalizeCaseStudy(raw, project) {
       project.result,
       project.summary
     ),
+    outcomeIntroContent,
     impact,
+    impactContent,
     learned,
+    learnedContent,
     nextSteps: nextSteps.length ? nextSteps : project.nextSteps,
     liveUrl,
     liveProjectUrl: liveUrl,
@@ -1259,16 +1515,25 @@ export function normalizeProject(raw) {
     : {};
   const slug = safeLowerSlug(raw?.slug || raw?.id || raw?.title);
   const id = safeLowerSlug(raw?.id || slug || raw?.title);
-  const title = firstString(raw?.title, raw?.projectTitle);
+  const titleContent = firstRichTextValue(raw?.title, raw?.projectTitle);
+  const title = firstPlainText(raw?.title, raw?.projectTitle);
 
   const tasks = toStringArray(raw?.tasks || raw?.services);
+  const taskItems = normalizeInlineContentList(raw?.tasks || raw?.services);
   const tags = toStringArray(raw?.tags);
-  const category = firstString(raw?.category, tags[0], tasks[0], raw?.tag1);
-  const tag1 = firstString(raw?.tag1, tags[0], tasks[0], category);
-  const tag2 = firstString(raw?.tag2, tags[1], tasks[1]);
-  const summary = firstString(raw?.summary, raw?.subtitle, raw?.description);
-  const description = firstString(raw?.description, raw?.summary);
-  const subtitle = firstString(raw?.subtitle);
+  const tagItems = normalizeInlineContentList(raw?.tags);
+  const categoryContent = firstRichTextValue(raw?.category, raw?.tag1);
+  const category = firstPlainText(raw?.category, raw?.tag1, tags[0], tasks[0]);
+  const tag1Content = firstRichTextValue(raw?.tag1, raw?.category);
+  const tag1 = firstPlainText(raw?.tag1, raw?.category, tags[0], tasks[0], category);
+  const tag2Content = firstRichTextValue(raw?.tag2);
+  const tag2 = firstPlainText(raw?.tag2, tags[1], tasks[1]);
+  const summaryContent = firstRichTextValue(raw?.summary, raw?.subtitle, raw?.description);
+  const summary = firstPlainText(raw?.summary, raw?.subtitle, raw?.description);
+  const descriptionContent = firstRichTextValue(raw?.description, raw?.summary);
+  const description = firstPlainText(raw?.description, raw?.summary);
+  const subtitleContent = firstRichTextValue(raw?.subtitle);
+  const subtitle = firstPlainText(raw?.subtitle);
   const placeholderImage = makePlaceholderImage(slug || id || title);
   const image = sanitizeMediaUrl(
     firstString(raw?.image, imagesRaw?.cover, raw?.cover, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage)
@@ -1316,7 +1581,8 @@ export function normalizeProject(raw) {
   );
   const liveProject = {
     enabled: toBoolean(liveProjectRaw?.enabled, Boolean(liveProjectUrl)),
-    text: firstString(liveProjectRaw?.text, "View Live Project"),
+    text: firstPlainText(liveProjectRaw?.text, "View Live Project"),
+    textContent: firstRichTextValue(liveProjectRaw?.text),
     url: liveProjectUrl,
   };
 
@@ -1326,19 +1592,30 @@ export function normalizeProject(raw) {
     createdAt: firstString(raw?._createdAt, raw?.createdAt),
     updatedAt: firstString(raw?._updatedAt, raw?.updatedAt),
     title,
+    titleContent,
     subtitle,
+    subtitleContent,
     summary,
+    summaryContent,
     description,
+    descriptionContent,
     category,
+    categoryContent,
     tasks: tasks.length ? tasks : [tag1, tag2].filter(Boolean),
+    taskItems,
     tags,
+    tagItems,
     tag1,
+    tag1Content,
     tag2,
+    tag2Content,
     image,
     cover,
     thumbnail,
-    client: firstString(raw?.client),
-    industry: firstString(raw?.industry),
+    client: firstPlainText(raw?.client),
+    clientContent: firstRichTextValue(raw?.client),
+    industry: firstPlainText(raw?.industry),
+    industryContent: firstRichTextValue(raw?.industry),
     status: firstString(raw?.status, "published"),
     date: firstString(raw?.date),
     overview,

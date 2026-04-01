@@ -1,4 +1,11 @@
-import { copyCode, highlightCodeHtml } from "./utils";
+import { copyCode, highlightCodeHtml, sanitizeBlogHtml } from "./utils";
+
+function InlineCodeMeta({ html, fallback = "" }) {
+  const sanitizedHtml = sanitizeBlogHtml(html || fallback);
+  if (!sanitizedHtml) return null;
+
+  return <span dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+}
 
 export default function CodeBlock({ block }) {
   if (!block?.code) return null;
@@ -9,7 +16,8 @@ export default function CodeBlock({ block }) {
     <div className="blogPostCodeBlock">
       <div className="blogPostCodeHeader">
         <span className="blogPostCodeLang">
-          {block.language || "Code"} - {block.filename || "snippet.txt"}
+          <InlineCodeMeta html={block.languageHtml} fallback={block.language || "Code"} /> -{" "}
+          <InlineCodeMeta html={block.filenameHtml} fallback={block.filename || "snippet.txt"} />
         </span>
         <button type="button" className="blogPostCopyBtn" onClick={(event) => copyCode(event.currentTarget)}>
           Copy

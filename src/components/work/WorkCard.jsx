@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { richTextToInlineHtml } from "../../lib/richText.js";
 
 const ArrowIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -8,6 +9,29 @@ const ArrowIcon = () => (
     <polyline points="7 7 17 7 17 17" />
   </svg>
 );
+
+function InlineRichText({ value, fallback = "", as: Tag = "span" }) {
+  const html = richTextToInlineHtml(value || fallback);
+  if (!html) return null;
+
+  return <Tag dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+function pickRichTextValue(...entries) {
+  for (const entry of entries) {
+    const text = String(entry?.text || "").trim();
+    const content = entry?.content || text;
+
+    if (text) {
+      return {
+        text,
+        content,
+      };
+    }
+  }
+
+  return { text: "", content: "" };
+}
 
 export default function WorkCard({
   project,
@@ -52,6 +76,22 @@ export default function WorkCard({
     subtitle ||
     taskParts.join(" / ") ||
     "Product design case study.";
+  const titleValue = pickRichTextValue(
+    { text: title, content: project.titleContent },
+    { text: title, content: project.title }
+  );
+  const categoryValue = pickRichTextValue(
+    { text: categoryLabel, content: project.categoryContent },
+    { text: tag1, content: project.tag1Content },
+    { text: tag2, content: project.tag2Content },
+    { text: normalizedTasks[0], content: project.taskItems?.[0]?.content }
+  );
+  const taskValue = pickRichTextValue(
+    { text: summary, content: project.summaryContent },
+    { text: description, content: project.descriptionContent },
+    { text: subtitle, content: project.subtitleContent },
+    { text: taskLabel, content: taskLabel }
+  );
   const href = slug ? `/work/${slug}` : "#";
   const cardLabel = `Open ${title || "project"}`;
 
@@ -106,10 +146,18 @@ export default function WorkCard({
       <div className="workCard__footer">
         <div className="workCard__text">
           <div className="workCard__meta">
-            <h3 className="workCard__title">{title || "Untitled"}</h3>
-            {categoryLabel ? <span className="workCard__eyebrow">{categoryLabel}</span> : null}
+            <h3 className="workCard__title">
+              <InlineRichText value={titleValue.content} fallback={titleValue.text || "Untitled"} />
+            </h3>
+            {categoryValue.text ? (
+              <span className="workCard__eyebrow">
+                <InlineRichText value={categoryValue.content} fallback={categoryValue.text} />
+              </span>
+            ) : null}
           </div>
-          <p className="workCard__task">{taskLabel}</p>
+          <p className="workCard__task">
+            <InlineRichText value={taskValue.content} fallback={taskValue.text || taskLabel} />
+          </p>
         </div>
 
         {arrowClickable ? (

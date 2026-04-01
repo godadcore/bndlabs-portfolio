@@ -1,3 +1,5 @@
+import { sanitizeUrl } from "../../lib/urlSecurity";
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -47,6 +49,91 @@ export function highlightCodeHtml(code) {
 
   html += escapeHtml(source.slice(lastIndex));
   return html;
+}
+
+export function sanitizeBlogHtml(value) {
+  const rawHtml = String(value ?? "").trim();
+  if (!rawHtml) return "";
+
+  if (typeof window === "undefined" || typeof DOMParser === "undefined") {
+    return rawHtml.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+  }
+
+  const allowedTags = new Set([
+    "a",
+    "b",
+    "blockquote",
+    "br",
+    "code",
+    "em",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "i",
+    "li",
+    "ol",
+    "p",
+    "strong",
+    "u",
+    "ul",
+  ]);
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<body>${rawHtml}</body>`, "text/html");
+
+  const sanitizeNode = (node) => {
+    if (node.nodeType === window.Node.TEXT_NODE) {
+      return doc.createTextNode(node.textContent || "");
+    }
+
+    if (node.nodeType !== window.Node.ELEMENT_NODE) {
+      return null;
+    }
+
+    const tagName = node.nodeName.toLowerCase();
+    const childNodes = Array.from(node.childNodes)
+      .map(sanitizeNode)
+      .filter(Boolean);
+
+    if (!allowedTags.has(tagName)) {
+      const fragment = doc.createDocumentFragment();
+      childNodes.forEach((childNode) => fragment.appendChild(childNode));
+      return fragment;
+    }
+
+    const sanitizedElement = doc.createElement(tagName);
+
+    if (tagName === "a") {
+      const safeHref = sanitizeUrl(node.getAttribute("href"), {
+        allowRelative: true,
+        allowedProtocols: ["http:", "https:", "mailto:", "tel:"],
+      });
+
+      if (!safeHref) {
+        const fragment = doc.createDocumentFragment();
+        childNodes.forEach((childNode) => fragment.appendChild(childNode));
+        return fragment;
+      }
+
+      sanitizedElement.setAttribute("href", safeHref);
+
+      if (/^https?:/i.test(safeHref)) {
+        sanitizedElement.setAttribute("target", "_blank");
+        sanitizedElement.setAttribute("rel", "noreferrer noopener");
+      }
+    }
+
+    childNodes.forEach((childNode) => sanitizedElement.appendChild(childNode));
+    return sanitizedElement;
+  };
+
+  const wrapper = doc.createElement("div");
+  Array.from(doc.body.childNodes)
+    .map(sanitizeNode)
+    .filter(Boolean)
+    .forEach((node) => wrapper.appendChild(node));
+
+  return wrapper.innerHTML.trim();
 }
 
 export function toggleVideo(videoId, wrapperId) {

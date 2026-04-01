@@ -1,12 +1,11 @@
 import {defineField, defineType} from 'sanity'
-
-const stringListField = (name: string, title: string) =>
-  defineField({
-    name,
-    title,
-    type: 'array',
-    of: [{type: 'string'}],
-  })
+import {
+  portableTextToPlainText,
+  richInlineField,
+  richInlineListField,
+  richTextBlocks,
+  richTextField,
+} from './richTextFields'
 
 const externalUrlField = (name: string, title: string, description?: string) =>
   defineField({
@@ -21,6 +20,9 @@ const externalUrlField = (name: string, title: string, description?: string) =>
       }),
   })
 
+const richTitlePreview = (value: unknown, fallback: string) =>
+  portableTextToPlainText(value) || fallback
+
 export const postType = defineType({
   name: 'post',
   title: 'Blog Posts',
@@ -29,37 +31,27 @@ export const postType = defineType({
     defineField({
       name: 'title',
       title: 'Title',
-      type: 'string',
+      type: 'array',
+      of: richTextBlocks,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {source: 'title'},
+      options: {
+        source: (doc) => portableTextToPlainText(doc?.title),
+      },
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'excerpt',
-      title: 'Excerpt',
-      type: 'text',
-      rows: 4,
-    }),
+    richTextField('excerpt', 'Excerpt'),
     defineField({
       name: 'date',
       title: 'Published Date',
       type: 'datetime',
     }),
-    defineField({
-      name: 'read_time',
-      title: 'Read Time',
-      type: 'string',
-    }),
-    defineField({
-      name: 'tag',
-      title: 'Tag',
-      type: 'string',
-    }),
+    richInlineField('read_time', 'Read Time'),
+    richInlineField('tag', 'Tag'),
     externalUrlField(
       'thumb_url',
       'Thumbnail URL',
@@ -70,18 +62,22 @@ export const postType = defineType({
       title: 'Author',
       type: 'object',
       fields: [
-        defineField({
-          name: 'name',
-          title: 'Name',
-          type: 'string',
-        }),
-        defineField({
-          name: 'initials',
-          title: 'Initials',
-          type: 'string',
-        }),
+        richInlineField('name', 'Name'),
+        richInlineField('initials', 'Initials'),
         externalUrlField('avatar_url', 'Avatar URL'),
       ],
+      preview: {
+        select: {
+          title: 'name',
+          subtitle: 'initials',
+        },
+        prepare({title, subtitle}) {
+          return {
+            title: richTitlePreview(title, 'Author'),
+            subtitle: richTitlePreview(subtitle, ''),
+          }
+        },
+      },
     }),
     defineField({
       name: 'content_blocks',
@@ -92,17 +88,15 @@ export const postType = defineType({
           name: 'headingBlock',
           title: 'Heading',
           type: 'object',
-          fields: [
-            defineField({
-              name: 'text',
-              title: 'Text',
-              type: 'string',
-              validation: (Rule) => Rule.required(),
-            }),
-          ],
+          fields: [richInlineField('text', 'Text')],
           preview: {
             select: {
               title: 'text',
+            },
+            prepare({title}) {
+              return {
+                title: richTitlePreview(title, 'Heading'),
+              }
             },
           },
         }),
@@ -111,30 +105,31 @@ export const postType = defineType({
           title: 'Text',
           type: 'object',
           fields: [
+            richTextField('content', 'Content'),
             defineField({
               name: 'html',
-              title: 'HTML',
+              title: 'Legacy HTML',
               type: 'text',
               rows: 6,
-              description: 'Optional raw HTML if you want to preserve custom paragraph markup.',
+              hidden: true,
             }),
             defineField({
               name: 'body',
-              title: 'Body',
+              title: 'Legacy Body',
               type: 'text',
               rows: 6,
-              description: 'Plain text alternative. The frontend will convert paragraphs automatically.',
+              hidden: true,
             }),
           ],
           preview: {
             select: {
-              title: 'body',
+              title: 'content',
               subtitle: 'html',
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Text block',
-                subtitle: subtitle ? 'Uses HTML' : 'Plain text',
+                title: richTitlePreview(title, 'Text block'),
+                subtitle: subtitle ? 'Uses legacy HTML fallback' : 'Rich text',
               }
             },
           },
@@ -150,11 +145,7 @@ export const postType = defineType({
               title: 'Alt Text',
               type: 'string',
             }),
-            defineField({
-              name: 'caption',
-              title: 'Caption',
-              type: 'string',
-            }),
+            richInlineField('caption', 'Caption'),
             defineField({
               name: 'images',
               title: 'Image Grid',
@@ -171,16 +162,18 @@ export const postType = defineType({
                       title: 'Alt Text',
                       type: 'string',
                     }),
-                    defineField({
-                      name: 'caption',
-                      title: 'Caption',
-                      type: 'string',
-                    }),
+                    richInlineField('caption', 'Caption'),
                   ],
                   preview: {
                     select: {
-                      title: 'alt',
+                      title: 'caption',
                       subtitle: 'url',
+                    },
+                    prepare({title, subtitle}) {
+                      return {
+                        title: richTitlePreview(title, 'Image'),
+                        subtitle,
+                      }
                     },
                   },
                 }),
@@ -189,12 +182,12 @@ export const postType = defineType({
           ],
           preview: {
             select: {
-              title: 'alt',
+              title: 'caption',
               subtitle: 'url',
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Image block',
+                title: richTitlePreview(title, 'Image block'),
                 subtitle: subtitle || 'Image grid',
               }
             },
@@ -206,11 +199,7 @@ export const postType = defineType({
           type: 'object',
           fields: [
             externalUrlField('url', 'Video URL'),
-            defineField({
-              name: 'caption',
-              title: 'Caption',
-              type: 'string',
-            }),
+            richInlineField('caption', 'Caption'),
           ],
           preview: {
             select: {
@@ -219,7 +208,7 @@ export const postType = defineType({
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Video block',
+                title: richTitlePreview(title, 'Video block'),
                 subtitle,
               }
             },
@@ -236,20 +225,16 @@ export const postType = defineType({
               title: 'Alt Text',
               type: 'string',
             }),
-            defineField({
-              name: 'caption',
-              title: 'Caption',
-              type: 'string',
-            }),
+            richInlineField('caption', 'Caption'),
           ],
           preview: {
             select: {
-              title: 'alt',
+              title: 'caption',
               subtitle: 'url',
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'GIF block',
+                title: richTitlePreview(title, 'GIF block'),
                 subtitle,
               }
             },
@@ -260,16 +245,8 @@ export const postType = defineType({
           title: 'Code',
           type: 'object',
           fields: [
-            defineField({
-              name: 'language',
-              title: 'Language',
-              type: 'string',
-            }),
-            defineField({
-              name: 'filename',
-              title: 'Filename',
-              type: 'string',
-            }),
+            richInlineField('language', 'Language'),
+            richInlineField('filename', 'Filename'),
             defineField({
               name: 'code',
               title: 'Code',
@@ -285,8 +262,8 @@ export const postType = defineType({
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Code block',
-                subtitle,
+                title: richTitlePreview(title, 'Code block'),
+                subtitle: richTitlePreview(subtitle, ''),
               }
             },
           },
@@ -296,7 +273,7 @@ export const postType = defineType({
           title: 'Table',
           type: 'object',
           fields: [
-            stringListField('headers', 'Headers'),
+            richInlineListField('headers', 'Headers', 'header', 'Header'),
             defineField({
               name: 'rows',
               title: 'Rows',
@@ -306,14 +283,14 @@ export const postType = defineType({
                   name: 'table_row',
                   title: 'Row',
                   type: 'object',
-                  fields: [stringListField('cells', 'Cells')],
+                  fields: [richInlineListField('cells', 'Cells', 'cell', 'Cell')],
                   preview: {
                     select: {
-                      title: 'cells.0',
+                      title: 'cells',
                     },
                     prepare({title}) {
                       return {
-                        title: title || 'Table row',
+                        title: richTitlePreview(title, 'Table row'),
                       }
                     },
                   },
@@ -323,11 +300,11 @@ export const postType = defineType({
           ],
           preview: {
             select: {
-              title: 'headers.0',
+              title: 'headers',
             },
             prepare({title}) {
               return {
-                title: title || 'Table block',
+                title: richTitlePreview(title, 'Table block'),
               }
             },
           },
@@ -336,14 +313,19 @@ export const postType = defineType({
           name: 'audioBlock',
           title: 'Audio',
           type: 'object',
-          fields: [externalUrlField('url', 'Audio URL')],
+          fields: [
+            externalUrlField('url', 'Audio URL'),
+            richInlineField('caption', 'Caption'),
+          ],
           preview: {
             select: {
-              title: 'url',
+              title: 'caption',
+              subtitle: 'url',
             },
-            prepare({title}) {
+            prepare({title, subtitle}) {
               return {
-                title: title || 'Audio block',
+                title: richTitlePreview(title, 'Audio block'),
+                subtitle,
               }
             },
           },
@@ -358,17 +340,8 @@ export const postType = defineType({
               title: 'Emoji',
               type: 'string',
             }),
-            defineField({
-              name: 'title',
-              title: 'Title',
-              type: 'string',
-            }),
-            defineField({
-              name: 'body',
-              title: 'Body',
-              type: 'text',
-              rows: 4,
-            }),
+            richInlineField('title', 'Title'),
+            richTextField('body', 'Body'),
           ],
           preview: {
             select: {
@@ -377,8 +350,8 @@ export const postType = defineType({
             },
             prepare({title, subtitle}) {
               return {
-                title: title || 'Callout block',
-                subtitle,
+                title: richTitlePreview(title, 'Callout block'),
+                subtitle: richTitlePreview(subtitle, ''),
               }
             },
           },
@@ -393,50 +366,33 @@ export const postType = defineType({
         defineField({
           name: 'title',
           title: 'Title',
-          type: 'string',
+          type: 'array',
+          of: richTextBlocks,
         }),
         defineField({
           name: 'slug',
           title: 'Slug',
-          type: 'string',
+          type: 'slug',
+          options: {
+            source: (doc) => portableTextToPlainText(doc?.title),
+          },
         }),
-        defineField({
-          name: 'excerpt',
-          title: 'Excerpt',
-          type: 'text',
-          rows: 3,
-        }),
+        richTextField('excerpt', 'Excerpt'),
         defineField({
           name: 'date',
           title: 'Published Date',
           type: 'datetime',
         }),
-        defineField({
-          name: 'read_time',
-          title: 'Read Time',
-          type: 'string',
-        }),
-        defineField({
-          name: 'tag',
-          title: 'Tag',
-          type: 'string',
-        }),
+        richInlineField('read_time', 'Read Time'),
+        richInlineField('tag', 'Tag'),
         externalUrlField('thumb_url', 'Thumbnail URL'),
         defineField({
           name: 'author',
           title: 'Author',
           type: 'object',
           fields: [
-            defineField({
-              name: 'name',
-              title: 'Name',
-              type: 'string',
-            }),
-            defineField({
-              name: 'initials',
-              title: 'Initials',
-              type: 'string',
-            }),
+            richInlineField('name', 'Name'),
+            richInlineField('initials', 'Initials'),
             externalUrlField('avatar_url', 'Avatar URL'),
           ],
         }),
@@ -454,8 +410,8 @@ export const postType = defineType({
     },
     prepare({title, subtitle}) {
       return {
-        title,
-        subtitle: subtitle || 'Blog post',
+        title: richTitlePreview(title, 'Untitled post'),
+        subtitle: richTitlePreview(subtitle, 'Blog post'),
       }
     },
   },

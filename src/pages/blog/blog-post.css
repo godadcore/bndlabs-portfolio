@@ -197,6 +197,14 @@
   color: var(--text-primary);
 }
 
+.blogPostPage .blogPostTitle a,
+.blogPostPage .blogPostAuthorName a,
+.blogPostPage .blogPostMetaTag a,
+.blogPostPage .blogPostCodeLang a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .blogPostPage .blogPostAuthorRow {
   display: flex;
   align-items: center;
@@ -269,6 +277,66 @@
   line-height: 1.85;
 }
 
+.blogPostPage .blogPostText h1,
+.blogPostPage .blogPostText h2,
+.blogPostPage .blogPostText h3,
+.blogPostPage .blogPostText h4 {
+  margin: 0 0 16px;
+  font-family: var(--fontHeading);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.blogPostPage .blogPostText h1 {
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+}
+
+.blogPostPage .blogPostText h2 {
+  font-size: clamp(1.65rem, 2.7vw, 2.2rem);
+}
+
+.blogPostPage .blogPostText h3 {
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+}
+
+.blogPostPage .blogPostText h4 {
+  font-size: clamp(1.08rem, 1.8vw, 1.35rem);
+}
+
+.blogPostPage .blogPostText ul,
+.blogPostPage .blogPostText ol {
+  margin: 0 0 16px;
+  padding-left: 1.2rem;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.blogPostPage .blogPostText li + li {
+  margin-top: 6px;
+}
+
+.blogPostPage .blogPostText blockquote {
+  margin: 0 0 16px;
+  padding-left: 14px;
+  border-left: 2px solid rgba(var(--accent-rgb), 0.24);
+  color: var(--text-primary);
+}
+
+.blogPostPage .blogPostText code,
+.blogPostPage .blogPostMediaCaption code,
+.blogPostPage .blogPostCallout code,
+.blogPostPage .blogPostTable th code,
+.blogPostPage .blogPostTable td code,
+.blogPostPage .blogPostAudioCaption code {
+  padding: 0.08em 0.4em;
+  border-radius: 0.45em;
+  background: rgba(var(--accent-rgb), 0.08);
+  font-size: 0.95em;
+}
+
 .blogPostPage .blogPostText p:last-child {
   margin-bottom: 0;
 }
@@ -309,6 +377,34 @@
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.6;
+}
+
+.blogPostPage .blogPostMediaCaption p,
+.blogPostPage .blogPostMediaCaption h1,
+.blogPostPage .blogPostMediaCaption h2,
+.blogPostPage .blogPostMediaCaption h3,
+.blogPostPage .blogPostMediaCaption h4,
+.blogPostPage .blogPostMediaCaption ul,
+.blogPostPage .blogPostMediaCaption ol,
+.blogPostPage .blogPostMediaCaption blockquote,
+.blogPostPage .blogPostAudioCaption p,
+.blogPostPage .blogPostAudioCaption h1,
+.blogPostPage .blogPostAudioCaption h2,
+.blogPostPage .blogPostAudioCaption h3,
+.blogPostPage .blogPostAudioCaption h4,
+.blogPostPage .blogPostAudioCaption ul,
+.blogPostPage .blogPostAudioCaption ol,
+.blogPostPage .blogPostAudioCaption blockquote {
+  margin: 0;
+}
+
+.blogPostPage .blogPostMediaCaption a,
+.blogPostPage .blogPostAudioCaption a,
+.blogPostPage .blogPostCallout a,
+.blogPostPage .blogPostTable th a,
+.blogPostPage .blogPostTable td a {
+  color: var(--accent);
+  text-decoration: none;
 }
 
 .blogPostPage .blogPostPlayBtn {
@@ -470,6 +566,25 @@
   line-height: 1.7;
 }
 
+.blogPostPage .blogPostTable th p,
+.blogPostPage .blogPostTable td p,
+.blogPostPage .blogPostTable th h1,
+.blogPostPage .blogPostTable th h2,
+.blogPostPage .blogPostTable th h3,
+.blogPostPage .blogPostTable th h4,
+.blogPostPage .blogPostTable td h1,
+.blogPostPage .blogPostTable td h2,
+.blogPostPage .blogPostTable td h3,
+.blogPostPage .blogPostTable td h4,
+.blogPostPage .blogPostTable th ul,
+.blogPostPage .blogPostTable th ol,
+.blogPostPage .blogPostTable td ul,
+.blogPostPage .blogPostTable td ol,
+.blogPostPage .blogPostTable th blockquote,
+.blogPostPage .blogPostTable td blockquote {
+  margin: 0;
+}
+
 .blogPostPage .blogPostTable tbody tr:hover {
   background: rgba(var(--surface-rgb), 0.56);
 }
@@ -496,8 +611,20 @@
   flex-shrink: 0;
 }
 
+.blogPostPage .blogPostAudioContent {
+  flex: 1;
+  min-width: 0;
+}
+
 .blogPostPage .blogPostAudioBlock audio {
   width: 100%;
+}
+
+.blogPostPage .blogPostAudioCaption {
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .blogPostPage .blogPostCallout {
@@ -515,6 +642,17 @@
 
 .blogPostPage .blogPostCallout strong {
   color: var(--text-primary);
+}
+
+.blogPostPage .blogPostCallout p,
+.blogPostPage .blogPostCallout h1,
+.blogPostPage .blogPostCallout h2,
+.blogPostPage .blogPostCallout h3,
+.blogPostPage .blogPostCallout h4,
+.blogPostPage .blogPostCallout ul,
+.blogPostPage .blogPostCallout ol,
+.blogPostPage .blogPostCallout blockquote {
+  margin: 0;
 }
 
 .blogPostPage .blogPostCalloutEmoji {

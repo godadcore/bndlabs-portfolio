@@ -6,7 +6,7 @@ import Footer from "../layout/Footer";
 import Seo from "../seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { loadAllProjects } from "../../lib/projectData";
-import { richTextToHtml, richTextToPlainText } from "../../lib/richText.js";
+import { richTextToHtml, richTextToInlineHtml, richTextToPlainText } from "../../lib/richText.js";
 import {
   BASE_KEYWORDS,
   SITE_NAME,
@@ -477,6 +477,121 @@ function normalizeTextList(value) {
   return [];
 }
 
+function normalizeInlineItem(value) {
+  if (value == null) return null;
+
+  if (Array.isArray(value)) {
+    const looksLikePortableText = value.some(
+      (item) => item && typeof item === "object" && (item._type || item.children)
+    );
+
+    if (looksLikePortableText) {
+      const text = richTextToPlainText(value);
+      return text
+        ? {
+            text,
+            content: value,
+          }
+        : null;
+    }
+
+    return null;
+  }
+
+  if (typeof value === "object") {
+    const content =
+      value?.content ||
+      value?.titleContent ||
+      value?.headingContent ||
+      value?.labelContent ||
+      value?.metricContent ||
+      value?.captionContent ||
+      value?.descriptionContent ||
+      value?.nameContent ||
+      value?.industryContent ||
+      value?.categoryContent ||
+      value?.clientContent ||
+      value?.tagContent ||
+      value?.readTimeContent ||
+      value?.title ||
+      value?.heading ||
+      value?.label ||
+      value?.metric ||
+      value?.caption ||
+      value?.description ||
+      value?.name ||
+      value?.content;
+    const text = firstString(
+      richTextToPlainText(value?.content),
+      richTextToPlainText(value?.titleContent),
+      richTextToPlainText(value?.headingContent),
+      richTextToPlainText(value?.labelContent),
+      richTextToPlainText(value?.metricContent),
+      richTextToPlainText(value?.captionContent),
+      richTextToPlainText(value?.descriptionContent),
+      richTextToPlainText(value?.nameContent),
+      richTextToPlainText(value?.industryContent),
+      richTextToPlainText(value?.categoryContent),
+      richTextToPlainText(value?.clientContent),
+      value?.text,
+      value?.title,
+      value?.heading,
+      value?.label,
+      value?.metric,
+      value?.caption,
+      value?.description,
+      value?.name
+    );
+
+    return text
+      ? {
+          text,
+          content: content || text,
+        }
+      : null;
+  }
+
+  const text = richTextToPlainText(value);
+  return text
+    ? {
+        text,
+        content: value,
+      }
+    : null;
+}
+
+function normalizeInlineItems(value) {
+  if (Array.isArray(value)) {
+    const looksLikePortableText = value.some(
+      (item) => item && typeof item === "object" && (item._type || item.children)
+    );
+
+    if (looksLikePortableText) {
+      const item = normalizeInlineItem(value);
+      return item ? [item] : [];
+    }
+
+    return value.flatMap((item) => {
+      const normalized = normalizeInlineItem(item);
+      return normalized ? [normalized] : [];
+    });
+  }
+
+  const item = normalizeInlineItem(value);
+  return item ? [item] : [];
+}
+
+function uniqueInlineItems(items) {
+  const seen = new Set();
+
+  return items.filter((item) => {
+    const key = String(item?.text || "").trim().toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function formatProjectDate(value) {
   if (!value) return "";
   const parsed = new Date(value);
@@ -504,11 +619,25 @@ function splitProjectTitle(title) {
   return { lead: words.slice(0, -1).join(" "), accent: words.at(-1) };
 }
 
+function hasDecoratedInlineContent(value) {
+  if (!Array.isArray(value)) return false;
+
+  return value.some(
+    (block) =>
+      block &&
+      typeof block === "object" &&
+      (Array.isArray(block.children) &&
+        block.children.some(
+          (child) => Array.isArray(child?.marks) && child.marks.length
+        ))
+  );
+}
+
 function normalizeImageItem(value, fallbackAlt = "Project image") {
   if (!value) return null;
   if (typeof value === "string") {
     const src = firstString(value);
-    return src ? { src, alt: fallbackAlt, caption: "", label: "" } : null;
+    return src ? { src, alt: fallbackAlt, caption: "", captionContent: "", label: "" } : null;
   }
   const src = firstString(
     value?.src,
@@ -523,6 +652,7 @@ function normalizeImageItem(value, fallbackAlt = "Project image") {
     src,
     alt: firstString(value?.alt, value?.image?.alt, fallbackAlt),
     caption: firstString(value?.caption, value?.image?.caption),
+    captionContent: value?.captionContent || value?.caption || value?.image?.caption,
     label: firstString(value?.label, value?.title),
   };
 }
@@ -557,8 +687,8 @@ function buildInfoTable(section) {
   const rows = Array.isArray(section?.table?.rows) ? section.table.rows : [];
   return rows.reduce((acc, row) => {
     if (!Array.isArray(row)) return acc;
-    const key = String(row[0] ?? "").trim().toLowerCase();
-    const value = String(row[1] ?? "").trim();
+    const key = String(row[0]?.text ?? row[0] ?? "").trim().toLowerCase();
+    const value = String(row[1]?.text ?? row[1] ?? "").trim();
     if (key && value) acc[key] = value;
     return acc;
   }, {});
@@ -636,38 +766,43 @@ function buildResultCards(project, caseStudy) {
   const results = Array.isArray(caseStudy?.results)
     ? caseStudy.results
         .map((item) => ({
-          metric: firstString(item?.metric, item?.value),
+          metric: normalizeInlineItem(item?.metricContent || item?.metric || item?.value),
           description: item?.descriptionContent || item?.description || item?.text,
         }))
-        .filter((item) => item.metric && richTextToPlainText(item.description))
+        .filter((item) => item.metric?.text && richTextToPlainText(item.description))
     : [];
   if (results.length || caseStudy?.contentModel === "caseStudy") return results.slice(0, 4);
 
   const cards = [];
   if (caseStudy?.impact) {
     cards.push({
-      metric: caseStudy.impact,
-      description: firstString(
-        caseStudy?.outcomeIntro,
-        "A concise summary of the most meaningful product impact from the final direction."
-      ),
+      metric: normalizeInlineItem(caseStudy.impactContent || caseStudy.impact),
+      description:
+        caseStudy?.outcomeIntroContent ||
+        caseStudy?.outcomeIntro ||
+        "A concise summary of the most meaningful product impact from the final direction.",
     });
   }
   if (Array.isArray(project?.highlights)) {
     project.highlights.forEach((item) => {
-      const metric = firstString(item?.value);
+      const metric = normalizeInlineItem(item?.valueContent || item?.value);
       const description = firstString(item?.label);
-      if (metric && description) cards.push({ metric, description });
+      if (metric?.text && description) cards.push({ metric, description });
     });
   }
-  if (caseStudy?.learned) cards.push({ metric: "Key learning", description: caseStudy.learned });
+  if (caseStudy?.learned) {
+    cards.push({
+      metric: normalizeInlineItem("Key learning"),
+      description: caseStudy.learnedContent || caseStudy.learned,
+    });
+  }
   if (!cards.length) {
     cards.push({
-      metric: firstString(project?.status, "Delivered"),
-      description: firstString(project?.result, project?.summary, project?.description),
+      metric: normalizeInlineItem(firstString(project?.status, "Delivered")),
+      description: project?.descriptionContent || project?.summaryContent || project?.result || project?.summary || project?.description,
     });
   }
-  return uniqueBy(cards, (item) => `${item.metric}:${item.description}`).slice(0, 4);
+  return uniqueBy(cards, (item) => `${item.metric?.text}:${richTextToPlainText(item.description)}`).slice(0, 4);
 }
 
 function buildProblemItems(caseStudy) {
@@ -675,10 +810,10 @@ function buildProblemItems(caseStudy) {
 
   return caseStudy.problems
     .map((item, index) => ({
-      title: firstString(item?.title, `Problem ${index + 1}`),
+      title: normalizeInlineItem(item?.titleContent || item?.title || `Problem ${index + 1}`),
       description: item?.descriptionContent || item?.description,
     }))
-    .filter((item) => item.title || richTextToPlainText(item.description));
+    .filter((item) => item.title?.text || richTextToPlainText(item.description));
 }
 
 function MediaSlider({ items, label, onOpen, className = "" }) {
@@ -783,7 +918,11 @@ function MediaSlider({ items, label, onOpen, className = "" }) {
       </div>
 
       {activeItem.label || activeItem.caption ? (
-        <figcaption className="projectCaseCarouselCaption">{activeItem.label || activeItem.caption}</figcaption>
+        <figcaption className="projectCaseCarouselCaption">
+          <InlineRichTextContent
+            value={activeItem.captionContent || activeItem.caption || activeItem.label}
+          />
+        </figcaption>
       ) : null}
     </figure>
   );
@@ -805,7 +944,11 @@ function FeatureMedia({ media, fallbackLabel, onOpen }) {
         <video controls playsInline preload="metadata" poster={media.poster || undefined}>
           <source src={media.src} />
         </video>
-        {media.caption ? <figcaption>{media.caption}</figcaption> : null}
+        {media.caption ? (
+          <figcaption>
+            <InlineRichTextContent value={media.captionContent || media.caption} />
+          </figcaption>
+        ) : null}
       </figure>
     );
   }
@@ -816,7 +959,11 @@ function FeatureMedia({ media, fallbackLabel, onOpen }) {
         <audio controls preload="metadata">
           <source src={media.src} />
         </audio>
-        {media.caption ? <p className="projectCaseAudioCaption">{media.caption}</p> : null}
+        {media.caption ? (
+          <p className="projectCaseAudioCaption">
+            <InlineRichTextContent value={media.captionContent || media.caption} />
+          </p>
+        ) : null}
       </div>
     );
   }
@@ -830,7 +977,11 @@ function FeatureMedia({ media, fallbackLabel, onOpen }) {
       >
         <img src={media.src} alt={media.alt || fallbackLabel} loading="lazy" decoding="async" />
       </button>
-      {media.caption ? <figcaption>{media.caption}</figcaption> : null}
+      {media.caption ? (
+        <figcaption>
+          <InlineRichTextContent value={media.captionContent || media.caption} />
+        </figcaption>
+      ) : null}
     </figure>
   );
 }
@@ -842,9 +993,11 @@ function ScopeCard({ label, items, icon }) {
       <p className="projectCaseScopeLabel">{label}</p>
       <ul className="projectCaseList">
         {items.map((item) => (
-          <li className="projectCaseListItem" key={`${label}-${item}`}>
+          <li className="projectCaseListItem" key={`${label}-${item.text}`}>
             <span className="projectCaseListDot" aria-hidden="true" />
-            <span>{item}</span>
+            <span>
+              <InlineRichTextContent value={item.content || item.text} fallback={item.text} />
+            </span>
           </li>
         ))}
       </ul>
@@ -871,7 +1024,11 @@ function ObjectiveItem({ title, text, done, tag }) {
 function ProblemCard({ title, description }) {
   return (
     <article className="projectCaseProblemCard projectCaseSectionCard">
-      {title ? <h3 className="projectCaseProblemTitle">{title}</h3> : null}
+      {title ? (
+        <h3 className="projectCaseProblemTitle">
+          <InlineRichTextContent value={title.content || title.text || title} fallback={title.text || title} />
+        </h3>
+      ) : null}
       <RichTextContent
         value={description}
         className="projectCaseProblemDescription projectCaseRichText"
@@ -883,7 +1040,9 @@ function ProblemCard({ title, description }) {
 function ResultCard({ metric, description }) {
   return (
     <article className="projectCaseResultCard">
-      <p className="projectCaseResultMetric">{metric}</p>
+      <p className="projectCaseResultMetric">
+        <InlineRichTextContent value={metric.content || metric.text || metric} fallback={metric.text || metric} />
+      </p>
       <RichTextContent
         value={description}
         className="projectCaseResultDescription projectCaseRichText"
@@ -922,12 +1081,20 @@ function RichTextContent({ value, className = "", as = "div" }) {
   return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
+function InlineRichTextContent({ value, fallback = "", className = "", as = "span" }) {
+  const html = richTextToInlineHtml(value || fallback);
+  if (!html) return null;
+
+  const Tag = as;
+  return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
 function CaseStudyTable({ columns, rows }) {
   const normalizedColumns = Array.isArray(columns)
-    ? columns.map((column) => String(column ?? "").trim()).filter(Boolean)
+    ? columns.filter((column) => String(column?.text ?? column ?? "").trim())
     : [];
   const normalizedRows = Array.isArray(rows)
-    ? rows.filter((row) => Array.isArray(row) && row.some((cell) => String(cell ?? "").trim()))
+    ? rows.filter((row) => Array.isArray(row) && row.some((cell) => String(cell?.text ?? cell ?? "").trim()))
     : [];
 
   if (!normalizedColumns.length && !normalizedRows.length) return null;
@@ -939,8 +1106,8 @@ function CaseStudyTable({ columns, rows }) {
           <thead>
             <tr>
               {normalizedColumns.map((column) => (
-                <th key={column} scope="col">
-                  {column}
+                <th key={column.text || JSON.stringify(column)} scope="col">
+                  <InlineRichTextContent value={column.content || column.text || column} fallback={column.text || column} />
                 </th>
               ))}
             </tr>
@@ -950,7 +1117,7 @@ function CaseStudyTable({ columns, rows }) {
           {normalizedRows.map((row, rowIndex) => (
             <tr key={`table-row-${rowIndex}`}>
               {row.map((cell, cellIndex) => {
-                const value = String(cell ?? "").trim();
+                const value = String(cell?.text ?? cell ?? "").trim();
                 const CellTag =
                   !normalizedColumns.length && cellIndex === 0 ? "th" : "td";
 
@@ -959,7 +1126,7 @@ function CaseStudyTable({ columns, rows }) {
                     key={`table-cell-${rowIndex}-${cellIndex}`}
                     {...(CellTag === "th" ? { scope: "row" } : {})}
                   >
-                    {value}
+                    <InlineRichTextContent value={cell?.content || cell?.text || value} fallback={value} />
                   </CellTag>
                 );
               })}
@@ -973,6 +1140,7 @@ function CaseStudyTable({ columns, rows }) {
 
 function FlexibleCaseStudySection({ section, index, onOpen }) {
   const title = firstString(section?.heading, section?.navLabel, `Section ${index}`);
+  const titleContent = section?.headingContent || section?.heading || title;
   const label = firstString(section?.navLabel, title);
   const fallbackLabel = `${title} media`;
 
@@ -1002,6 +1170,7 @@ function FlexibleCaseStudySection({ section, index, onOpen }) {
           src: section.video.src,
           poster: firstString(section.poster?.src),
           caption: firstString(section.video.caption, section.heading),
+          captionContent: section.video.captionContent || section.headingContent || section.heading,
         }}
         fallbackLabel={fallbackLabel}
         onOpen={onOpen}
@@ -1014,6 +1183,7 @@ function FlexibleCaseStudySection({ section, index, onOpen }) {
           kind: "audio",
           src: section.audio.src,
           caption: firstString(section.audio.caption, section.heading),
+          captionContent: section.audio.captionContent || section.headingContent || section.heading,
         }}
         fallbackLabel={fallbackLabel}
         onOpen={onOpen}
@@ -1034,6 +1204,7 @@ function FlexibleCaseStudySection({ section, index, onOpen }) {
       index={index}
       label={label}
       title={title}
+      titleContent={titleContent}
       copy={section.content || section.text}
     >
       {content}
@@ -1041,7 +1212,7 @@ function FlexibleCaseStudySection({ section, index, onOpen }) {
   );
 }
 
-function CaseSection({ id, index, label, title, copy, children }) {
+function CaseSection({ id, index, label, title, titleContent, copy, children }) {
   const copyItems = normalizeContentEntries(copy);
 
   return (
@@ -1050,7 +1221,9 @@ function CaseSection({ id, index, label, title, copy, children }) {
       <p className="projectCaseEyebrow">
         {String(index).padStart(2, "0")} / {label}
       </p>
-      <h2 className="projectCaseSectionTitle">{title}</h2>
+      <h2 className="projectCaseSectionTitle">
+        <InlineRichTextContent value={titleContent || title} fallback={title} />
+      </h2>
       {copyItems.map((item, lineIndex) => (
         <RichTextContent
           as="div"
@@ -1113,7 +1286,9 @@ function Lightbox({ items, index, onClose, onNext, onPrev }) {
           <img src={activeItem.src} alt={activeItem.alt || activeItem.label || "Expanded project media"} />
           {activeItem.caption || activeItem.label ? (
             <figcaption className="projectCaseLightboxCaption">
-              {activeItem.caption || activeItem.label}
+              <InlineRichTextContent
+                value={activeItem.captionContent || activeItem.caption || activeItem.label}
+              />
             </figcaption>
           ) : null}
         </figure>
@@ -1403,26 +1578,27 @@ export default function CaseStudyDetail({ slug }) {
   );
   const infoTable = buildInfoTable(infoSection);
 
-  const roleItems = uniqueStrings([
-    ...normalizeTextList(caseStudy.role),
-    ...normalizeTextList(caseStudy.responsibilities),
-    ...normalizeTextList(caseStudy.myRole),
-    ...normalizeTextList(infoTable.role),
+  const roleItems = uniqueInlineItems([
+    ...(Array.isArray(caseStudy.roleItems) ? caseStudy.roleItems : normalizeInlineItems(caseStudy.role)),
+    ...normalizeInlineItems(caseStudy.responsibilities),
+    ...normalizeInlineItems(caseStudy.myRoleContent || caseStudy.myRole),
+    ...normalizeInlineItems(infoTable.role),
   ]);
-  const toolsItems = uniqueStrings([
-    ...normalizeTextList(caseStudy.tools),
-    ...normalizeTextList(infoTable.tools),
+  const toolsItems = uniqueInlineItems([
+    ...(Array.isArray(caseStudy.toolsItems) ? caseStudy.toolsItems : normalizeInlineItems(caseStudy.tools)),
+    ...normalizeInlineItems(infoTable.tools),
   ]);
-  const timelineItems = uniqueStrings([
-    ...normalizeTextList(caseStudy.timeline),
-    ...normalizeTextList(infoTable.duration),
-    ...normalizeTextList(infoTable.timeline),
-    firstString(formatProjectDate(caseStudy.publishedDate || project.date)),
+  const timelineItems = uniqueInlineItems([
+    ...(Array.isArray(caseStudy.timelineItems) ? caseStudy.timelineItems : normalizeInlineItems(caseStudy.timeline)),
+    ...normalizeInlineItems(infoTable.duration),
+    ...normalizeInlineItems(infoTable.timeline),
+    ...normalizeInlineItems(formatProjectDate(caseStudy.publishedDate || project.date)),
   ]);
 
   const brandName = firstString(caseStudy.brandName, project.client, project.title);
   const projectTitle = firstString(project.title, brandName);
   const { lead: titleLead, accent: titleAccent } = splitProjectTitle(projectTitle);
+  const shouldRenderRichHeroTitle = hasDecoratedInlineContent(project.titleContent);
   const projectDate = firstString(
     formatProjectDate(caseStudy.publishedDate),
     formatProjectDate(project.date),
@@ -1449,15 +1625,17 @@ export default function CaseStudyDetail({ slug }) {
   const primaryActionUrl = firstString(visitUrl, prototypeUrl);
   const primaryActionLabel = visitUrl ? "Visit Website" : "View Prototype";
 
-  const categories = uniqueStrings([
-    firstString(caseStudy.category, project.category, infoTable.platform),
-    firstString(project.industry),
+  const categoryItems = uniqueInlineItems([
+    ...normalizeInlineItems(caseStudy.categoryContent || caseStudy.category),
+    ...normalizeInlineItems(project.categoryContent || project.category),
+    ...normalizeInlineItems(project.industryContent || project.industry),
+    ...normalizeInlineItems(infoTable.platform),
   ]).slice(0, 3);
-  const features = uniqueStrings([
-    ...normalizeTextList(caseStudy.tasks),
-    ...normalizeTextList(project.tasks),
-    ...normalizeTextList(caseStudy.tags),
-    ...normalizeTextList(project.tags),
+  const features = uniqueInlineItems([
+    ...(Array.isArray(caseStudy.tasksItems) ? caseStudy.tasksItems : normalizeInlineItems(caseStudy.tasks)),
+    ...(Array.isArray(project.taskItems) ? project.taskItems : normalizeInlineItems(project.tasks)),
+    ...(Array.isArray(caseStudy.tagsItems) ? caseStudy.tagsItems : normalizeInlineItems(caseStudy.tags)),
+    ...(Array.isArray(project.tagItems) ? project.tagItems : normalizeInlineItems(project.tags)),
   ]).slice(0, 8);
 
   const problemItems = isModernCaseStudy
@@ -1567,31 +1745,45 @@ export default function CaseStudyDetail({ slug }) {
           src: videoSection.video.src,
           poster: firstString(videoSection.poster?.src),
           caption: firstString(videoSection.video.caption, videoSection.heading),
+          captionContent: videoSection.video.captionContent || videoSection.headingContent || videoSection.heading,
         }
       : protoImage
         ? { kind: "image", ...protoImage }
         : audioSection?.audio?.src
-          ? { kind: "audio", src: audioSection.audio.src, caption: firstString(audioSection.audio.caption, audioSection.heading) }
+          ? {
+              kind: "audio",
+              src: audioSection.audio.src,
+              caption: firstString(audioSection.audio.caption, audioSection.heading),
+              captionContent: audioSection.audio.captionContent || audioSection.headingContent || audioSection.heading,
+            }
           : null;
 
   const scopeCards = [
     {
       label: "My Role",
-      items: roleItems.length ? roleItems : [firstString(caseStudy.myRole, "Product Design")],
+      items: roleItems.length ? roleItems : normalizeInlineItems(caseStudy.myRoleContent || caseStudy.myRole || "Product Design"),
       icon: <IconRole />,
     },
     {
       label: toolsItems.length ? "Tools Used" : "Project Snapshot",
       items: toolsItems.length
         ? toolsItems
-        : uniqueStrings([firstString(project.client, brandName), firstString(project.industry), firstString(statusLabel)]).slice(0, 3),
+        : uniqueInlineItems([
+            ...normalizeInlineItems(project.clientContent || project.client || brandName),
+            ...normalizeInlineItems(project.industryContent || project.industry),
+            ...normalizeInlineItems(statusLabel),
+          ]).slice(0, 3),
       icon: <IconSnapshot />,
     },
     {
       label: "Timeline",
       items: timelineItems.length
         ? timelineItems
-        : uniqueStrings([firstString(projectDate), firstString(project.category), firstString(statusLabel)]).slice(0, 3),
+        : uniqueInlineItems([
+            ...normalizeInlineItems(projectDate),
+            ...normalizeInlineItems(project.categoryContent || project.category),
+            ...normalizeInlineItems(statusLabel),
+          ]).slice(0, 3),
       icon: <IconTimeline />,
     },
   ];
@@ -1602,49 +1794,67 @@ export default function CaseStudyDetail({ slug }) {
         caseStudy.overviewDescriptionContent || caseStudy.overviewDescription,
         caseStudy.overviewBlocks,
       ].filter((item) => Boolean(richTextToPlainText(item)))
-    : firstString(caseStudy.overviewIntro, project.overview, caseStudy.description, project.description, project.summary);
+    : caseStudy.overviewIntroContent ||
+      caseStudy.overviewIntro ||
+      project.descriptionContent ||
+      project.overview ||
+      caseStudy.description ||
+      project.description ||
+      project.summary;
   const researchCopy = isModernCaseStudy
     ? caseStudy.researchTextContent || caseStudy.researchText
-    : firstString(
-        caseStudy.researchIntro,
-        caseStudy.usabilityIntro,
+    : caseStudy.researchIntroContent ||
+      caseStudy.researchIntro ||
+      caseStudy.usabilityIntroContent ||
+      caseStudy.usabilityIntro ||
+      firstString(
         project.problem,
         "The project began with a close read of user friction, category patterns, and where the experience needed stronger guidance."
       );
   const problemCopy = isModernCaseStudy
     ? ""
-    : firstString(
+    : caseStudy.goalContent ||
+      caseStudy.goal ||
+      firstString(
         project.problem,
-        caseStudy.goal,
         "The goal was to reduce confusion, create a stronger hierarchy, and give users a clearer path through the product."
       );
   const wireCopy = isModernCaseStudy
     ? caseStudy.wireframeTextContent || caseStudy.wireframeText
-    : firstString(
-        caseStudy.wireframesIntro,
-        caseStudy.appmapDesc,
+    : caseStudy.wireframesIntroContent ||
+      caseStudy.wireframesIntro ||
+      caseStudy.appmapDescContent ||
+      caseStudy.appmapDesc ||
+      firstString(
         "The structure phase focused on information hierarchy, content flow, and deciding what each screen needed to communicate first."
       );
   const wireCopyTwo = isModernCaseStudy
     ? ""
-    : firstString(
-        caseStudy.digitalWireDesc,
+    : caseStudy.digitalWireDescContent ||
+      caseStudy.digitalWireDesc ||
+      project.descriptionContent ||
+      firstString(
         project.solution,
         "The wireframe direction created a stronger foundation for layout, interaction states, and scalable implementation."
       );
   const prototypeCopy = isModernCaseStudy
     ? caseStudy.prototypeTextContent || caseStudy.prototypeText
-    : firstString(
-        caseStudy.protoDesc,
-        caseStudy.designIntro,
+    : caseStudy.protoDescContent ||
+      caseStudy.protoDesc ||
+      caseStudy.designIntroContent ||
+      caseStudy.designIntro ||
+      project.descriptionContent ||
+      firstString(
         project.result,
         "The prototype turned the structure into an interactive flow that could be reviewed, refined, and prepared for handoff."
       );
   const resultsCopy = isModernCaseStudy
     ? ""
-    : firstString(
-        caseStudy.outcomeIntro,
-        caseStudy.impact,
+    : caseStudy.outcomeIntroContent ||
+      caseStudy.outcomeIntro ||
+      caseStudy.impactContent ||
+      caseStudy.impact ||
+      firstString(
         project.result,
         "The final direction brought the system together into a clearer, more confident experience with measurable improvement."
       );
@@ -1703,11 +1913,11 @@ export default function CaseStudyDetail({ slug }) {
                       <IconArrowLeft />
                       <span>Back to Work</span>
                     </Link>
-                    {categories.length ? (
+                    {categoryItems.length ? (
                       <div className="projectCaseCategoryRow" aria-label="Project categories">
-                        {categories.map((category) => (
-                          <span className="projectCaseCategoryChip" key={category}>
-                            {category}
+                        {categoryItems.map((category) => (
+                          <span className="projectCaseCategoryChip" key={category.text}>
+                            <InlineRichTextContent value={category.content || category.text} fallback={category.text} />
                           </span>
                         ))}
                       </div>
@@ -1715,22 +1925,35 @@ export default function CaseStudyDetail({ slug }) {
                   </div>
 
                   <div className="projectCaseHeroText">
-                    <h1 className="projectCaseTitle">
-                      {titleLead}
-                      {titleAccent ? (
-                        <>
-                          {" "}
-                          <span className="projectCaseTitleAccent">{titleAccent}</span>
-                        </>
-                      ) : null}
-                    </h1>
+                    {shouldRenderRichHeroTitle ? (
+                      <h1 className="projectCaseTitle">
+                        <InlineRichTextContent value={project.titleContent} fallback={projectTitle} />
+                      </h1>
+                    ) : (
+                      <h1 className="projectCaseTitle">
+                        {titleLead}
+                        {titleAccent ? (
+                          <>
+                            {" "}
+                            <span className="projectCaseTitleAccent">{titleAccent}</span>
+                          </>
+                        ) : null}
+                      </h1>
+                    )}
                     {caseStudy.brandLogo ? (
                       <img className="projectCaseBrandLogo" src={caseStudy.brandLogo} alt={brandName} loading="lazy" decoding="async" />
                     ) : (
                       <p className="projectCaseBrandName">{brandName}</p>
                     )}
                     <RichTextContent
-                      value={caseStudy.descriptionContent || caseStudy.description || project.description || project.summary}
+                      value={
+                        caseStudy.descriptionContent ||
+                        caseStudy.description ||
+                        project.descriptionContent ||
+                        project.summaryContent ||
+                        project.description ||
+                        project.summary
+                      }
                       className="projectCaseDescription projectCaseRichText"
                     />
                   </div>
@@ -1763,8 +1986,8 @@ export default function CaseStudyDetail({ slug }) {
                     <div className="projectCaseFeatureStrip">
                       <span className="projectCaseFeatureLabel">Features</span>
                       {features.map((feature) => (
-                        <span className="projectCaseFeatureChip" key={feature}>
-                          {feature}
+                        <span className="projectCaseFeatureChip" key={feature.text}>
+                          <InlineRichTextContent value={feature.content || feature.text} fallback={feature.text} />
                         </span>
                       ))}
                     </div>
@@ -1773,7 +1996,12 @@ export default function CaseStudyDetail({ slug }) {
                   <div className="projectCaseMetaGrid">
                     <div className="projectCaseMetaItem">
                       <p className="projectCaseMetaLabel">Category</p>
-                      <p className="projectCaseMetaValue">{firstString(categories.join(", "), project.category, "Case Study")}</p>
+                      <p className="projectCaseMetaValue">
+                        <InlineRichTextContent
+                          value={categoryItems[0]?.content || project.categoryContent || project.category || "Case Study"}
+                          fallback={categoryItems[0]?.text || project.category || "Case Study"}
+                        />
+                      </p>
                     </div>
                     <div className="projectCaseMetaItem">
                       <p className="projectCaseMetaLabel">Published</p>
@@ -1889,7 +2117,7 @@ export default function CaseStudyDetail({ slug }) {
                         <div className="projectCaseProblemGrid">
                           {problemItems.map((item) => (
                             <ProblemCard
-                              key={`${item.title}-${item.description}`}
+                              key={`${item.title?.text || item.title}-${richTextToPlainText(item.description)}`}
                               title={item.title}
                               description={item.description}
                             />
@@ -1967,7 +2195,11 @@ export default function CaseStudyDetail({ slug }) {
                       {resultCards.length ? (
                         <div className="projectCaseResultGrid">
                           {resultCards.map((card) => (
-                            <ResultCard key={`${card.metric}-${card.description}`} metric={card.metric} description={card.description} />
+                            <ResultCard
+                              key={`${card.metric?.text || card.metric}-${richTextToPlainText(card.description)}`}
+                              metric={card.metric}
+                              description={card.description}
+                            />
                           ))}
                         </div>
                       ) : null}

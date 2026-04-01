@@ -304,6 +304,13 @@
   max-width: none;
 }
 
+.workPage .workCard__title a,
+.workPage .workCard__task a,
+.workPage .workCard__eyebrow a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .workPage .workCard__arrow {
   width: 44px;
   height: 44px;

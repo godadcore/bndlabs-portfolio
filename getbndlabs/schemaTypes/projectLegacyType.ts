@@ -1,14 +1,16 @@
 import {defineField, defineType} from 'sanity'
+import {
+  portableTextToPlainText,
+  richInlineField,
+  richInlineListField,
+  richTextBlocks,
+  richTextField,
+} from './richTextFields'
 
-const stringListField = (name: string, title: string) =>
-  defineField({
-    name,
-    title,
-    type: 'array',
-    of: [{type: 'string'}],
-  })
+const richPreview = (value: unknown, fallback: string) =>
+  portableTextToPlainText(value) || fallback
 
-const textCardArrayField = (
+const richTextCardArrayField = (
   name: string,
   title: string,
   itemName: string,
@@ -26,22 +28,19 @@ const textCardArrayField = (
         title: itemTitle,
         type: 'object',
         fields: [
-          defineField({
-            name: 'title',
-            title: 'Title',
-            type: 'string',
-          }),
-          defineField({
-            name: bodyName,
-            title: bodyTitle,
-            type: 'text',
-            rows: 4,
-          }),
+          richInlineField('title', 'Title'),
+          richTextField(bodyName, bodyTitle),
         ],
         preview: {
           select: {
             title: 'title',
             subtitle: bodyName,
+          },
+          prepare({title, subtitle}) {
+            return {
+              title: richPreview(title, itemTitle),
+              subtitle: richPreview(subtitle, ''),
+            }
           },
         },
       }),
@@ -95,31 +94,25 @@ export const projectType = defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {source: 'title'},
+      options: {
+        source: (doc) => portableTextToPlainText(doc?.title),
+      },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'title',
       title: 'Title',
-      type: 'string',
+      type: 'array',
+      of: richTextBlocks,
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
-      name: 'subtitle',
-      title: 'Subtitle',
-      type: 'string',
-    }),
-    defineField({
-      name: 'summary',
-      title: 'Summary',
-      type: 'text',
-      rows: 3,
-    }),
+    richInlineField('subtitle', 'Subtitle'),
+    richTextField('summary', 'Summary'),
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'text',
-      rows: 4,
+      type: 'array',
+      of: richTextBlocks,
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -132,63 +125,17 @@ export const projectType = defineType({
           scheme: ['https', 'http'],
         }),
     }),
-    defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'string',
-    }),
-    defineField({
-      name: 'tag1',
-      title: 'Tag 1',
-      type: 'string',
-    }),
-    defineField({
-      name: 'tag2',
-      title: 'Tag 2',
-      type: 'string',
-    }),
-    defineField({
-      name: 'goal',
-      title: 'Goal',
-      type: 'text',
-      rows: 3,
-    }),
-    defineField({
-      name: 'solution',
-      title: 'Solution',
-      type: 'text',
-      rows: 3,
-    }),
-    defineField({
-      name: 'my_role',
-      title: 'My Role',
-      type: 'string',
-    }),
-    textCardArrayField('challenges', 'Challenges', 'challenge', 'Challenge'),
-    defineField({
-      name: 'discovery',
-      title: 'Discovery',
-      type: 'text',
-      rows: 4,
-    }),
-    defineField({
-      name: 'overview',
-      title: 'Overview',
-      type: 'text',
-      rows: 4,
-    }),
-    defineField({
-      name: 'problem',
-      title: 'Problem',
-      type: 'text',
-      rows: 4,
-    }),
-    defineField({
-      name: 'result',
-      title: 'Result',
-      type: 'text',
-      rows: 4,
-    }),
+    richInlineField('category', 'Category'),
+    richInlineField('tag1', 'Tag 1'),
+    richInlineField('tag2', 'Tag 2'),
+    richTextField('goal', 'Goal'),
+    richTextField('solution', 'Solution'),
+    richInlineField('my_role', 'My Role'),
+    richTextCardArrayField('challenges', 'Challenges', 'challenge', 'Challenge'),
+    richTextField('discovery', 'Discovery'),
+    richTextField('overview', 'Overview'),
+    richTextField('problem', 'Problem'),
+    richTextField('result', 'Result'),
     defineField({
       name: 'highlights',
       title: 'Highlights',
@@ -199,21 +146,19 @@ export const projectType = defineType({
           title: 'Highlight',
           type: 'object',
           fields: [
-            defineField({
-              name: 'label',
-              title: 'Label',
-              type: 'string',
-            }),
-            defineField({
-              name: 'value',
-              title: 'Value',
-              type: 'string',
-            }),
+            richInlineField('label', 'Label'),
+            richInlineField('value', 'Value'),
           ],
           preview: {
             select: {
               title: 'label',
               subtitle: 'value',
+            },
+            prepare({title, subtitle}) {
+              return {
+                title: richPreview(title, 'Highlight'),
+                subtitle: richPreview(subtitle, ''),
+              }
             },
           },
         }),
@@ -229,12 +174,7 @@ export const projectType = defineType({
           title: 'Structure',
           type: 'object',
           fields: [
-            defineField({
-              name: 'intro',
-              title: 'Intro',
-              type: 'text',
-              rows: 3,
-            }),
+            richTextField('intro', 'Intro'),
             defineField({
               name: 'image',
               title: 'Image URL',
@@ -247,12 +187,7 @@ export const projectType = defineType({
           title: 'Design',
           type: 'object',
           fields: [
-            defineField({
-              name: 'intro',
-              title: 'Intro',
-              type: 'text',
-              rows: 3,
-            }),
+            richTextField('intro', 'Intro'),
             defineField({
               name: 'image',
               title: 'Image URL',
@@ -278,16 +213,18 @@ export const projectType = defineType({
                       title: 'Image URL',
                       type: 'string',
                     }),
-                    defineField({
-                      name: 'label',
-                      title: 'Label',
-                      type: 'string',
-                    }),
+                    richInlineField('label', 'Label'),
                   ],
                   preview: {
                     select: {
                       title: 'label',
                       subtitle: 'src',
+                    },
+                    prepare({title, subtitle}) {
+                      return {
+                        title: richPreview(title, 'Screen'),
+                        subtitle,
+                      }
                     },
                   },
                 }),
@@ -300,26 +237,16 @@ export const projectType = defineType({
           title: 'Delivery',
           type: 'object',
           fields: [
-            defineField({
-              name: 'intro',
-              title: 'Intro',
-              type: 'text',
-              rows: 3,
-            }),
+            richTextField('intro', 'Intro'),
             defineField({
               name: 'prototype_screen',
               title: 'Prototype Screen URL',
               type: 'string',
             }),
-            stringListField('bullets', 'Bullets'),
+            richInlineListField('bullets', 'Bullets', 'bulletItem', 'Bullet'),
           ],
         }),
-        defineField({
-          name: 'integration',
-          title: 'Integration',
-          type: 'text',
-          rows: 3,
-        }),
+        richTextField('integration', 'Integration'),
         defineField({
           name: 'steps',
           title: 'Steps',
@@ -330,28 +257,25 @@ export const projectType = defineType({
               title: 'Step',
               type: 'object',
               fields: [
-                defineField({
-                  name: 'title',
-                  title: 'Title',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'description',
-                  title: 'Description',
-                  type: 'text',
-                  rows: 3,
-                }),
+                richInlineField('title', 'Title'),
+                richTextField('description', 'Description'),
               ],
               preview: {
                 select: {
                   title: 'title',
                   subtitle: 'description',
                 },
+                prepare({title, subtitle}) {
+                  return {
+                    title: richPreview(title, 'Step'),
+                    subtitle: richPreview(subtitle, ''),
+                  }
+                },
               },
             }),
           ],
         }),
-        stringListField('next_steps', 'Next Steps'),
+        richInlineListField('next_steps', 'Next Steps', 'nextStepItem', 'Next Step'),
       ],
     }),
     defineField({
@@ -359,12 +283,7 @@ export const projectType = defineType({
       title: 'User Research',
       type: 'object',
       fields: [
-        defineField({
-          name: 'method',
-          title: 'Method',
-          type: 'text',
-          rows: 4,
-        }),
+        richTextField('method', 'Method'),
         defineField({
           name: 'persona',
           title: 'Persona',
@@ -380,55 +299,27 @@ export const projectType = defineType({
                   title: 'Image URL',
                   type: 'string',
                 }),
-                defineField({
-                  name: 'name',
-                  title: 'Name',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'age',
-                  title: 'Age',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'gender',
-                  title: 'Gender',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'occupation',
-                  title: 'Occupation',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'location',
-                  title: 'Location',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'education',
-                  title: 'Education',
-                  type: 'string',
-                }),
-                defineField({
-                  name: 'quote',
-                  title: 'Quote',
-                  type: 'text',
-                  rows: 3,
-                }),
-                defineField({
-                  name: 'bio',
-                  title: 'Bio',
-                  type: 'text',
-                  rows: 4,
-                }),
-                stringListField('goals', 'Goals'),
-                stringListField('frustrations', 'Frustrations'),
+                richInlineField('name', 'Name'),
+                richInlineField('age', 'Age'),
+                richInlineField('gender', 'Gender'),
+                richInlineField('occupation', 'Occupation'),
+                richInlineField('location', 'Location'),
+                richInlineField('education', 'Education'),
+                richTextField('quote', 'Quote'),
+                richTextField('bio', 'Bio'),
+                richInlineListField('goals', 'Goals', 'goalItem', 'Goal'),
+                richInlineListField('frustrations', 'Frustrations', 'frustrationItem', 'Frustration'),
               ],
               preview: {
                 select: {
                   title: 'name',
                   subtitle: 'occupation',
+                },
+                prepare({title, subtitle}) {
+                  return {
+                    title: richPreview(title, 'Persona'),
+                    subtitle: richPreview(subtitle, ''),
+                  }
                 },
               },
             }),
@@ -439,12 +330,7 @@ export const projectType = defineType({
           title: 'Journey Mapping',
           type: 'object',
           fields: [
-            defineField({
-              name: 'goal',
-              title: 'Goal',
-              type: 'text',
-              rows: 3,
-            }),
+            richTextField('goal', 'Goal'),
             defineField({
               name: 'image',
               title: 'Image URL',
@@ -452,7 +338,7 @@ export const projectType = defineType({
             }),
           ],
         }),
-        textCardArrayField('findings', 'Findings', 'finding', 'Finding'),
+        richTextCardArrayField('findings', 'Findings', 'finding', 'Finding'),
       ],
     }),
     defineField({
@@ -460,24 +346,9 @@ export const projectType = defineType({
       title: 'Outcomes',
       type: 'object',
       fields: [
-        defineField({
-          name: 'intro',
-          title: 'Intro',
-          type: 'text',
-          rows: 3,
-        }),
-        defineField({
-          name: 'impact',
-          title: 'Impact',
-          type: 'text',
-          rows: 3,
-        }),
-        defineField({
-          name: 'learned',
-          title: 'Learned',
-          type: 'text',
-          rows: 3,
-        }),
+        richTextField('intro', 'Intro'),
+        richTextField('impact', 'Impact'),
+        richTextField('learned', 'Learned'),
       ],
     }),
     defineField({
@@ -513,21 +384,13 @@ export const projectType = defineType({
       title: 'Thumbnail URL',
       type: 'string',
     }),
-    textCardArrayField('sections', 'Sections', 'section', 'Section', 'body', 'Body'),
+    richTextCardArrayField('sections', 'Sections', 'section', 'Section', 'body', 'Body'),
     imageListField('gallery', 'Gallery', 'gallery_entry', 'Gallery Item'),
-    stringListField('nextSteps', 'Next Steps'),
-    stringListField('tasks', 'Tasks'),
-    stringListField('tags', 'Tags'),
-    defineField({
-      name: 'client',
-      title: 'Client',
-      type: 'string',
-    }),
-    defineField({
-      name: 'industry',
-      title: 'Industry',
-      type: 'string',
-    }),
+    richInlineListField('nextSteps', 'Next Steps', 'nextStepItem', 'Next Step'),
+    richInlineListField('tasks', 'Tasks', 'taskItem', 'Task'),
+    richInlineListField('tags', 'Tags', 'tagItem', 'Tag'),
+    richInlineField('client', 'Client'),
+    richInlineField('industry', 'Industry'),
     defineField({
       name: 'status',
       title: 'Status',
@@ -554,9 +417,9 @@ export const projectType = defineType({
       status: 'status',
     },
     prepare({title, subtitle, status}) {
-      const parts = [subtitle, status].filter(Boolean)
+      const parts = [richPreview(subtitle, ''), status].filter(Boolean)
       return {
-        title,
+        title: richPreview(title, 'Untitled project'),
         subtitle: parts.join(' | '),
       }
     },
