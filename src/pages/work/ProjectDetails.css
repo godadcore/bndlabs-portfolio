@@ -1600,3 +1600,7 @@
     font-size: clamp(2.35rem, 13vw, 3.4rem);
   }
 }
+
+.projectDetailsPage .projectDetailsSection {
+  padding-top: var(--portfolio-header-clearance);
+}

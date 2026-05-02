@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/layout/Footer";
-import Header from "../components/layout/Header";
 import Seo from "../components/seo/Seo";
 import usePullToRefresh from "../hooks/usePullToRefresh";
 import { SITE_NAME } from "../lib/site";
@@ -25,13 +24,7 @@ export default function NotFound() {
 
       <section className="hero aboutCard" aria-label="Page not found">
         <div className="cardScroll" ref={scrollRef}>
-          <section className="aboutHeroShell" id="top">
-            <div className="aboutShell">
-              <Header />
-            </div>
-          </section>
-
-          <section className="notFoundSection" aria-labelledby="not-found-title">
+          <section className="notFoundSection" id="top" aria-labelledby="not-found-title">
             <div className="notFoundInner">
               <article className="notFoundCard">
                 <p className="notFoundEyebrow">404 Error</p>

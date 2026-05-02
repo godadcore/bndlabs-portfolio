@@ -882,3 +882,7 @@
     color: var(--text-muted);
   }
 }
+
+.workPage .workHeroShell--clean {
+  padding-top: var(--portfolio-header-clearance);
+}

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import BlogCard from "../blog/BlogCard";
-import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import Seo from "../seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
@@ -1482,12 +1481,7 @@ export default function CaseStudyDetail({ slug }) {
       <main className="page projectDetailsPage">
         <section className="hero aboutCard">
           <div className="cardScroll" ref={scrollRootRef}>
-            <section className="aboutHeroShell">
-              <div className="aboutShell">
-                <Header active="work" />
-              </div>
-            </section>
-            <section className="projectDetailsSection">
+            <section className="projectDetailsSection" id="top">
               <div className="projectDetailsInner">
                 <div className="projectDetailsToolbar">
                   <Link className="projectBackBtn" to="/work">
@@ -1520,12 +1514,7 @@ export default function CaseStudyDetail({ slug }) {
         />
         <section className="hero aboutCard">
           <div className="cardScroll" ref={scrollRootRef}>
-            <section className="aboutHeroShell">
-              <div className="aboutShell">
-                <Header active="work" />
-              </div>
-            </section>
-            <section className="projectDetailsSection">
+            <section className="projectDetailsSection" id="top">
               <div className="projectDetailsInner">
                 <div className="projectDetailsToolbar">
                   <Link className="projectBackBtn" to="/work">
@@ -1898,13 +1887,7 @@ export default function CaseStudyDetail({ slug }) {
 
       <section className="hero aboutCard" aria-label="Case study page">
         <div className="cardScroll" ref={scrollRootRef}>
-          <section className="aboutHeroShell" id="top">
-            <div className="aboutShell">
-              <Header active="work" />
-            </div>
-          </section>
-
-          <section className="projectDetailsSection" aria-label="Project details">
+          <section className="projectDetailsSection" id="top" aria-label="Project details">
             <div className="projectDetailsInner">
               <article className="projectCaseStudy">
                 <header className="projectCaseHero">

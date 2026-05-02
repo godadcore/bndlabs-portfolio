@@ -301,3 +301,7 @@
       0 24px 68px rgba(0, 0, 0, 0.28);
   }
 }
+
+.notFoundPage .notFoundSection {
+  padding-top: var(--portfolio-header-clearance);
+}

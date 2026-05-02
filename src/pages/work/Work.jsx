@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import WorkCard from "../../components/work/WorkCard";
 import Seo from "../../components/seo/Seo";
@@ -344,8 +343,6 @@ export default function Work() {
           <section className="workHeroSection--clean">
             <div className="workHeroShell--clean">
               <div className="aboutShell workShell">
-                <Header active="work" />
-
                 <div className="workMotionScope" ref={motionScopeRef}>
                   <div className="workHeroHeadingWrapClean workReveal workReveal--soft">
                     <h1 className="srOnly">Selected Work / Projects</h1>

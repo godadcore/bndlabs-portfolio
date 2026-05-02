@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion as Motion, useInView, useScroll, useTransform } from "motion/react";
 import Footer from "../components/layout/Footer";
-import Header from "../components/layout/Header";
 import greeting from "../assets/About Greeting GIF.webm";
 import portfolio1 from "../assets/Portfolio Image 1.png";
 import portfolio2 from "../assets/Portfolio Image 2.png";
@@ -163,8 +162,6 @@ export default function About() {
         <div className="cardScroll" ref={scrollRef}>
           <section className="aboutHeroShell" id="top">
             <div className="aboutShell">
-              <Header active="about" />
-
               <div className="aboutBodyGrid">
                 <Motion.div
                   className="aboutTextBlock"

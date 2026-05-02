@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import BlogCard from "../../components/blog/BlogCard";
 import Seo from "../../components/seo/Seo";
@@ -159,8 +158,6 @@ export default function Blog() {
           <section className="workHeroSection--clean">
             <div className="workHeroShell--clean">
               <div className="aboutShell workShell">
-                <Header active="blog" />
-
                 <div className="workMotionScope" ref={motionScopeRef}>
                   <div className="workHeroHeadingWrapClean workReveal workReveal--soft">
                     <h1 className="srOnly">Blog</h1>

@@ -8,7 +8,6 @@ import MediaBlock from "../../components/blog-post/MediaBlock";
 import TableBlock from "../../components/blog-post/TableBlock";
 import TocSidebar from "../../components/blog-post/TocSidebar";
 import Footer from "../../components/layout/Footer";
-import Header from "../../components/layout/Header";
 import Seo from "../../components/seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import {
@@ -196,13 +195,7 @@ function BlogPostContent({ slug }) {
 
       <section className="hero aboutCard" aria-label="Blog post">
         <div className="cardScroll" ref={scrollRootRef}>
-          <section className="aboutHeroShell" id="top">
-            <div className="aboutShell">
-              <Header active="blog" />
-            </div>
-          </section>
-
-          <section className="blogPostSection" aria-label="Blog post content">
+          <section className="blogPostSection" id="top" aria-label="Blog post content">
             <div className="blogPostInner">
               <div className="blogPostToolbar">
                 <Link className="blogPostBackBtn" to="/blog">

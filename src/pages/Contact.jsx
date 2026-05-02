@@ -1,5 +1,4 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
-import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
@@ -389,14 +388,8 @@ export default function Contact() {
 
       <section className="hero aboutCard" aria-label="Contact hero">
         <div className="cardScroll" ref={scrollRootRef}>
-          <section className="aboutHeroShell" id="top">
-            <div className="aboutShell">
-              <Header active="contact" />
-            </div>
-          </section>
-
           <div className="contactMotionScope" ref={motionScopeRef}>
-          <section className="contactSection" aria-label="Contact form">
+          <section className="contactSection" id="contact" aria-label="Contact form">
             <div className="contactInner">
               <div className="contactHeading contactReveal contactReveal--soft">
                 <h1 className="srOnly">Contact UI/UX Designer</h1>

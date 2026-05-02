@@ -25,6 +25,11 @@
   --w-semi: 650;
   --w-bold: 700;
   --sectionPadX: clamp(22px, 3.2vw, 42px);
+  --portfolio-page-pad: clamp(14px, 2.6vw, 34px);
+  --portfolio-header-side-gap: clamp(18px, 3.5vw, 64px);
+  --portfolio-header-top-gap: clamp(18px, 2.1vw, 28px);
+  --portfolio-header-height: 70px;
+  --portfolio-header-clearance: calc(var(--portfolio-header-top-gap) + var(--portfolio-header-height) + clamp(28px, 3vw, 44px));
   --logoSizeMobile: 14px;
   --logoSizeDesktop: 20px;
   --logoWeight: 400;
@@ -661,6 +666,602 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .dropdown a.is-active-link::before{ display: none !important; }
 
 /* =========================================
+   PORTFOLIO HEADER
+========================================= */
+
+.portfolioHeaderShell.aboutStickyHeader{
+  position: fixed;
+  top: calc(var(--portfolio-page-pad) + var(--portfolio-header-top-gap));
+  left: 50%;
+  z-index: 9000;
+  width: min(
+    calc(100vw - (var(--portfolio-page-pad) * 2) - (var(--portfolio-header-side-gap) * 2)),
+    calc(2400px - (var(--portfolio-header-side-gap) * 2))
+  );
+  max-width: calc(100vw - 28px);
+  margin: 0;
+  background: transparent;
+  border: 0;
+  transform: translateX(-50%);
+  backface-visibility: visible;
+}
+
+.portfolioHeader{
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(12px, 1.5vw, 22px);
+  width: 100%;
+  min-height: var(--portfolio-header-height);
+  padding: 9px 10px 9px 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 22px;
+  background-color: rgba(10,10,20,.58);
+  background-image:
+    radial-gradient(circle at 16% 0%, rgba(106,88,255,.24), transparent 36%),
+    linear-gradient(135deg, rgba(18,18,32,.64), rgba(8,8,16,.46));
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.18),
+    0 1px 0 rgba(255,255,255,.10) inset;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  overflow: visible;
+}
+
+.portfolioLogo.logo{
+  min-width: 0;
+  width: max-content;
+  max-width: 100%;
+  padding: 6px 8px 6px 6px;
+  border-radius: 16px;
+  color: #ffffff;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.portfolioLogo.logo:hover{
+  background: rgba(255,255,255,.08);
+  transform: translateY(-1px);
+}
+
+.portfolioLogo .logo-mark{
+  width: 31px;
+}
+
+.portfolioLogo .logo-text{
+  font-size: clamp(13px, .95vw, 16px);
+  font-weight: 700;
+  letter-spacing: .11em;
+  color: #ffffff;
+}
+
+.portfolioNav{
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 999px;
+  background: rgba(255,255,255,.065);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.portfolioNavLink,
+.portfolioMobileLink{
+  font-family: var(--fontUi);
+  text-decoration: none;
+  letter-spacing: 0;
+}
+
+.portfolioNavLink{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 clamp(12px, 1vw, 16px);
+  border-radius: 999px;
+  color: rgba(255,255,255,.74);
+  font-size: clamp(15px, .98vw, 16px);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transition: color .2s ease, background .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.portfolioNavLink:hover{
+  color: #ffffff;
+  background: rgba(255,255,255,.08);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.portfolioNavLink.is-active{
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(106,88,255,.34), rgba(255,255,255,.10));
+  box-shadow:
+    0 0 22px rgba(106,88,255,.24),
+    inset 0 0 0 1px rgba(255,255,255,.14);
+}
+
+.portfolioNavIcon{
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: currentColor;
+  opacity: .86;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.portfolioNavIcon svg{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.portfolioNavLink:hover .portfolioNavIcon,
+.portfolioNavLink.is-active .portfolioNavIcon,
+.portfolioMobileLink:hover .portfolioNavIcon,
+.portfolioMobileLink.is-active .portfolioNavIcon{
+  opacity: 1;
+}
+
+.portfolioHeaderActions{
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  min-width: 0;
+}
+
+.portfolioCta,
+.portfolioMobileCta{
+  font-family: var(--fontUi);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 8px;
+  min-width: max-content;
+  height: 44px;
+  padding: 0 15px 0 17px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 999px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.portfolioCta--primary{
+  background:
+    linear-gradient(135deg, rgba(106,88,255,.98), rgba(79,64,220,.92));
+  box-shadow: 0 15px 32px rgba(106,88,255,.30), inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.portfolioCta--download{
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.06));
+  color: rgba(255,255,255,.92);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+.portfolioCta--download::before{
+  content: "";
+  position: absolute;
+  inset: -80% auto -80% -35%;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.24), transparent);
+  transform: translateX(-120%) rotate(12deg);
+  transition: transform .65s cubic-bezier(.2,.8,.2,1);
+}
+
+.portfolioCta:hover,
+.portfolioMobileCta:hover{
+  transform: translateY(-1px);
+}
+
+.portfolioCta--primary:hover,
+.portfolioMobileCta.portfolioCta--primary:hover{
+  box-shadow: 0 18px 38px rgba(106,88,255,.38), inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+.portfolioCta--download:hover,
+.portfolioMobileCta.portfolioCta--download:hover{
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+  box-shadow: 0 14px 30px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.14);
+}
+
+.portfolioCta--download:hover::before{
+  transform: translateX(360%) rotate(12deg);
+}
+
+.portfolioCta:active,
+.portfolioMobileCta:active{
+  transform: translateY(0) scale(.985);
+}
+
+.portfolioCtaIcon{
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.13);
+  color: currentColor;
+  flex: 0 0 auto;
+}
+
+.portfolioCtaIcon svg{
+  width: 15px;
+  height: 15px;
+}
+
+.portfolioMenuButton{
+  display: none;
+  appearance: none;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: none;
+  padding: 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.portfolioMenuButton span{
+  position: absolute;
+  width: 24px;
+  height: 2.5px;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform .28s cubic-bezier(.2,.8,.2,1), opacity .18s ease;
+}
+
+.portfolioMenuButton span:first-child{
+  transform: translateY(-4px);
+}
+
+.portfolioMenuButton span:last-child{
+  transform: translateY(4px);
+}
+
+.portfolioMenuButton.is-open span:first-child{
+  transform: rotate(45deg);
+}
+
+.portfolioMenuButton.is-open span:last-child{
+  transform: rotate(-45deg);
+}
+
+.portfolioMobilePanel{
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  z-index: 3001;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(106,88,255,.24), transparent 46%),
+    linear-gradient(135deg, rgba(18,18,30,.96), rgba(10,10,18,.84)),
+    rgba(10,10,20,.92);
+  box-shadow: 0 24px 62px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-8px) scale(.985);
+  transform-origin: top center;
+  transition:
+    opacity .22s ease,
+    visibility .22s ease,
+    transform .28s cubic-bezier(.2,.8,.2,1);
+}
+
+.portfolioMobilePanel.is-open{
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.portfolioMobilePanelInner{
+  display: grid;
+  gap: 5px;
+}
+
+.portfolioMobileLink{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  color: rgba(255,255,255,.78);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.portfolioMobileLink .portfolioNavIcon{
+  width: 20px;
+  height: 20px;
+}
+
+.portfolioMobileLink:hover,
+.portfolioMobileLink.is-active{
+  color: #ffffff;
+  background: rgba(106,88,255,.20);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.portfolioMobileActions{
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.portfolioMobileCta{
+  width: 100%;
+  margin-top: 5px;
+  min-height: 48px;
+}
+
+.portfolioLogo:focus-visible,
+.portfolioNavLink:focus-visible,
+.portfolioCta:focus-visible,
+.portfolioMenuButton:focus-visible,
+.portfolioMobileLink:focus-visible,
+.portfolioMobileCta:focus-visible{
+  outline: 3px solid rgba(143,130,255,.42);
+  outline-offset: 3px;
+}
+
+.homeHeroWithHeader{
+  position: relative;
+}
+
+.homeHeroWithHeader .copy{
+  margin-top: clamp(120px, 8vw, 146px);
+}
+
+@media (max-width: 1180px) and (min-width: 1024px){
+  .portfolioHeader{
+    gap: 10px;
+    padding-left: 10px;
+  }
+
+  .portfolioLogo .logo-mark{
+    width: 28px;
+  }
+
+  .portfolioLogo .logo-text{
+    font-size: 12px;
+    letter-spacing: .09em;
+  }
+
+  .portfolioNavLink{
+    height: 38px;
+    padding: 0 10px;
+    font-size: 14.5px;
+  }
+
+  .portfolioCta{
+    height: 42px;
+    padding: 0 12px 0 14px;
+    font-size: 13.5px;
+  }
+}
+
+@media (max-width: 1023px){
+  :root{
+    --portfolio-header-height: 62px;
+    --portfolio-header-clearance: calc(var(--portfolio-header-top-gap) + var(--portfolio-header-height) + 26px);
+  }
+
+  .portfolioHeader{
+    grid-template-columns: minmax(0, auto) auto;
+    justify-content: space-between;
+    min-height: 62px;
+    padding: 8px 8px 8px 12px;
+    border-radius: 22px;
+  }
+
+  .portfolioNav,
+  .portfolioCta{
+    display: none;
+  }
+
+  .portfolioHeaderActions{
+    justify-self: end;
+  }
+
+  .portfolioMenuButton{
+    display: inline-flex;
+  }
+
+  .portfolioLogo .logo-mark{
+    width: 28px;
+  }
+
+  .portfolioLogo .logo-text{
+    font-size: 13px;
+    letter-spacing: .1em;
+  }
+
+  .homeHeroWithHeader .copy{
+    margin-top: 78px;
+  }
+}
+
+@media (max-width: 768px){
+  :root{
+    --portfolio-header-height: 58px;
+    --portfolio-header-top-gap: 18px;
+  }
+
+  .portfolioHeader{
+    min-height: 58px;
+    border-radius: 22px;
+  }
+
+  .portfolioMenuButton{
+    width: 44px;
+    height: 44px;
+  }
+
+  .portfolioMobilePanel{
+    border-radius: 18px;
+  }
+
+  .portfolioMobileLink{
+    min-height: 45px;
+  }
+}
+
+@media (max-width: 430px){
+  :root{
+    --portfolio-header-side-gap: 18px;
+    --portfolio-header-top-gap: 18px;
+    --portfolio-header-clearance: calc(var(--portfolio-header-top-gap) + var(--portfolio-header-height) + 22px);
+  }
+
+  .homeHeroWithHeader .copy{
+    margin-top: 68px;
+  }
+
+  .portfolioHeader{
+    padding-left: 9px;
+    padding-right: 7px;
+  }
+
+  .portfolioLogo.logo{
+    gap: 8px;
+    padding-right: 4px;
+  }
+
+  .portfolioLogo .logo-mark{
+    width: 24px;
+  }
+
+  .portfolioMenuButton{
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (prefers-color-scheme: dark){
+  .portfolioHeader{
+    border-color: rgba(245,247,251,.12);
+    background-color: rgba(10,10,20,.58);
+    background-image:
+      radial-gradient(circle at 16% 0%, rgba(111,92,255,.22), transparent 38%),
+      linear-gradient(135deg, rgba(16,18,28,.66), rgba(8,9,16,.50));
+    box-shadow:
+      0 18px 45px rgba(0,0,0,.24),
+      0 1px 0 rgba(255,255,255,.08) inset;
+  }
+
+  .portfolioLogo.logo{
+    color: var(--text-primary);
+  }
+
+  .portfolioLogo.logo:hover{
+    background: rgba(111,92,255,.14);
+  }
+
+  .portfolioLogo .logo-text{
+    color: var(--text-primary);
+  }
+
+  .portfolioNav{
+    border-color: rgba(245,247,251,.08);
+    background: rgba(14,17,24,.36);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+  }
+
+  .portfolioNavLink{
+    color: rgba(245,247,251,.68);
+  }
+
+  .portfolioNavLink:hover{
+    color: rgba(245,247,251,.94);
+    background: rgba(245,247,251,.06);
+  }
+
+  .portfolioNavLink.is-active{
+    color: var(--accent-hover);
+    background: rgba(111,92,255,.17);
+    box-shadow: inset 0 0 0 1px rgba(111,92,255,.18);
+  }
+
+  .portfolioMenuButton{
+    border-color: transparent;
+    background: transparent;
+    color: var(--text-primary);
+    box-shadow: none;
+  }
+
+  .portfolioMobilePanel{
+    border-color: rgba(245,247,251,.10);
+    background:
+      linear-gradient(135deg, rgba(27,33,44,.96), rgba(22,27,36,.88)),
+      rgba(22,27,36,.94);
+    box-shadow: 0 24px 62px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.05);
+  }
+
+  .portfolioMobileLink{
+    color: rgba(245,247,251,.72);
+  }
+
+  .portfolioMobileLink:hover,
+  .portfolioMobileLink.is-active{
+    color: var(--accent-hover);
+    background: rgba(111,92,255,.17);
+  }
+
+  .portfolioCta,
+  .portfolioMobileCta{
+    background: linear-gradient(135deg, var(--accent-active), var(--accent-hover));
+    box-shadow: 0 16px 34px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .portfolioHeader,
+  .portfolioLogo.logo,
+  .portfolioNavLink,
+  .portfolioCta,
+  .portfolioMobileCta,
+  .portfolioMenuButton span,
+  .portfolioMobilePanel{
+    transition: none !important;
+  }
+}
+
+/* =========================================
    ABOUT PAGE
 ========================================= */
 
@@ -741,6 +1342,10 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 ========================================= */
 
 @media (min-width: 981px){
+  :root{
+    --portfolio-page-pad: clamp(10px, 1.3vw, 20px);
+  }
+
   .h1{ font-size: var(--heroTitleDesktop); }
   :root{ --hamW: 36px; --hamH: 3.5px; --hamGap: 9px; --hamPad: 10px; }
   .menu-wrapper--mobile{ display:none; }
@@ -1229,4 +1834,9 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
 @media (min-width: 1100px){
   .contactSub{ max-width: none; white-space: nowrap; font-size: 14px; }
+}
+
+.aboutPage .aboutHeroShell,
+.contactPage .contactSection{
+  padding-top: var(--portfolio-header-clearance);
 }

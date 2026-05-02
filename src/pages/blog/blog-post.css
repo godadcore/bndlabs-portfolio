@@ -967,3 +967,7 @@
     max-height: 360px;
   }
 }
+
+.blogPostPage .blogPostSection {
+  padding-top: var(--portfolio-header-clearance);
+}

@@ -61,7 +61,7 @@ export default function SelectedWork({ scrollRootRef }) {
       <div className="selectedWorkLayout">
         <div className="selectedWorkLeft">
           <h2 className="selectedWorkTitle">
-            Selected
+            Top
             <br />
             work
           </h2>
