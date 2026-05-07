@@ -2,7 +2,6 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SITE_NAME } from "../../lib/site";
 import cvDownloadUrl from "../../Bodunde_Emmanuel_CV.pdf";
-import BrandMark from "./BrandMark";
 
 const NAV_ITEMS = [
   { key: "home", label: "Home", to: "/#home", section: "home", icon: "home" },
@@ -202,10 +201,14 @@ export default function Header({ active = "" }) {
           aria-label="Home"
           onClick={navigateTo(NAV_ITEMS[0])}
         >
-          <BrandMark className="logo-mark" />
-          <span className="logo-text">
-            {SITE_NAME}<span className="dot">.</span>
-          </span>
+          <img
+            className="logo-image"
+            src="/brand-logo.svg"
+            alt={`${SITE_NAME} logo`}
+            width="346"
+            height="86"
+            decoding="async"
+          />
         </a>
 
         <nav className="portfolioNav" aria-label="Primary navigation">

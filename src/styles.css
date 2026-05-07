@@ -426,6 +426,7 @@ h6,
 
 .logo{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
 .logo-mark{ display:block; width:32px; height:auto; aspect-ratio: 118 / 90; flex:0 0 auto; }
+.logo-image{ display:block; width: 136px; height:auto; aspect-ratio: 346 / 86; flex:0 0 auto; }
 .logo-text{ font-weight: var(--logoWeight); letter-spacing: var(--logoTracking); font-size: var(--logoSizeDesktop); line-height: 1.02; }
 .dot{ letter-spacing:0; }
 
@@ -713,7 +714,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   min-width: 0;
   width: max-content;
   max-width: 100%;
-  padding: 6px 8px 6px 6px;
+  padding: 6px 8px;
   border-radius: 16px;
   color: #ffffff;
   transition: background .2s ease, transform .2s ease;
@@ -726,6 +727,10 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
 .portfolioLogo .logo-mark{
   width: 31px;
+}
+
+.portfolioLogo .logo-image{
+  width: clamp(112px, 9.2vw, 148px);
 }
 
 .portfolioLogo .logo-text{
@@ -1057,6 +1062,10 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
     width: 28px;
   }
 
+  .portfolioLogo .logo-image{
+    width: 118px;
+  }
+
   .portfolioLogo .logo-text{
     font-size: 12px;
     letter-spacing: .09em;
@@ -1104,6 +1113,10 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
   .portfolioLogo .logo-mark{
     width: 28px;
+  }
+
+  .portfolioLogo .logo-image{
+    width: 124px;
   }
 
   .portfolioLogo .logo-text{
@@ -1164,6 +1177,10 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
   .portfolioLogo .logo-mark{
     width: 24px;
+  }
+
+  .portfolioLogo .logo-image{
+    width: 112px;
   }
 
   .portfolioMenuButton{

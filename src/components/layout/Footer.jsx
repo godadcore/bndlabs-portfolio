@@ -1,7 +1,6 @@
 // src/components/layout/Footer.jsx
 import { SITE_NAME } from "../../lib/site";
 import { useSiteSettings } from "../../providers/siteSettingsContext.js";
-import BrandMark from "./BrandMark";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -12,7 +11,14 @@ export default function Footer() {
       <div className="homeFooterInner">
         <div className="footerBrand">
           <div className="footerLogoSlot" aria-hidden="true">
-            <BrandMark className="footerLogoMark" />
+            <img
+              className="footerLogoMark"
+              src="/brand-icon.svg"
+              alt=""
+              width="72"
+              height="86"
+              decoding="async"
+            />
           </div>
           <span className="footerText">
             {SITE_NAME}
