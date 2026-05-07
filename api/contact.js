@@ -14,7 +14,7 @@ for (const envFile of envFiles) {
   }
 }
 
-const BRAND_NAME = "Bndlabs";
+const BRAND_NAME = "bndlabs";
 const BRAND_URL = "https://getbndlabs.com";
 const BRAND_LOGO_URL = `${BRAND_URL}/favicon.svg`;
 const JSON_HEADERS = {
@@ -40,7 +40,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: "X",
-    href: "https://x.com/Bndlabs",
+    href: "https://x.com/bndlabs",
     badge: "X",
     bg: "#f3f4f6",
     fg: "#111111",
@@ -112,7 +112,7 @@ function getMailConfig() {
   const contactToEmail = firstEnvValue("CONTACT_TO_EMAIL") || smtpUser;
   const contactFromEmail = firstEnvValue("CONTACT_FROM_EMAIL") || smtpUser;
   const autoReplySubject =
-    firstEnvValue("CONTACT_AUTO_REPLY_SUBJECT") || "Thanks for contacting BndLabs";
+    firstEnvValue("CONTACT_AUTO_REPLY_SUBJECT") || "Thanks for contacting bndlabs";
 
   return {
     smtpHost,
@@ -308,7 +308,7 @@ function buildAutoReplyHtml({ firstName, name, email, message }) {
 
 function buildOwnerEmailText({ name, email, subject, source, subscribe, message }) {
   return [
-    `New Message from ${name} via BndLabs Contact Form`,
+    `New Message from ${name} via bndlabs Contact Form`,
     "",
     `Name: ${name}`,
     `Email: ${email}`,
@@ -328,7 +328,7 @@ function buildAutoReplyText({ firstName, name, message }) {
     "Your message:",
     message,
     "",
-    "Bndlabs",
+    "bndlabs",
   ].join("\n");
 }
 
@@ -466,7 +466,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const ownerSubject = `New Message from ${name} via BndLabs Contact Form`;
+  const ownerSubject = `New Message from ${name} via bndlabs Contact Form`;
   const autoReplyText = `Hi ${firstName || name}, thank you for reaching out! I received your message and will respond shortly.`;
   const ownerHtml = buildOwnerEmailHtml({ name, email, message });
   const ownerText = buildOwnerEmailText({

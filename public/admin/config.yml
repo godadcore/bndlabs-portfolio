@@ -192,7 +192,7 @@ collections:
         fields:
           - { label: "Email", name: "email", widget: "string", default: "hello@getbndlabs.com" }
           - { label: "Behance", name: "behance", widget: "string", default: "https://www.behance.net/bodundeemmanuel" }
-          - { label: "X", name: "x", widget: "string", default: "https://x.com/Bndlabs" }
+          - { label: "X", name: "x", widget: "string", default: "https://x.com/bndlabs" }
           - { label: "Instagram", name: "instagram", widget: "string", default: "https://www.instagram.com/bndlabs" }
           - { label: "WhatsApp Number", name: "whatsapp_number", widget: "string", default: "09052321666" }
           - { label: "LinkedIn", name: "linkedin", widget: "string", default: "https://www.linkedin.com/in/bodundeemmanuel" }

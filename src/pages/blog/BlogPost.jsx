@@ -176,7 +176,7 @@ function BlogPostContent({ slug }) {
   const relatedPosts = selectRelatedPosts(posts, post?.slug || slug);
   const hasRelatedPosts = relatedPosts.length > 0;
   const seoTitle = post?.title ? `${post.title} | Blog | ${SITE_NAME}` : `Blog Post | ${SITE_NAME}`;
-  const seoDescription = post?.excerpt || "A blog post from Bndlabs.";
+  const seoDescription = post?.excerpt || "A blog post from bndlabs.";
   const seoKeywords = post
     ? [...BASE_KEYWORDS, post.title, post.tag, "design blog", "product design notes"].filter(Boolean)
     : [...BASE_KEYWORDS, "design blog", "product design notes"];

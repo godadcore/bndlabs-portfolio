@@ -2,7 +2,7 @@ import siteSettings from "../content/site/settings.json" with { type: "json" };
 import { sanitizeExternalUrl } from "./urlSecurity.js";
 
 export const SITE_URL = "https://getbndlabs.com";
-export const SITE_NAME = "Bndlabs";
+export const SITE_NAME = "bndlabs";
 export const PERSON_NAME = "Bodunde Emmanuel";
 export const PERSON_TITLE = "UI/UX Designer";
 export const LOCATION_LABEL = "Lagos, Nigeria";
@@ -25,7 +25,7 @@ export const BASE_KEYWORDS = [
   "Lagos designer",
   "Nigeria designer",
   "Bodunde Emmanuel",
-  "Bndlabs",
+  "bndlabs",
 ];
 
 function uniqueStrings(values) {
