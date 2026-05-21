@@ -37,10 +37,6 @@ async function fetchSiteSettingsFromSanity() {
     return buildSiteSettings(rawSettings);
   }
 
-  console.warn("SANITY_SITE_SETTINGS_FALLBACK", {
-    reason: "empty_or_unusable_response",
-    source: payload?.source || "unknown",
-  });
   return fallbackSiteSettings;
 }
 

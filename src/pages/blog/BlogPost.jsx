@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createElement, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import BlogCard from "../../components/blog/BlogCard";
 import AudioBlock from "../../components/blog-post/AudioBlock";
@@ -9,6 +9,7 @@ import TableBlock from "../../components/blog-post/TableBlock";
 import TocSidebar from "../../components/blog-post/TocSidebar";
 import Footer from "../../components/layout/Footer";
 import Seo from "../../components/seo/Seo";
+import ShareSection from "../../components/shared/ShareSection";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import {
   formatBlogDate,
@@ -16,7 +17,8 @@ import {
   getPostBySlug,
   loadAllPosts,
 } from "../../lib/blogData";
-import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
+import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME, buildBlogPostSchema } from "../../lib/site";
+import { useSiteSettings } from "../../providers/siteSettingsContext.js";
 import { sanitizeBlogHtml } from "../../components/blog-post/utils";
 import "./blog-post.css";
 
@@ -45,7 +47,10 @@ function InlineHtml({ html, className = "", as: Tag = "span" }) {
   const sanitizedHtml = sanitizeBlogHtml(html);
   if (!sanitizedHtml) return null;
 
-  return <Tag className={className} dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+  return createElement(Tag, {
+    className,
+    dangerouslySetInnerHTML: { __html: sanitizedHtml },
+  });
 }
 
 function renderBlock(block, index) {
@@ -113,6 +118,7 @@ function BlogPostContent({ slug }) {
   const [isLoading, setIsLoading] = useState(() => !initialPost);
   const [activeHeading, setActiveHeading] = useState(() => initialPost?.headings?.[0]?.id || "");
   const scrollRootRef = useRef(null);
+  const siteSettings = useSiteSettings();
 
   usePullToRefresh(scrollRootRef);
 
@@ -175,11 +181,19 @@ function BlogPostContent({ slug }) {
   const hasContent = Boolean(post?.contentBlocks?.length);
   const relatedPosts = selectRelatedPosts(posts, post?.slug || slug);
   const hasRelatedPosts = relatedPosts.length > 0;
-  const seoTitle = post?.title ? `${post.title} | Blog | ${SITE_NAME}` : `Blog Post | ${SITE_NAME}`;
+  const seoTitle = post?.title ? `${post.title} | Design Blog by Bodunde Emmanuel | ${SITE_NAME}` : `Design Blog Post | ${SITE_NAME}`;
   const seoDescription = post?.excerpt || "A blog post from bndlabs.";
   const seoKeywords = post
-    ? [...BASE_KEYWORDS, post.title, post.tag, "design blog", "product design notes"].filter(Boolean)
-    : [...BASE_KEYWORDS, "design blog", "product design notes"];
+    ? [
+        ...BASE_KEYWORDS,
+        ...NIGERIA_LOCATION_KEYWORDS,
+        post.title,
+        post.tag,
+        "design blog",
+        "product design notes",
+        "UI UX design blog Nigeria",
+      ].filter(Boolean)
+    : [...BASE_KEYWORDS, ...NIGERIA_LOCATION_KEYWORDS, "design blog", "product design notes"];
 
   return (
     <main className="page blogPostPage">
@@ -189,8 +203,9 @@ function BlogPostContent({ slug }) {
         keywords={seoKeywords}
         canonicalPath={`/blog/${slug}`}
         type="article"
-        image={post?.thumbnail || undefined}
+        image={post?.thumbnail || post?.image || undefined}
         imageAlt={post?.title ? `${post.title} blog post preview for ${SITE_NAME}` : `Blog post preview for ${SITE_NAME}`}
+        schema={post ? buildBlogPostSchema(post, siteSettings) : undefined}
       />
 
       <section className="hero aboutCard" aria-label="Blog post">
@@ -248,6 +263,12 @@ function BlogPostContent({ slug }) {
                       <div className="blogPostBody">
                         {post.contentBlocks.map((block, index) => renderBlock(block, index))}
                       </div>
+
+                      <ShareSection
+                        className="blogPostShare"
+                        path={`/blog/${post.slug || slug}`}
+                        shareTitle={seoTitle}
+                      />
 
                       {hasRelatedPosts ? (
                         <section className="blogPostMore" aria-labelledby="blog-post-more-title">

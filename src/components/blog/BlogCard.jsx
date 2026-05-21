@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { formatBlogDate } from "../../lib/blogData";
 import { richTextToInlineHtml } from "../../lib/richText.js";
@@ -7,7 +8,10 @@ function InlineRichText({ value, fallback = "", className = "", as: Tag = "span"
   const html = richTextToInlineHtml(value || fallback);
   if (!html) return null;
 
-  return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+  return createElement(Tag, {
+    className,
+    dangerouslySetInnerHTML: { __html: html },
+  });
 }
 
 function pickRichTextValue(...entries) {

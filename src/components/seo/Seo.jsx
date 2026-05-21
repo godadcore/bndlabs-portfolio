@@ -10,7 +10,7 @@ import {
   PERSON_NAME,
   SITE_NAME,
   absoluteUrl,
-  buildPersonSchema,
+  buildWebPageSchema,
   keywordContent,
   toAbsoluteAssetUrl,
 } from "../../lib/site";
@@ -18,6 +18,12 @@ import { useSiteSettings } from "../../providers/siteSettingsContext.js";
 
 function upsertMeta(selector, attributes) {
   let element = document.head.querySelector(selector);
+  const content = cleanMetaContent(attributes.content);
+
+  if (!content) {
+    element?.remove();
+    return;
+  }
 
   if (!element) {
     element = document.createElement("meta");
@@ -25,12 +31,12 @@ function upsertMeta(selector, attributes) {
   }
 
   Object.entries(attributes).forEach(([key, value]) => {
-    if (value == null || value === "") {
+    if (value == null) {
       element.removeAttribute(key);
       return;
     }
 
-    element.setAttribute(key, value);
+    element.setAttribute(key, key === "content" ? content : value);
   });
 }
 
@@ -70,6 +76,10 @@ function upsertJsonLd(scriptId, value) {
   element.textContent = value;
 }
 
+function cleanMetaContent(value) {
+  return String(value ?? "").replace(/\s+/g, " ").trim();
+}
+
 export default function Seo({
   title,
   description,
@@ -88,19 +98,35 @@ export default function Seo({
   const ogImage = toAbsoluteAssetUrl(image);
   const defaultOgImage = toAbsoluteAssetUrl(DEFAULT_OG_IMAGE_PATH);
   const usesDefaultOgImage = ogImage === defaultOgImage;
+  const metaTitle = cleanMetaContent(title);
+  const metaDescription = cleanMetaContent(description);
+  const metaImageAlt = cleanMetaContent(imageAlt);
   const metaKeywords = keywordContent(keywords);
-  const schemaValue = schema === null ? null : JSON.stringify(schema ?? buildPersonSchema(siteSettings));
+  const schemaValue =
+    schema === null
+      ? null
+      : JSON.stringify(
+          schema ??
+            buildWebPageSchema({
+              title: metaTitle,
+              description: metaDescription,
+              url: canonicalUrl,
+              image: ogImage,
+              type,
+              siteData: siteSettings,
+            })
+        );
 
   useEffect(() => {
-    document.title = title;
+    document.title = metaTitle;
 
-    upsertMeta('meta[name="description"]', { name: "description", content: description });
+    upsertMeta('meta[name="description"]', { name: "description", content: metaDescription });
     upsertMeta('meta[name="keywords"]', { name: "keywords", content: metaKeywords });
     upsertMeta('meta[name="robots"]', { name: "robots", content: robots });
     upsertMeta('meta[name="author"]', { name: "author", content: PERSON_NAME });
 
-    upsertMeta('meta[property="og:title"]', { property: "og:title", content: title });
-    upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
+    upsertMeta('meta[property="og:title"]', { property: "og:title", content: metaTitle });
+    upsertMeta('meta[property="og:description"]', { property: "og:description", content: metaDescription });
     upsertMeta('meta[property="og:image"]', { property: "og:image", content: ogImage });
     upsertMeta('meta[property="og:image:url"]', { property: "og:image:url", content: ogImage });
     upsertMeta('meta[property="og:image:secure_url"]', { property: "og:image:secure_url", content: ogImage });
@@ -116,23 +142,23 @@ export default function Seo({
       property: "og:image:height",
       content: usesDefaultOgImage ? String(DEFAULT_OG_IMAGE_HEIGHT) : "",
     });
-    upsertMeta('meta[property="og:image:alt"]', { property: "og:image:alt", content: imageAlt });
+    upsertMeta('meta[property="og:image:alt"]', { property: "og:image:alt", content: metaImageAlt });
     upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonicalUrl });
     upsertMeta('meta[property="og:type"]', { property: "og:type", content: type });
     upsertMeta('meta[property="og:site_name"]', { property: "og:site_name", content: SITE_NAME });
     upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: "en_US" });
 
     upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary_large_image" });
-    upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: title });
-    upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: description });
+    upsertMeta('meta[name="twitter:title"]', { name: "twitter:title", content: metaTitle });
+    upsertMeta('meta[name="twitter:description"]', { name: "twitter:description", content: metaDescription });
     upsertMeta('meta[name="twitter:url"]', { name: "twitter:url", content: canonicalUrl });
     upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: ogImage });
     upsertMeta('meta[name="twitter:image:src"]', { name: "twitter:image:src", content: ogImage });
-    upsertMeta('meta[name="twitter:image:alt"]', { name: "twitter:image:alt", content: imageAlt });
+    upsertMeta('meta[name="twitter:image:alt"]', { name: "twitter:image:alt", content: metaImageAlt });
 
     upsertLink('link[rel="canonical"]', { rel: "canonical", href: canonicalUrl });
     upsertJsonLd("seo-person-schema", schemaValue);
-  }, [canonicalUrl, description, imageAlt, metaKeywords, ogImage, robots, schemaValue, title, type, usesDefaultOgImage]);
+  }, [canonicalUrl, metaDescription, metaImageAlt, metaKeywords, metaTitle, ogImage, robots, schemaValue, type, usesDefaultOgImage]);
 
   return null;
 }

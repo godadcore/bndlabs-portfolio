@@ -2,42 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://getbndlabs.com/</loc>
-    <lastmod>2026-05-02T19:57:53.049Z</lastmod>
+    <lastmod>2026-05-21T03:09:58.728Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/about</loc>
-    <lastmod>2026-05-02T19:57:53.049Z</lastmod>
+    <lastmod>2026-05-21T03:09:58.728Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/blog</loc>
-    <lastmod>2026-05-02T19:57:53.049Z</lastmod>
+    <lastmod>2026-05-21T03:09:58.728Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/work</loc>
-    <lastmod>2026-05-02T19:57:53.049Z</lastmod>
+    <lastmod>2026-05-21T03:09:58.728Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/contact</loc>
-    <lastmod>2026-05-02T19:57:53.049Z</lastmod>
+    <lastmod>2026-05-21T03:09:58.728Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/work/hopebridge</loc>
-    <lastmod>2025-03-04T00:00:00.000Z</lastmod>
+    <lastmod>2026-04-01T12:44:21.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://getbndlabs.com/work/improving-chowdeck-s-pay-for-me-flow-with-payment-codes</loc>
+    <lastmod>2026-05-20T23:16:26.000Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/work/novavoyage</loc>
-    <lastmod>2025-11-14T00:00:00.000Z</lastmod>
+    <lastmod>2026-03-31T17:16:36.000Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/work/pawmart</loc>
-    <lastmod>2026-01-10T00:00:00.000Z</lastmod>
+    <lastmod>2026-04-01T11:54:50.000Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/work/roomilink</loc>
-    <lastmod>2026-10-07T00:00:00.000Z</lastmod>
+    <lastmod>2026-04-01T13:52:27.000Z</lastmod>
   </url>
   <url>
     <loc>https://getbndlabs.com/work/shashabank</loc>
-    <lastmod>2025-07-10T00:00:00.000Z</lastmod>
+    <lastmod>2026-03-31T14:51:42.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://getbndlabs.com/blog/design-engineers-ux-design-s-demise-forget-your-lovable-products</loc>
+    <lastmod>2026-03-31T14:59:23.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://getbndlabs.com/blog/the-ground-is-shaking-why-designers-must-flip-the-script-on-ai</loc>
+    <lastmod>2026-03-31T17:16:59.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://getbndlabs.com/blog/why-chatgpt-style-answers-are-the-future-of-site-search-and-how-to-add-it-to-your-website</loc>
+    <lastmod>2026-04-01T11:48:24.000Z</lastmod>
   </url>
 </urlset>

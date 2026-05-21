@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion as Motion, useInView, useScroll, useTransform } from "motion/react";
+import {
+  ArrowReloadHorizontalIcon,
+  Chat01Icon,
+  Package01Icon,
+} from "@hugeicons/core-free-icons";
 import Footer from "../components/layout/Footer";
 import greeting from "../assets/About Greeting GIF.webm";
 import portfolio1 from "../assets/Portfolio Image 1.png";
@@ -11,13 +16,11 @@ import FramerIcon from "../components/about/FramerIcon";
 import LinkedinIcon from "../components/about/LinkedinIcon";
 import GoogleIcon from "../components/about/GoogleIcon";
 import NotionIcon from "../components/about/NotionIcon";
-import ProcessIconOne from "../components/about/ProcessIconOne";
-import ProcessIconTwo from "../components/about/ProcessIconTwo";
-import ProcessIconThree from "../components/about/ProcessIconThree";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
+import HugeIcon from "../components/shared/HugeIcon";
 import usePullToRefresh from "../hooks/usePullToRefresh";
-import { BASE_KEYWORDS, SITE_NAME } from "../lib/site";
+import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME } from "../lib/site";
 
 function CountUp({ to = 0, suffix = "+", duration = 1400, startWhen = false }) {
   const [value, setValue] = useState(0);
@@ -95,12 +98,12 @@ export default function About() {
       },
       {
         company: "Novavoyage",
-        role: "Remote (UI/UX Designer",
+        role: "Remote UI/UX Designer",
         years: "2025",
       },
       {
         company: "PawMart",
-        role: "Remote (UI/UX Designer",
+        role: "Remote UI/UX Designer",
         years: "2025",
       },
     ],
@@ -146,13 +149,14 @@ export default function About() {
   return (
     <main className="page aboutPage">
       <Seo
-        title={`About Bodunde Emmanuel | UI/UX Designer in Lagos, Nigeria | ${SITE_NAME}`}
-        description="Learn more about Bodunde Emmanuel, a UI/UX designer, product designer and frontend designer in Lagos, Nigeria creating thoughtful digital experiences and brand systems."
+        title={`About Bodunde Emmanuel | UI/UX Designer & Product Designer in Lagos, Nigeria | ${SITE_NAME}`}
+        description="Learn about Bodunde Emmanuel, founder of Bndlabs and a Lagos-based UI/UX designer, product designer, and frontend developer creating thoughtful websites, apps, and design systems for clients across Nigeria."
         keywords={[
           ...BASE_KEYWORDS,
+          ...NIGERIA_LOCATION_KEYWORDS,
           "About Bodunde Emmanuel",
           "product designer Lagos",
-          "frontend designer Nigeria",
+          "frontend developer Nigeria",
         ]}
         canonicalPath="/about"
         imageAlt={`About ${SITE_NAME} portfolio preview for Bodunde Emmanuel`}
@@ -184,8 +188,8 @@ export default function About() {
 
                   <Motion.p className="aboutDesc" variants={fadeUp}>
                     Bodunde Emmanuel is a UI/UX designer in Lagos, Nigeria creating
-                    seamless digital experiences for startups and global brands
-                    that inspire and connect with users across every platform.
+                    clear digital experiences for startups, founders, and growing
+                    brands that need polished websites, apps, and product interfaces.
                   </Motion.p>
 
                   <Motion.p className="aboutDesc" variants={fadeUp}>
@@ -248,18 +252,18 @@ export default function About() {
                 </div>
 
                 <div className="statItem">
-                  <h2><CountUp to={2} startWhen={statsInView} /></h2>
-                  <p>Global Clients</p>
+                  <h2><CountUp to={3} startWhen={statsInView} /></h2>
+                  <p>Core Disciplines</p>
                 </div>
 
                 <div className="statItem">
                   <h2><CountUp to={3} startWhen={statsInView} /></h2>
-                  <p>Years of Experience</p>
+                  <p>Years Building</p>
                 </div>
 
                 <div className="statItem">
                   <h2><CountUp to={1} startWhen={statsInView} /></h2>
-                  <p>Awards Received</p>
+                  <p>Independent Studio</p>
                 </div>
               </Motion.div>
             </div>
@@ -279,9 +283,9 @@ export default function About() {
                 </Motion.span>
 
                 <Motion.h2 className="aboutExperienceTitle" variants={fadeUp}>
-                  Worked with Global
+                  Practical product
                   <br />
-                  Industry leaders
+                  and interface work
                 </Motion.h2>
               </Motion.div>
 
@@ -457,8 +461,8 @@ export default function About() {
                 </Motion.h2>
 
                 <Motion.p className="aboutProcessText" variants={fadeUp}>
-                  Our streamlined design process ensures efficiency and quality
-                  from request to final delivery.
+                  My process keeps strategy, interface design, and frontend
+                  handoff connected from the first brief to final delivery.
                 </Motion.p>
 
                 <Motion.a
@@ -487,12 +491,12 @@ export default function About() {
                   }}
                 >
                   <span className="aboutStepBadge">01</span>
-                  <div className="aboutStepIcon"><ProcessIconOne /></div>
+                  <div className="aboutStepIcon"><HugeIcon icon={Chat01Icon} size={32} strokeWidth={1.75} /></div>
                   <div className="aboutStepContent">
                     <h3>Make your request</h3>
                     <p>
-                      Simply submit your design needs through our easy-to-use
-                      platform whenever inspiration strikes.
+                      Share your goals, audience, timeline, and the product
+                      problems you want the work to solve.
                     </p>
                   </div>
                 </Motion.article>
@@ -511,12 +515,12 @@ export default function About() {
                   }}
                 >
                   <span className="aboutStepBadge">02</span>
-                  <div className="aboutStepIcon"><ProcessIconTwo /></div>
+                  <div className="aboutStepIcon"><HugeIcon icon={ArrowReloadHorizontalIcon} size={32} strokeWidth={1.75} /></div>
                   <div className="aboutStepContent">
                     <h3>Review and refine</h3>
                     <p>
-                      Review the initial designs quickly and provide feedback
-                      for revisions within a day or two.
+                      We shape the structure, test the hierarchy, and refine
+                      the visual system until the experience feels clear.
                     </p>
                   </div>
                 </Motion.article>
@@ -535,12 +539,12 @@ export default function About() {
                   }}
                 >
                   <span className="aboutStepBadge">03</span>
-                  <div className="aboutStepIcon"><ProcessIconThree /></div>
+                  <div className="aboutStepIcon"><HugeIcon icon={Package01Icon} size={32} strokeWidth={1.75} /></div>
                   <div className="aboutStepContent">
-                    <h3>Get your design in time</h3>
+                    <h3>Deliver with clarity</h3>
                     <p>
-                      Receive your polished final designs promptly, typically
-                      within 48 hours after approval.
+                      Receive polished screens, reusable UI decisions, and
+                      frontend-ready guidance for a cleaner handoff.
                     </p>
                   </div>
                 </Motion.article>

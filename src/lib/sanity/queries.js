@@ -42,7 +42,6 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   sections[]{
     _key,
     _type,
-    icon,
     title,
     heading,
     body,

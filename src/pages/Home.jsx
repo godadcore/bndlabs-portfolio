@@ -8,7 +8,7 @@ import ContactSection from "../components/home/ContactSection";
 import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import usePullToRefresh from "../hooks/usePullToRefresh";
-import { BASE_KEYWORDS, SITE_NAME } from "../lib/site";
+import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME } from "../lib/site";
 
 const Hero3D = lazy(() => import("../components/home/Hero3D"));
 
@@ -86,12 +86,13 @@ export default function Home() {
   return (
     <main className="page">
       <Seo
-        title={`Bodunde Emmanuel - UI/UX Designer & Product Designer | ${SITE_NAME}`}
-        description="Portfolio of Bodunde Emmanuel, a UI/UX designer, product designer and frontend designer creating modern digital experiences, interfaces and brand systems."
+        title={`Bodunde Emmanuel | UI/UX Designer in Nigeria, Product Designer & Frontend Developer | ${SITE_NAME}`}
+        description="Portfolio of Bodunde Emmanuel, the designer behind Bndlabs: a UI/UX designer, product designer, and frontend developer in Lagos serving clients across Nigeria, including Abuja, Ibadan, Port Harcourt, Kano, Enugu, and Benin City."
         keywords={[
           ...BASE_KEYWORDS,
+          ...NIGERIA_LOCATION_KEYWORDS,
           "UI UX designer portfolio",
-          "frontend designer portfolio",
+          "frontend developer portfolio",
           "brand systems designer",
         ]}
         canonicalPath="/"

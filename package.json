@@ -7,11 +7,14 @@
     "dev": "vite",
     "seo:generate": "node scripts/generate-seo-files.mjs",
     "sanity:import": "node scripts/import-sanity-content.mjs",
-    "build": "npm run seo:generate && vite build",
+    "build": "vite build && npm run seo:generate",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hugeicons/core-free-icons": "^4.1.4",
+    "@hugeicons/react": "^1.1.6",
+    "@phosphor-icons/react": "^2.1.10",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@sanity/client": "^7.17.0",

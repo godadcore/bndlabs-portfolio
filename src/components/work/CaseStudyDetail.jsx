@@ -1,14 +1,28 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import {
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  ArrowUpRight01Icon,
+  Cancel01Icon,
+  Clock01Icon,
+  File02Icon,
+  Tick01Icon,
+  UserCircleIcon,
+} from "@hugeicons/core-free-icons";
 import { Link } from "react-router-dom";
 import BlogCard from "../blog/BlogCard";
 import Footer from "../layout/Footer";
 import Seo from "../seo/Seo";
+import ShareSection from "../shared/ShareSection";
+import HugeIcon from "../shared/HugeIcon";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { loadAllProjects } from "../../lib/projectData";
 import { richTextToHtml, richTextToInlineHtml, richTextToPlainText } from "../../lib/richText.js";
 import {
   BASE_KEYWORDS,
   SITE_NAME,
+  buildProjectSchema,
   buildProjectSeoDescription,
   buildProjectSeoKeywords,
 } from "../../lib/site";
@@ -18,157 +32,7 @@ import "../../pages/blog/blog.css";
 import "../../pages/work/ProjectDetails.css";
 
 const RELATED_CASE_STUDIES_MOBILE_BREAKPOINT = 640;
-
-const NAV_SECTIONS = [
-  { id: "overview", label: "Overview", Icon: IconOverview },
-  { id: "project-scope", label: "Project Scope", Icon: IconScope },
-  { id: "research", label: "User Research", Icon: IconResearch },
-  { id: "problem", label: "Problem & Goals", Icon: IconProblem },
-  { id: "wireframe", label: "Wireframe", Icon: IconWireframe },
-  { id: "prototype", label: "Prototype", Icon: IconPrototype },
-  { id: "final-results", label: "Final Results", Icon: IconResults },
-];
-
-function IconOverview() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.7" />
-      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-    </svg>
-  );
-}
-
-function IconScope() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="5" y="5" width="6" height="6" stroke="currentColor" strokeWidth="1.7" />
-      <rect x="13" y="5" width="6" height="6" stroke="currentColor" strokeWidth="1.7" />
-      <rect x="5" y="13" width="6" height="6" stroke="currentColor" strokeWidth="1.7" />
-      <rect x="13" y="13" width="6" height="6" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
-
-function IconResearch() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="11" cy="11" r="5.5" stroke="currentColor" strokeWidth="1.7" />
-      <path
-        d="M16 16l3.5 3.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconProblem() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 4 18 6.5v4.7c0 4-2.4 6.8-6 8.8-3.6-2-6-4.8-6-8.8V6.5L12 4Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function IconWireframe() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="4.5" y="5" width="15" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
-      <path
-        d="M4.5 10.5h15M10.5 19V10.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconPrototype() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M9 7.5v9l7-4.5-7-4.5Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-      <rect x="4.5" y="4.5" width="15" height="15" rx="3" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
-
-function IconResults() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M5 14.5h3l2-5 3.2 9 2.2-6H19"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function getNamedSectionIcon(name) {
-  switch (normalizeSectionToken(name)) {
-    case "overview":
-    case "about":
-    case "intro":
-      return IconOverview;
-    case "scope":
-    case "details":
-    case "project-scope":
-      return IconScope;
-    case "research":
-    case "discovery":
-      return IconResearch;
-    case "problem":
-    case "challenge":
-    case "goals":
-      return IconProblem;
-    case "wireframe":
-    case "wireframes":
-    case "flow":
-    case "structure":
-      return IconWireframe;
-    case "prototype":
-    case "testing":
-    case "interaction":
-      return IconPrototype;
-    case "results":
-    case "outcomes":
-    case "final":
-      return IconResults;
-    default:
-      return null;
-  }
-}
-
-function resolveFlexibleSectionIcon(section) {
-  const explicitIcon = getNamedSectionIcon(section?.icon);
-  if (explicitIcon) return explicitIcon;
-
-  const content = `${firstString(section?.heading)} ${firstString(section?.id)}`.toLowerCase();
-
-  if (/(overview|about|intro|summary)/.test(content)) return IconOverview;
-  if (/(scope|setup|details|stack|tool|timeline|table)/.test(content) || section?.type === "table") return IconScope;
-  if (/(research|discovery|insight|finding|audit|persona)/.test(content)) return IconResearch;
-  if (/(problem|challenge|goal)/.test(content)) return IconProblem;
-  if (/(wire|frame|flow|structure|map)/.test(content) || section?.type === "frames") return IconWireframe;
-  if (/(prototype|test|audio|video|motion)/.test(content) || section?.type === "video" || section?.type === "audio") return IconPrototype;
-  if (/(result|outcome|impact|final|launch|delivery)/.test(content)) return IconResults;
-
-  return section?.type === "story" ? IconOverview : IconScope;
-}
+const STANDARD_CASE_SECTION_COUNT = 7;
 
 function buildFlexibleSectionMeta(section, index) {
   const label = firstString(section?.heading, `Section ${index + 1}`);
@@ -176,9 +40,8 @@ function buildFlexibleSectionMeta(section, index) {
 
   return {
     ...section,
-    navLabel: label,
+    sectionLabel: label,
     renderId: `project-section-${token || index + 1}-${index + 1}`,
-    Icon: resolveFlexibleSectionIcon(section),
   };
 }
 
@@ -208,136 +71,39 @@ function buildHeroWhatsAppUrl({ number, url, message }) {
 }
 
 function IconRole() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.7" />
-      <path
-        d="M5.5 18.5c1.8-2.8 4.1-4.2 6.5-4.2s4.7 1.4 6.5 4.2"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={UserCircleIcon} size={20} strokeWidth={1.75} />;
 }
 
 function IconSnapshot() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="5" y="5" width="14" height="14" rx="3" stroke="currentColor" strokeWidth="1.7" />
-      <path
-        d="M8.5 10.5h7M8.5 14h4.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={File02Icon} size={20} strokeWidth={1.75} />;
 }
 
 function IconTimeline() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 7.5V12l3 1.8"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
+  return <HugeIcon icon={Clock01Icon} size={20} strokeWidth={1.75} />;
 }
 
 function IconClose() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M6 6l12 12M18 6 6 18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={Cancel01Icon} size={20} strokeWidth={1.9} />;
 }
 
 function IconArrowLeft() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M19 12H5M12 19l-7-7 7-7"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={ArrowLeft01Icon} size={18} strokeWidth={1.9} />;
 }
 
 function IconExternal() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M14 5h5v5M10 14 19 5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M19 13v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={ArrowUpRight01Icon} size={18} strokeWidth={1.9} />;
 }
 
 function IconChevronLeft() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="m15 18-6-6 6-6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={ArrowLeft01Icon} size={18} strokeWidth={1.9} />;
 }
 
 function IconChevronRight() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="m9 18 6-6-6-6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={ArrowRight01Icon} size={18} strokeWidth={1.9} />;
 }
 
 function IconCheck() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="m5 13 4 4L19 7"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={Tick01Icon} size={18} strokeWidth={2} />;
 }
 
 function firstString(...values) {
@@ -822,7 +588,11 @@ function MediaSlider({ items, label, onOpen, className = "" }) {
   const itemSignature = items.map((item) => item?.src || "").join("|");
 
   useEffect(() => {
-    setCurrentIndex(0);
+    const frameId = window.requestAnimationFrame(() => {
+      setCurrentIndex(0);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
   }, [itemSignature]);
 
   if (!items.length) return null;
@@ -1138,9 +908,9 @@ function CaseStudyTable({ columns, rows }) {
 }
 
 function FlexibleCaseStudySection({ section, index, onOpen }) {
-  const title = firstString(section?.heading, section?.navLabel, `Section ${index}`);
+  const title = firstString(section?.heading, section?.sectionLabel, `Section ${index}`);
   const titleContent = section?.headingContent || section?.heading || title;
-  const label = firstString(section?.navLabel, title);
+  const label = firstString(section?.sectionLabel, title);
   const fallbackLabel = `${title} media`;
 
   let content = null;
@@ -1216,7 +986,6 @@ function CaseSection({ id, index, label, title, titleContent, copy, children }) 
 
   return (
     <section className="projectCaseSection" id={id}>
-      <span className="projectCaseSectionObserver" data-section-id={id} aria-hidden="true" />
       <p className="projectCaseEyebrow">
         {String(index).padStart(2, "0")} / {label}
       </p>
@@ -1238,6 +1007,8 @@ function CaseSection({ id, index, label, title, titleContent, copy, children }) 
 
 function Lightbox({ items, index, onClose, onNext, onPrev }) {
   const activeItem = items[index];
+  const closeButtonRef = useRef(null);
+  const previousActiveElementRef = useRef(null);
 
   useEffect(() => {
     if (!items.length) return undefined;
@@ -1252,47 +1023,92 @@ function Lightbox({ items, index, onClose, onNext, onPrev }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [items.length, onClose, onNext, onPrev]);
 
-  if (!activeItem) return null;
+  useEffect(() => {
+    if (!items.length) return undefined;
 
-  return (
-    <div className="projectCaseLightbox" role="dialog" aria-modal="true" aria-label="Expanded project media">
-      <button
-        type="button"
-        className="projectCaseLightboxBackdrop"
-        onClick={onClose}
-        aria-label="Close media preview"
-      />
-      <div className="projectCaseLightboxPanel">
+    const html = document.documentElement;
+    const body = document.body;
+    const scrollRoots = Array.from(document.querySelectorAll(".cardScroll"));
+    const originalHtmlOverflow = html.style.overflow;
+    const originalBodyOverflow = body.style.overflow;
+    const scrollRootState = scrollRoots.map((root) => ({
+      root,
+      overflowY: root.style.overflowY,
+      touchAction: root.style.touchAction,
+    }));
+    previousActiveElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    html.classList.add("project-lightbox-open");
+    body.classList.add("project-lightbox-open");
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    scrollRoots.forEach((root) => {
+      root.style.overflowY = "hidden";
+      root.style.touchAction = "none";
+    });
+
+    closeButtonRef.current?.focus({ preventScroll: true });
+
+    return () => {
+      html.classList.remove("project-lightbox-open");
+      body.classList.remove("project-lightbox-open");
+      html.style.overflow = originalHtmlOverflow;
+      body.style.overflow = originalBodyOverflow;
+      scrollRootState.forEach(({ root, overflowY, touchAction }) => {
+        root.style.overflowY = overflowY;
+        root.style.touchAction = touchAction;
+      });
+      previousActiveElementRef.current?.focus?.({ preventScroll: true });
+      previousActiveElementRef.current = null;
+    };
+  }, [items.length]);
+
+  if (!activeItem || typeof document === "undefined") return null;
+
+  return createPortal(
+    <div className="projectDetailsPage projectCaseLightboxPortal">
+      <div className="projectCaseLightbox" role="dialog" aria-modal="true" aria-label="Expanded project media">
         <button
           type="button"
-          className="projectCaseLightboxClose"
+          className="projectCaseLightboxBackdrop"
           onClick={onClose}
           aria-label="Close media preview"
-        >
-          <IconClose />
-        </button>
-        {items.length > 1 ? (
-          <div className="projectCaseLightboxNav">
-            <button type="button" className="projectCaseLightboxArrow" onClick={onPrev} aria-label="Previous image">
-              <IconChevronLeft />
-            </button>
-            <button type="button" className="projectCaseLightboxArrow" onClick={onNext} aria-label="Next image">
-              <IconChevronRight />
-            </button>
-          </div>
-        ) : null}
-        <figure className="projectCaseLightboxFigure">
-          <img src={activeItem.src} alt={activeItem.alt || activeItem.label || "Expanded project media"} />
-          {activeItem.caption || activeItem.label ? (
-            <figcaption className="projectCaseLightboxCaption">
-              <InlineRichTextContent
-                value={activeItem.captionContent || activeItem.caption || activeItem.label}
-              />
-            </figcaption>
+        />
+        <div className="projectCaseLightboxPanel">
+          <button
+            type="button"
+            className="projectCaseLightboxClose"
+            ref={closeButtonRef}
+            onClick={onClose}
+            aria-label="Close media preview"
+          >
+            <IconClose />
+          </button>
+          {items.length > 1 ? (
+            <div className="projectCaseLightboxNav">
+              <button type="button" className="projectCaseLightboxArrow" onClick={onPrev} aria-label="Previous image">
+                <IconChevronLeft />
+              </button>
+              <button type="button" className="projectCaseLightboxArrow" onClick={onNext} aria-label="Next image">
+                <IconChevronRight />
+              </button>
+            </div>
           ) : null}
-        </figure>
+          <figure className="projectCaseLightboxFigure">
+            <img src={activeItem.src} alt={activeItem.alt || activeItem.label || "Expanded project media"} />
+            {activeItem.caption || activeItem.label ? (
+              <figcaption className="projectCaseLightboxCaption">
+                <InlineRichTextContent
+                  value={activeItem.captionContent || activeItem.caption || activeItem.label}
+                />
+              </figcaption>
+            ) : null}
+          </figure>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -1300,16 +1116,14 @@ export default function CaseStudyDetail({ slug }) {
   const [allProjects, setAllProjects] = useState([]);
   const [project, setProject] = useState(null);
   const [isProjectLoading, setIsProjectLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState("overview");
   const [lightboxItems, setLightboxItems] = useState([]);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== "undefined" ? window.innerWidth : 1200
   );
   const scrollRootRef = useRef(null);
-  const navButtonRefs = useRef({});
-  const navTouchStateRef = useRef({ id: "", timestamp: 0, startX: 0, startY: 0, moved: false });
-  const { socialLinks, whatsappNumber: siteWhatsAppNumber } = useSiteSettings();
+  const siteSettings = useSiteSettings();
+  const { socialLinks, whatsappNumber: siteWhatsAppNumber } = siteSettings;
 
   usePullToRefresh(scrollRootRef);
 
@@ -1322,10 +1136,13 @@ export default function CaseStudyDetail({ slug }) {
 
   useEffect(() => {
     let isMounted = true;
-    setIsProjectLoading(true);
-    setActiveSection("overview");
-    setLightboxItems([]);
-    setLightboxIndex(-1);
+
+    queueMicrotask(() => {
+      if (!isMounted) return;
+      setIsProjectLoading(true);
+      setLightboxItems([]);
+      setLightboxIndex(-1);
+    });
 
     loadAllProjects().then((loadedProjects) => {
       if (!isMounted) return;
@@ -1344,47 +1161,10 @@ export default function CaseStudyDetail({ slug }) {
     };
   }, [slug]);
 
-  useEffect(() => {
-    const root = scrollRootRef.current;
-    if (!root || !project) return undefined;
-    const targets = Array.from(root.querySelectorAll(".projectCaseSectionObserver"));
-    if (!targets.length) return undefined;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-
-        if (!visible.length) return;
-
-        const nextSectionId = visible[0].target.getAttribute("data-section-id");
-        if (nextSectionId) setActiveSection(nextSectionId);
-      },
-      { root, rootMargin: "-12% 0px -72% 0px", threshold: 0.6 }
-    );
-
-    targets.forEach((target) => observer.observe(target));
-    return () => observer.disconnect();
-  }, [project]);
-
-  useEffect(() => {
-    const activeButton = navButtonRefs.current[activeSection];
-    if (!activeButton) return;
-
-    activeButton.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    });
-  }, [activeSection]);
-
-  const scrollToSection = (id) => {
+  const scrollToCaseSection = (id) => {
     const root = scrollRootRef.current;
     const section = root?.querySelector(`[id="${id}"]`) || document.getElementById(id);
     if (!section) return;
-
-    setActiveSection(id);
 
     if (!root) {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1402,79 +1182,6 @@ export default function CaseStudyDetail({ slug }) {
       behavior: "smooth",
     });
   };
-
-  useEffect(() => {
-    const root = scrollRootRef.current;
-    if (!root || !project) return undefined;
-
-    const buttons = Array.from(root.querySelectorAll(".nav-tab"));
-    if (!buttons.length) return undefined;
-
-    const handleTouchStart = (event) => {
-      const touch = event.touches[0];
-      navTouchStateRef.current = {
-        id: event.currentTarget.getAttribute("data-target") || "",
-        timestamp: 0,
-        startX: touch?.clientX ?? 0,
-        startY: touch?.clientY ?? 0,
-        moved: false,
-      };
-    };
-
-    const handleTouchMove = (event) => {
-      const touch = event.touches[0];
-      const deltaX = Math.abs((touch?.clientX ?? 0) - navTouchStateRef.current.startX);
-      const deltaY = Math.abs((touch?.clientY ?? 0) - navTouchStateRef.current.startY);
-
-      if (deltaX > 10 || deltaY > 10) {
-        navTouchStateRef.current.moved = true;
-      }
-    };
-
-    const handleTouchCancel = () => {
-      navTouchStateRef.current.moved = true;
-    };
-
-    const handleActivate = (event) => {
-      const targetId = event.currentTarget.getAttribute("data-target");
-      if (!targetId) return;
-
-      if (event.type === "touchend") {
-        if (navTouchStateRef.current.moved) return;
-        event.preventDefault();
-        navTouchStateRef.current.timestamp = Date.now();
-        navTouchStateRef.current.id = targetId;
-        scrollToSection(targetId);
-        return;
-      }
-
-      const isSyntheticClickAfterTouch =
-        navTouchStateRef.current.id === targetId &&
-        Date.now() - navTouchStateRef.current.timestamp < 750;
-
-      if (isSyntheticClickAfterTouch) return;
-
-      scrollToSection(targetId);
-    };
-
-    buttons.forEach((button) => {
-      button.addEventListener("click", handleActivate);
-      button.addEventListener("touchstart", handleTouchStart, { passive: true });
-      button.addEventListener("touchmove", handleTouchMove, { passive: true });
-      button.addEventListener("touchcancel", handleTouchCancel, { passive: true });
-      button.addEventListener("touchend", handleActivate, { passive: false });
-    });
-
-    return () => {
-      buttons.forEach((button) => {
-        button.removeEventListener("click", handleActivate);
-        button.removeEventListener("touchstart", handleTouchStart);
-        button.removeEventListener("touchmove", handleTouchMove);
-        button.removeEventListener("touchcancel", handleTouchCancel);
-        button.removeEventListener("touchend", handleActivate);
-      });
-    };
-  }, [project]);
 
   if (!project && isProjectLoading) {
     return (
@@ -1552,14 +1259,6 @@ export default function CaseStudyDetail({ slug }) {
   const flexibleSections = sections
     .filter((section) => section && section !== infoSection)
     .map((section, index) => buildFlexibleSectionMeta(section, index));
-  const navSections = [
-    ...NAV_SECTIONS,
-    ...flexibleSections.map((section) => ({
-      id: section.renderId,
-      label: section.navLabel,
-      Icon: section.Icon,
-    })),
-  ];
   const relatedProjects = buildRelatedProjects(
     project,
     allProjects,
@@ -1876,13 +1575,14 @@ export default function CaseStudyDetail({ slug }) {
   return (
     <main className="page projectDetailsPage">
       <Seo
-        title={`${project.title} Case Study | ${SITE_NAME}`}
+        title={`${project.title} UI/UX Case Study by Bodunde Emmanuel | ${SITE_NAME}`}
         description={buildProjectSeoDescription(project)}
         keywords={buildProjectSeoKeywords(project)}
         canonicalPath={`/work/${project.slug}`}
         type="article"
         image={coverImage?.src || undefined}
         imageAlt={`${project.title} case study preview for ${SITE_NAME}`}
+        schema={buildProjectSchema(project, siteSettings)}
       />
 
       <section className="hero aboutCard" aria-label="Case study page">
@@ -1951,7 +1651,7 @@ export default function CaseStudyDetail({ slug }) {
                       <button
                         type="button"
                         className="projectCaseActionLink projectCaseActionButton is-primary"
-                        onClick={() => scrollToSection("prototype")}
+                        onClick={() => scrollToCaseSection("prototype")}
                       >
                         <IconExternal />
                         <span>{primaryActionLabel}</span>
@@ -2017,39 +1717,6 @@ export default function CaseStudyDetail({ slug }) {
                 </header>
 
                 <div className="projectCaseBody">
-                  <aside className="projectCaseNav" aria-label="Case study sections">
-                    <ul className="projectCaseNavList">
-                      {navSections.map((section, index) => {
-                        const isActive = activeSection === section.id;
-                        const completed = navSections.findIndex((item) => item.id === activeSection) > index;
-                        return (
-                          <li className="projectCaseNavItem" key={section.id}>
-                            <button
-                              type="button"
-                              className={`projectCaseNavButton nav-tab ${isActive ? "is-active" : ""}`.trim()}
-                              data-target={section.id}
-                              ref={(node) => {
-                                if (node) {
-                                  navButtonRefs.current[section.id] = node;
-                                } else {
-                                  delete navButtonRefs.current[section.id];
-                                }
-                              }}
-                            >
-                              <span className="projectCaseNavIcon">
-                                <section.Icon />
-                              </span>
-                              <span>{section.label}</span>
-                            </button>
-                            {index < navSections.length - 1 ? (
-                              <span className={`projectCaseNavConnector ${completed ? "is-complete" : ""}`.trim()} aria-hidden="true" />
-                            ) : null}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </aside>
-
                   <div className="projectCaseContent">
                     <CaseSection id="overview" index={1} label="Overview" title="About the Project" copy={overviewCopy}>
                       {isModernCaseStudy ? (
@@ -2202,10 +1869,15 @@ export default function CaseStudyDetail({ slug }) {
                       <FlexibleCaseStudySection
                         key={section.renderId}
                         section={section}
-                        index={NAV_SECTIONS.length + sectionIndex + 1}
+                        index={STANDARD_CASE_SECTION_COUNT + sectionIndex + 1}
                         onOpen={openLightbox}
                       />
                     ))}
+
+                    <ShareSection
+                      path={`/work/${project.slug}`}
+                      shareTitle={`${project.title} Case Study | ${SITE_NAME}`}
+                    />
 
                     {relatedProjects.length ? (
                       <section className="projectCaseRelated" aria-labelledby="related-case-studies-title">

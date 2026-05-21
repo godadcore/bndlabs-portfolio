@@ -108,26 +108,6 @@ function firstBlockHtml(...values) {
   return firstRenderedHtml(values, { inline: false });
 }
 
-function toStringArray(value) {
-  if (!Array.isArray(value)) return [];
-
-  return value
-    .map((item) =>
-      typeof item === "object"
-        ? firstString(
-            item?.content,
-            item?.text,
-            item?.title,
-            item?.label,
-            item?.value,
-            item?.description,
-            item?.body
-          )
-        : String(item ?? "").trim()
-    )
-    .filter(Boolean);
-}
-
 function stripHtml(value) {
   return String(value ?? "")
     .replace(/<[^>]+>/g, " ")

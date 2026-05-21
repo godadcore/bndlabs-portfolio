@@ -1,20 +1,20 @@
+import { createElement } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 import { richTextToInlineHtml } from "../../lib/richText.js";
+import HugeIcon from "../shared/HugeIcon";
 
 const ArrowIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-    width="15" height="15">
-    <line x1="7" y1="17" x2="17" y2="7" />
-    <polyline points="7 7 17 7 17 17" />
-  </svg>
+  <HugeIcon icon={ArrowUpRight01Icon} size={18} strokeWidth={1.9} />
 );
 
 function InlineRichText({ value, fallback = "", as: Tag = "span" }) {
   const html = richTextToInlineHtml(value || fallback);
   if (!html) return null;
 
-  return <Tag dangerouslySetInnerHTML={{ __html: html }} />;
+  return createElement(Tag, {
+    dangerouslySetInnerHTML: { __html: html },
+  });
 }
 
 function pickRichTextValue(...entries) {

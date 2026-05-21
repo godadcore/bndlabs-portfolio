@@ -1,5 +1,4 @@
 .projectDetailsPage {
-  --case-nav-width: 224px;
   --case-section-scroll-offset: 110px;
   --case-ink: var(--text-primary);
   --case-muted: var(--text-muted);
@@ -10,12 +9,10 @@
   --case-surface: rgba(var(--surface-rgb), 0.96);
   --case-surface-soft: rgba(var(--surface-soft-rgb), 0.9);
   --case-surface-elevated: rgba(var(--surface-elevated-rgb), 0.96);
-  --case-warning-bg: rgba(232, 119, 94, 0.12);
-  --case-warning-border: rgba(232, 119, 94, 0.28);
-  --case-warning-ink: #e8775e;
-  --case-shadow:
-    0 20px 54px rgba(15, 23, 42, 0.08),
-    0 0 0 1px rgba(15, 23, 42, 0.04);
+  --case-warning-bg: var(--status-warning-soft);
+  --case-warning-border: var(--status-warning-border);
+  --case-warning-ink: var(--status-warning);
+  --case-shadow: var(--shadow-card);
   color-scheme: light dark;
   width: 100%;
   max-width: 100%;
@@ -145,7 +142,7 @@
   gap: 8px;
   min-height: 46px;
   padding: 0 18px;
-  border-radius: 999px;
+  border-radius: var(--button-radius);
   text-decoration: none;
   font-family: var(--fontUi);
   font-size: 14px;
@@ -157,7 +154,7 @@
   border: 1px solid var(--case-border);
   background: var(--case-surface);
   color: var(--case-muted-strong);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--brand-shadow-soft);
 }
 
 .projectDetailsPage .projectBackBtn svg,
@@ -181,7 +178,6 @@
 .projectDetailsPage .projectBackBtn:focus-visible,
 .projectDetailsPage .projectCaseActionLink:focus-visible,
 .projectDetailsPage .projectCaseClosingLink:focus-visible,
-.projectDetailsPage .projectCaseNavButton:focus-visible,
 .projectDetailsPage .projectCaseCarouselButton:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
@@ -189,7 +185,7 @@
 
 .projectDetailsPage .projectCaseHero {
   max-width: 860px;
-  margin: 0 0 0 calc(var(--case-nav-width) + 38px);
+  margin: 0;
   padding: 52px 0 42px;
   width: 100%;
 }
@@ -210,7 +206,7 @@
 .projectDetailsPage .projectCaseCategoryChip,
 .projectDetailsPage .projectCaseFeatureChip,
 .projectDetailsPage .projectCaseObjectiveTag {
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-family: var(--fontUi);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -402,7 +398,7 @@
 .projectDetailsPage .projectCaseClosingLink {
   border-color: rgba(var(--accent-rgb), 0.24);
   background: linear-gradient(135deg, var(--accent-hover), var(--accent));
-  color: #ffffff;
+  color: var(--button-primary-text);
   box-shadow: 0 16px 34px rgba(var(--accent-rgb), 0.22);
 }
 
@@ -454,7 +450,7 @@
   margin-top: 32px;
   padding: 1px;
   border: 1px solid var(--case-border);
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--case-border);
   width: 100%;
@@ -495,32 +491,22 @@
   display: block;
   width: 100%;
   max-width: 900px;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
   margin: 0 auto;
-  border-radius: 26px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--case-border);
   box-shadow: var(--case-shadow);
   background: var(--case-surface-soft);
 }
 
 .projectDetailsPage .projectCaseBody {
-  display: grid;
-  grid-template-columns: var(--case-nav-width) minmax(0, 1fr);
-  gap: 38px;
-  align-items: start;
+  display: block;
   width: 100%;
   max-width: 100%;
 }
 
-.projectDetailsPage .projectCaseNav {
-  position: sticky;
-  top: 30px;
-  align-self: start;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.projectDetailsPage .projectCaseNavList,
 .projectDetailsPage .projectCaseList,
 .projectDetailsPage .projectCaseObjectiveList,
 .projectDetailsPage .projectCaseDecisionList {
@@ -529,82 +515,9 @@
   padding: 0;
 }
 
-.projectDetailsPage .projectCaseNavList {
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
-}
-
-.projectDetailsPage .projectCaseNavButton {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 12px;
-  border: 0;
-  border-radius: 14px;
-  background: transparent;
-  color: var(--case-muted);
-  text-align: left;
-  white-space: nowrap;
-  font-family: var(--fontUi);
-  font-size: 13px;
-  cursor: pointer;
-  max-width: 100%;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.projectDetailsPage .projectCaseNavButton > *,
-.projectDetailsPage .projectCaseNavButton > * * {
-  pointer-events: none;
-}
-
-.projectDetailsPage .projectCaseNavButton.is-active {
-  background: rgba(var(--accent-rgb), 0.08);
-  color: var(--accent);
-}
-
-.projectDetailsPage .projectCaseNavButton:hover {
-  background: var(--case-surface-soft);
-  color: var(--case-ink);
-}
-
-.projectDetailsPage .projectCaseNavIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 1px solid var(--case-border);
-  background: var(--case-surface);
-}
-
-.projectDetailsPage .projectCaseNavIcon svg,
 .projectDetailsPage .projectCaseScopeIcon svg {
   width: 16px;
   height: 16px;
-}
-
-.projectDetailsPage .projectCaseNavButton.is-active .projectCaseNavIcon {
-  border-color: rgba(var(--accent-rgb), 0.24);
-  background: rgba(var(--accent-rgb), 0.1);
-}
-
-.projectDetailsPage .projectCaseNavConnector {
-  display: block;
-  width: 6px;
-  height: 6px;
-  margin: 4px 0 4px 24px;
-  border-radius: 999px;
-  background: var(--case-border);
-}
-
-.projectDetailsPage .projectCaseNavConnector.is-complete {
-  background: var(--accent);
-  box-shadow: 0 0 0 6px rgba(var(--accent-rgb), 0.08);
 }
 
 .projectDetailsPage .projectCaseSection {
@@ -618,16 +531,6 @@
 .projectDetailsPage .projectCaseSection img {
   max-width: 100%;
   height: auto;
-}
-
-.projectDetailsPage .projectCaseSectionObserver {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
 }
 
 .projectDetailsPage .projectCaseSection + .projectCaseSection {
@@ -677,7 +580,7 @@
 .projectDetailsPage .projectCaseAudioCard,
 .projectDetailsPage .projectCaseLoadingPanel {
   border: 1px solid var(--case-border);
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   background: var(--case-surface);
   box-shadow: var(--case-shadow);
   width: 100%;
@@ -717,7 +620,7 @@
   justify-content: center;
   width: 42px;
   height: 42px;
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
   background: rgba(var(--accent-rgb), 0.1);
   color: var(--accent);
 }
@@ -804,12 +707,12 @@
 .projectDetailsPage .projectCaseImageSliderImage,
 .projectDetailsPage .slider-image {
   width: 100%;
-  max-width: 500px;
+  max-width: min(100%, 680px);
   max-height: 80vh;
   margin: 0 auto;
   display: block;
   object-fit: contain;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--case-border);
   background: var(--case-surface-soft);
   box-shadow: var(--case-shadow);
@@ -828,9 +731,9 @@
   height: 40px;
   padding: 8px 12px;
   border: 0;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.5);
-  color: #ffffff;
+  border-radius: var(--radius-sm);
+  background: var(--overlay-control-bg);
+  color: var(--overlay-control-text);
   cursor: pointer;
   transform: translateY(-50%);
 }
@@ -862,7 +765,7 @@
 
 .projectDetailsPage .projectCaseSectionCard {
   border: 1px solid var(--case-border);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--brand-color-light);
   box-shadow: var(--case-shadow);
   width: 100%;
@@ -925,8 +828,10 @@
   width: 100%;
   max-width: 100%;
   height: auto;
+  object-fit: contain;
+  object-position: center;
   display: block;
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--case-border);
   background: var(--case-surface-soft);
   box-shadow: var(--case-shadow);
@@ -966,10 +871,12 @@
 .projectDetailsPage .projectCaseOverviewTile img {
   display: block;
   width: 100%;
-  height: 100%;
-  min-height: 240px;
-  object-fit: cover;
-  border-radius: 22px;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  object-position: center;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--case-border);
   box-shadow: var(--case-shadow);
   background: var(--case-surface-soft);
@@ -1022,7 +929,7 @@
   width: 40px;
   height: 40px;
   border: 1px solid var(--case-border);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: var(--case-surface);
   color: var(--case-ink);
   cursor: pointer;
@@ -1061,7 +968,7 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   flex: 0 0 auto;
   border: 2px solid var(--case-border);
   color: var(--accent);
@@ -1123,9 +1030,9 @@
 }
 
 .projectDetailsPage .projectCaseObjectiveTag:not(.is-done) {
-  background: rgba(240, 182, 84, 0.1);
-  border-color: rgba(240, 182, 84, 0.22);
-  color: #d29a2f;
+  background: var(--case-warning-bg);
+  border-color: var(--case-warning-border);
+  color: var(--case-warning-ink);
 }
 
 .projectDetailsPage .projectCaseSplitGrid,
@@ -1218,24 +1125,32 @@
 .projectDetailsPage .projectCaseLightbox {
   position: fixed;
   inset: 0;
-  z-index: 120;
+  z-index: 2147483000;
   display: grid;
   place-items: center;
-  padding: 28px;
+  padding: clamp(16px, 3vw, 34px);
+  background: var(--overlay-scrim);
+  isolation: isolate;
 }
 
 .projectDetailsPage .projectCaseLightboxBackdrop {
   position: absolute;
   inset: 0;
   border: 0;
-  background: rgba(8, 10, 14, 0.84);
+  background: var(--overlay-scrim-soft);
   backdrop-filter: blur(12px);
+  cursor: zoom-out;
 }
 
 .projectDetailsPage .projectCaseLightboxPanel {
   position: relative;
   z-index: 1;
-  width: min(100%, 1120px);
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: clamp(54px, 8vh, 78px) 0 clamp(18px, 4vh, 32px);
+  pointer-events: none;
 }
 
 .projectDetailsPage .projectCaseLightboxClose,
@@ -1245,24 +1160,37 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  background: rgba(18, 20, 26, 0.72);
-  color: #ffffff;
+  border: 1px solid var(--overlay-control-border);
+  border-radius: var(--radius-sm);
+  background: var(--overlay-control-bg);
+  color: var(--overlay-control-text);
   cursor: pointer;
+  pointer-events: auto;
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.projectDetailsPage .projectCaseLightboxClose:hover,
+.projectDetailsPage .projectCaseLightboxArrow:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-accent-soft);
+  background: rgba(var(--accent-rgb), 0.42);
 }
 
 .projectDetailsPage .projectCaseLightboxClose {
-  position: absolute;
-  top: -58px;
-  right: 0;
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  right: max(18px, env(safe-area-inset-right));
+  z-index: 3;
 }
 
 .projectDetailsPage .projectCaseLightboxNav {
-  position: absolute;
+  position: fixed;
   top: 50%;
-  left: -22px;
-  right: -22px;
+  left: clamp(14px, 3vw, 34px);
+  right: clamp(14px, 3vw, 34px);
   z-index: 1;
   display: flex;
   justify-content: space-between;
@@ -1276,15 +1204,26 @@
 
 .projectDetailsPage .projectCaseLightboxFigure {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 1280px);
+  max-height: 100%;
+  pointer-events: auto;
 }
 
 .projectDetailsPage .projectCaseLightboxFigure img {
   display: block;
-  width: 100%;
-  max-height: calc(100vh - 120px);
+  width: auto;
+  max-width: min(100%, calc(100vw - 36px));
+  height: auto;
+  max-height: calc(100dvh - 132px);
   object-fit: contain;
-  border-radius: 28px;
-  background: rgba(14, 16, 20, 0.95);
+  object-position: center;
+  border-radius: var(--radius-lg);
+  background: var(--overlay-scrim);
+  box-shadow: 0 28px 90px rgba(var(--accent-rgb), 0.18);
 }
 
 .projectDetailsPage .projectCaseLightboxCaption {
@@ -1294,6 +1233,21 @@
   line-height: 1.65;
   color: rgba(255, 255, 255, 0.82);
   text-align: center;
+  max-width: min(76ch, 100%);
+}
+
+html.project-lightbox-open,
+body.project-lightbox-open {
+  overflow: hidden !important;
+}
+
+body.project-lightbox-open .cardScroll {
+  overflow: hidden !important;
+}
+
+body.project-lightbox-open .portfolioHeaderShell {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .projectDetailsPage .projectCaseLoadingPanel {
@@ -1330,72 +1284,6 @@
     padding-top: 44px;
   }
 
-  .projectDetailsPage .projectCaseBody {
-    grid-template-columns: 1fr;
-    gap: 26px;
-  }
-
-  .projectDetailsPage .projectCaseNav {
-    position: sticky;
-    top: 0;
-    z-index: 12;
-    padding-bottom: 8px;
-    border-radius: 20px;
-    background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.96) 0%, rgba(var(--surface-rgb), 0.96) 78%, rgba(var(--surface-rgb), 0) 100%);
-    backdrop-filter: blur(10px);
-  }
-
-  .projectDetailsPage .projectCaseNavList {
-    flex-direction: row;
-    gap: 10px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scroll-padding-inline: 16px;
-    padding: 10px 16px;
-    width: 100%;
-    max-width: 100%;
-    border-radius: 20px;
-    background: var(--case-surface-soft);
-    padding-bottom: 10px;
-    scrollbar-width: none;
-  }
-
-  .projectDetailsPage .projectCaseNavList::-webkit-scrollbar {
-    display: none;
-  }
-
-  .projectDetailsPage .projectCaseNavList::after {
-    content: "";
-    flex: 0 0 40px;
-  }
-
-  .projectDetailsPage .projectCaseNavItem {
-    flex: 0 0 auto;
-  }
-
-  .projectDetailsPage .projectCaseNavButton {
-    flex: 0 0 auto;
-    width: auto;
-    min-height: 44px;
-    padding: 10px 14px;
-    border-radius: 14px;
-  }
-
-  .projectDetailsPage .projectCaseNavButton.is-active {
-    background: var(--accent);
-    color: #ffffff;
-    box-shadow: 0 12px 24px rgba(var(--accent-rgb), 0.24);
-  }
-
-  .projectDetailsPage .projectCaseNavButton.is-active .projectCaseNavIcon {
-    border-color: rgba(255, 255, 255, 0.24);
-    background: rgba(255, 255, 255, 0.14);
-    color: #ffffff;
-  }
-
-  .projectDetailsPage .projectCaseNavConnector {
-    display: none;
-  }
 }
 
 @media (max-width: 980px) {
@@ -1457,7 +1345,7 @@
 @media (min-width: 1024px) {
   .projectDetailsPage .projectCaseImageSliderImage,
   .projectDetailsPage .slider-image {
-    max-width: 600px;
+    max-width: min(100%, 840px);
   }
 }
 
@@ -1483,22 +1371,16 @@
     padding: 0 44px;
   }
 
-  .projectDetailsPage .projectCaseNavList {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-  }
-
   .projectDetailsPage .projectCaseTitle {
-    font-size: 24px;
-    line-height: 1.3;
+    font-size: clamp(2.25rem, 11vw, 3.8rem);
+    line-height: 1.02;
   }
 
   .projectDetailsPage .projectCaseSectionTitle,
   .projectDetailsPage .projectCaseSplitTitle,
   .projectDetailsPage .projectCaseClosingTitle {
-    font-size: 20px;
-    line-height: 1.25;
+    font-size: clamp(1.7rem, 7.4vw, 2.4rem);
+    line-height: 1.12;
   }
 
   .projectDetailsPage .projectCaseDescription,
@@ -1543,14 +1425,14 @@
   .projectDetailsPage .projectCasePrototypeCard,
   .projectDetailsPage .projectCaseAudioCard,
   .projectDetailsPage .projectCaseLoadingPanel {
-    border-radius: 20px;
+    border-radius: var(--radius-md);
   }
 
   .projectDetailsPage .projectCaseFeatureMedia img,
   .projectDetailsPage .projectCaseFeatureMedia video,
   .projectDetailsPage .projectCaseCarouselSlide img,
   .projectDetailsPage .projectCaseMediaFigure img {
-    border-radius: 20px;
+    border-radius: var(--radius-md);
   }
 
   .projectDetailsPage .projectCaseImageSliderArrow {
@@ -1564,7 +1446,8 @@
   }
 
   .projectDetailsPage .projectCaseLightboxClose {
-    top: -50px;
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
   }
 
   .projectDetailsPage .projectCaseLightboxNav {
@@ -1603,4 +1486,56 @@
 
 .projectDetailsPage .projectDetailsSection {
   padding-top: var(--portfolio-header-clearance);
+}
+
+/* Case study glass refinement */
+.projectDetailsPage .projectBackBtn,
+.projectDetailsPage .projectCaseActionLink,
+.projectDetailsPage .projectCaseCategoryChip,
+.projectDetailsPage .projectCaseFeatureChip,
+.projectDetailsPage .projectCaseMetaGrid,
+.projectDetailsPage .projectCaseMetaItem,
+.projectDetailsPage .projectCaseStat,
+.projectDetailsPage .projectCaseScopeCard,
+.projectDetailsPage .projectCaseObjective,
+.projectDetailsPage .projectCasePrototypeCard,
+.projectDetailsPage .projectCaseResultCard,
+.projectDetailsPage .projectCaseAudioCard,
+.projectDetailsPage .projectCaseLoadingPanel,
+.projectDetailsPage .projectCaseSectionCard,
+.projectDetailsPage .projectCaseTableWrap,
+.projectDetailsPage .projectCaseCarouselButton,
+.projectDetailsPage .projectCaseLightboxClose,
+.projectDetailsPage .projectCaseLightboxArrow {
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.projectDetailsPage .projectBackBtn,
+.projectDetailsPage .projectCaseActionLink:not(.is-primary):not(.is-soft),
+.projectDetailsPage .projectCaseCategoryChip,
+.projectDetailsPage .projectCaseFeatureChip,
+.projectDetailsPage .projectCaseMetaItem,
+.projectDetailsPage .projectCaseCarouselButton {
+  border-color: var(--glass-border-muted);
+  background: var(--glass-control-bg);
+}
+
+.projectDetailsPage .projectCaseStat,
+.projectDetailsPage .projectCaseScopeCard,
+.projectDetailsPage .projectCaseObjective,
+.projectDetailsPage .projectCasePrototypeCard,
+.projectDetailsPage .projectCaseResultCard,
+.projectDetailsPage .projectCaseAudioCard,
+.projectDetailsPage .projectCaseLoadingPanel,
+.projectDetailsPage .projectCaseSectionCard,
+.projectDetailsPage .projectCaseTableWrap {
+  border-color: var(--glass-border-muted);
+  background: var(--glass-card-bg);
+  box-shadow: var(--glass-shadow);
+}
+
+.projectDetailsPage .projectCaseLightboxBackdrop {
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
 }

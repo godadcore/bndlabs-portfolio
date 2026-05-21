@@ -38,7 +38,7 @@
   line-height: 1.04;
   letter-spacing: -0.03em;
   font-weight: 400;
-  color: #0b0b0d;
+  color: var(--text-primary);
   max-width: 6ch;
 }
 
@@ -72,9 +72,9 @@
   display: flex;
   flex-direction: column;
   background: var(--surface-elevated);
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 0;
+  border: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-card);
   text-decoration: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, filter 0.18s ease;
@@ -93,24 +93,30 @@
 
 .selectedWorkSection .workCard__image {
   width: 100%;
-  height: 300px;
-  border-radius: 18px;
+  height: auto;
+  aspect-ratio: 16 / 11;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--card-image-bg);
   box-shadow:
-    inset 0 0 0 1px rgba(7, 12, 18, 0.07),
-    0 12px 30px rgba(7, 12, 18, 0.08);
+    inset 0 0 0 1px var(--border-subtle),
+    var(--brand-shadow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .selectedWorkSection .featuredCard .workCard__image {
   width: 100%;
-  height: clamp(280px, 34vw, 520px);
+  height: auto;
+  aspect-ratio: 16 / 10;
 }
 
 .selectedWorkSection .workCard__image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   display: block;
   transform: none;
 }
@@ -145,7 +151,7 @@
   align-items: center;
   min-height: 24px;
   padding: 0 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   background: rgba(var(--accent-rgb), 0.1);
   color: var(--accent);
   font-size: 0.68rem;
@@ -158,21 +164,21 @@
   font-family: var(--fontHeading);
   font-weight: 400;
   font-size: 1.22rem;
-  color: #111111;
+  color: var(--text-primary);
   margin: 0;
   line-height: 1.12;
   letter-spacing: -0.02em;
 }
 
 .selectedWorkSection .workCard__year {
-  color: #888888;
+  color: var(--text-subtle);
   font-weight: 400;
   font-size: 0.75rem;
 }
 
 .selectedWorkSection .workCard__task {
   font-size: 0.94rem;
-  color: rgba(17, 17, 17, 0.58);
+  color: var(--text-muted);
   margin: 0;
   line-height: 1.52;
   font-weight: 400;
@@ -187,7 +193,7 @@
 .selectedWorkSection .workCard__arrow {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   border: 1.5px solid var(--card-arrow-border);
   background: var(--card-arrow-bg);
   color: var(--card-arrow-color);
@@ -250,11 +256,13 @@
   }
 
   .selectedWorkSection .workCard__image {
-    height: 240px;
+    height: auto;
+    aspect-ratio: 16 / 11;
   }
 
   .selectedWorkSection .featuredCard .workCard__image {
-    height: clamp(240px, 52vw, 340px);
+    height: auto;
+    aspect-ratio: 16 / 10;
   }
 }
 
@@ -269,11 +277,13 @@
   }
 
   .selectedWorkSection .workCard__image {
-    height: 214px;
+    height: auto;
+    aspect-ratio: 4 / 3;
   }
 
   .selectedWorkSection .featuredCard .workCard__image {
-    height: 230px;
+    height: auto;
+    aspect-ratio: 4 / 3;
   }
 
   .selectedWorkSection .workCard__title {
@@ -298,4 +308,20 @@
   .selectedWorkSection .workCard__task {
     color: var(--text-muted);
   }
+}
+
+.selectedWorkSection .workCard {
+  border-color: var(--glass-border-muted);
+  background: var(--glass-card-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.selectedWorkSection .workCard:hover {
+  box-shadow: var(--glass-shadow-strong);
+}
+
+.selectedWorkSection .workCard__footer {
+  background: rgba(var(--surface-rgb), 0.34);
 }

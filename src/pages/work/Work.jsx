@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/layout/Footer";
 import WorkCard from "../../components/work/WorkCard";
 import Seo from "../../components/seo/Seo";
+import HugeIcon from "../../components/shared/HugeIcon";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { getInitialProjects, loadAllProjects, sortProjectsNewestFirst } from "../../lib/projectData";
-import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
+import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME } from "../../lib/site";
 import "./work.css";
 
 const DRAG_THRESHOLD = 50;
@@ -13,19 +15,11 @@ const FEATURED_COUNT = 5;
 const MOBILE_BREAKPOINT = 640;
 
 const ChevronLeft = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-    width="18" height="18">
-    <polyline points="15 18 9 12 15 6" />
-  </svg>
+  <HugeIcon icon={ArrowLeft01Icon} size={18} strokeWidth={1.9} />
 );
 
 const ChevronRight = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-    width="18" height="18">
-    <polyline points="9 18 15 12 9 6" />
-  </svg>
+  <HugeIcon icon={ArrowRight01Icon} size={18} strokeWidth={1.9} />
 );
 
 export default function Work() {
@@ -325,14 +319,16 @@ export default function Work() {
   return (
     <div className="page workPage">
       <Seo
-        title={`Selected Work & UI/UX Projects | ${SITE_NAME}`}
-        description="Explore selected UI/UX, product design, brand, and frontend projects by Bodunde Emmanuel, a digital product designer in Lagos, Nigeria."
+        title={`UI/UX Design Case Studies in Nigeria by Bodunde Emmanuel | ${SITE_NAME}`}
+        description="Explore UI/UX, product design, website design, app design, and frontend development case studies by Bodunde Emmanuel of Bndlabs in Lagos, Nigeria."
         keywords={[
           ...BASE_KEYWORDS,
+          ...NIGERIA_LOCATION_KEYWORDS,
           "UI UX projects",
           "product design case studies",
           "selected work portfolio",
           "digital product designer portfolio",
+          "frontend developer portfolio Nigeria",
         ]}
         canonicalPath="/work"
         imageAlt={`Selected work page preview for ${SITE_NAME}`}

@@ -7,15 +7,15 @@ import usePrefersDarkMode from "../../hooks/usePrefersDarkMode";
 const clamp01 = (v) => Math.max(0, Math.min(1, v));
 const range = (v, a, b) => clamp01((v - a) / (b - a));
 
-const PinkWhiteBox = forwardRef(function PinkWhiteBox({ prefersDark = false, ...props }, ref) {
-  const pinkColor = prefersDark ? "#dfb4c8" : "#f2b3d6";
+const AccentWhiteBox = forwardRef(function AccentWhiteBox({ prefersDark = false, ...props }, ref) {
+  const accentColor = prefersDark ? "#9b90ff" : "#6e5fe8";
   const whiteColor = prefersDark ? "#eef2f8" : "#ffffff";
 
   return (
     <mesh ref={ref} castShadow receiveShadow {...props}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial attach="material-0" color={pinkColor} roughness={0.55} metalness={0.05} />
-      <meshStandardMaterial attach="material-1" color={pinkColor} roughness={0.55} metalness={0.05} />
+      <meshStandardMaterial attach="material-0" color={accentColor} roughness={0.55} metalness={0.05} />
+      <meshStandardMaterial attach="material-1" color={accentColor} roughness={0.55} metalness={0.05} />
       <meshStandardMaterial attach="material-2" color={whiteColor} roughness={0.35} metalness={0.05} />
       <meshStandardMaterial attach="material-3" color={whiteColor} roughness={0.35} metalness={0.05} />
       <meshStandardMaterial attach="material-4" color={whiteColor} roughness={0.35} metalness={0.05} />
@@ -43,7 +43,7 @@ const GlossyWhiteBox = forwardRef(function GlossyWhiteBox({ prefersDark = false,
 
 function Scene({ progress = 0, prefersDark = false }) {
   const group = useRef(null);
-  const pinkBox = useRef(null);
+  const accentBox = useRef(null);
   const w1 = useRef(null);
   const w2 = useRef(null);
   const w3 = useRef(null);
@@ -63,10 +63,10 @@ function Scene({ progress = 0, prefersDark = false }) {
       group.current.rotation.y += delta * (0.2 + active * 0.7);
     }
 
-    if (pinkBox.current) {
-      pinkBox.current.rotation.x = 0.35 + active * 1.2;
-      pinkBox.current.rotation.y = 0.5 + active * 1.0;
-      pinkBox.current.position.y = THREE.MathUtils.lerp(-0.25, 0.1, comeIn);
+    if (accentBox.current) {
+      accentBox.current.rotation.x = 0.35 + active * 1.2;
+      accentBox.current.rotation.y = 0.5 + active * 1.0;
+      accentBox.current.position.y = THREE.MathUtils.lerp(-0.25, 0.1, comeIn);
     }
 
     const wobble = state.clock.elapsedTime;
@@ -105,7 +105,7 @@ function Scene({ progress = 0, prefersDark = false }) {
       <group ref={group} position={[0, 0, 3.5]}>
         <Float speed={1.2} rotationIntensity={0.35} floatIntensity={0.25}>
           <group>
-            <PinkWhiteBox ref={pinkBox} position={[0.2, 0.0, 0]} prefersDark={prefersDark} />
+            <AccentWhiteBox ref={accentBox} position={[0.2, 0.0, 0]} prefersDark={prefersDark} />
             <GlossyWhiteBox ref={w1} position={[-1.35, -0.75, -0.35]} prefersDark={prefersDark} />
             <GlossyWhiteBox ref={w2} position={[1.15, -0.25, -0.15]} prefersDark={prefersDark} />
             <GlossyWhiteBox ref={w3} position={[-0.35, 0.85, -0.25]} prefersDark={prefersDark} />
@@ -120,12 +120,12 @@ function Scene({ progress = 0, prefersDark = false }) {
 
 export default function WhatIDo3D({ progress = 0 }) {
   const prefersDarkMode = usePrefersDarkMode();
-  const backgroundColor = prefersDarkMode ? "#1B212C" : "#ffffff";
+  const backgroundColor = prefersDarkMode ? "#141b2a" : "#ffffff";
 
   return (
     <div className="whatido3d">
       <Canvas
-        shadows
+        shadows="percentage"
         dpr={[1, 1.5]}
         camera={{ position: [0, 1.2, 4.2], fov: 45 }}
         gl={{ antialias: true, powerPreference: "high-performance" }}

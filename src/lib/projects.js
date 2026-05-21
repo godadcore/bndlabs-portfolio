@@ -625,7 +625,6 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
   const heading = firstPlainText(section?.heading, section?.title, `Section ${index + 1}`);
   const content = firstRichTextValue(section?.body, section?.description, section?.text);
   const text = richTextToPlainText(content);
-  const icon = firstString(section?.icon);
   const id = createCaseStudySectionId(
     section?._key || heading || `${projectTitle}-section-${index + 1}`,
     `section-${index + 1}`
@@ -649,7 +648,6 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
       ? {
           ...tableSection,
           headingContent,
-          icon,
         }
       : null;
   }
@@ -674,7 +672,6 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
       ? {
           ...audioSection,
           headingContent,
-          icon,
         }
       : null;
   }
@@ -700,7 +697,6 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
       ? {
           ...videoSection,
           headingContent,
-          icon,
         }
       : null;
   }
@@ -723,7 +719,6 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
     return frameSection
       ? {
           ...frameSection,
-          icon,
         }
       : null;
   }
@@ -753,7 +748,6 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
     ? {
         ...storySection,
         headingContent,
-        icon,
       }
     : null;
 }

@@ -15,24 +15,6 @@ const stringListField = (name: string, title: string) =>
     of: [{type: 'string'}],
   })
 
-const sectionIconField = defineField({
-  name: 'icon',
-  title: 'Icon',
-  type: 'string',
-  description: 'Optional icon hint used for sidebar section navigation on the frontend.',
-  options: {
-    list: [
-      {title: 'Overview', value: 'overview'},
-      {title: 'Project Scope', value: 'project-scope'},
-      {title: 'Research', value: 'research'},
-      {title: 'Problem', value: 'problem'},
-      {title: 'Wireframe', value: 'wireframe'},
-      {title: 'Prototype', value: 'prototype'},
-      {title: 'Results', value: 'results'},
-    ],
-  },
-})
-
 const mediaArrayField = (name: string, title: string) =>
   defineField({
     name,
@@ -125,7 +107,6 @@ const storySectionType = defineField({
   title: 'Flexible Content Section',
   type: 'object',
   fields: [
-    sectionIconField,
     richInlineField('title', 'Heading'),
     richTextField(
       'body',
@@ -164,7 +145,6 @@ const frameGroupSectionType = defineField({
   title: 'Grouped Frames',
   type: 'object',
   fields: [
-    sectionIconField,
     richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     mediaArrayField('frames', 'Frames'),
@@ -188,7 +168,6 @@ const videoSectionType = defineField({
   title: 'Video Section',
   type: 'object',
   fields: [
-    sectionIconField,
     richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     defineField({
@@ -229,7 +208,6 @@ const audioSectionType = defineField({
   title: 'Voice Note Section',
   type: 'object',
   fields: [
-    sectionIconField,
     richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     defineField({
@@ -262,7 +240,6 @@ const tableSectionType = defineField({
   title: 'Table Section',
   type: 'object',
   fields: [
-    sectionIconField,
     richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     richInlineListField('columns', 'Column Headers', 'column', 'Column'),

@@ -14,9 +14,9 @@ const CFG = {
   camera: { position: [6, 6, 6], zoom: 78 },
 
   colors: {
-    platform: "#4B43D6",
-    gridBase: "#F6F7FF",
-    gridLine: "rgba(120,130,255,0.18)",
+    platform: "#5f50d6",
+    gridBase: "#f7f8fb",
+    gridLine: "rgba(95,80,214,0.16)",
   },
 
   platform: {
@@ -62,53 +62,53 @@ const OBJECTS = {
       id: "L_long",
       size: [2.35, 0.75, 1.25],
       pos: [-1.55, sitOnPlatform(0.75), 0.05],
-      color: "#BFE9FF",
+      color: "#dcd7ff",
       float: { speed: 1.05, height: 0.12, rot: 0.12, phase: 0.4 },
     },
     {
       id: "L_leg",
       size: [0.75, 0.75, 2.05],
       pos: [-2.25, sitOnPlatform(0.75), 0.95],
-      color: "#BFE9FF",
+      color: "#dcd7ff",
       float: { speed: 0.95, height: 0.10, rot: 0.10, phase: 1.1 },
     },
 
-    // Yellow big block
+    // Main brand accent block
     {
       id: "yellow",
       size: [3.2, 1.95, 1.75],
       pos: [-5.95, -5.95, 0.35],
-      color: "#F5E44C",
+      color: "#6e5fe8",
       float: { speed: 1.05, height: 0.10, rot: 0.10, phase: 2.6 },
     },
 
-    // Top cluster cubes (3 + pink floating)
+    // Top cluster cubes
     {
       id: "cube_left",
       size: [2.05, 1.9, 2.05],
       pos: [-3.4, 1.9 + 0.45, -1.75],
-      color: "#C9D5FF",
+      color: "#dcd7ff",
       float: { speed: 0.9, height: 0.06, rot: 0.06, phase: 0.0 },
     },
     {
       id: "cube_right",
       size: [2.05, 1.9, 2.05],
       pos: [2.5, 1.9 + 0.45, -1.75],
-      color: "#C9D5FF",
+      color: "#dcd7ff",
       float: { speed: 0.9, height: 0.06, rot: 0.06, phase: 0.7 },
     },
     {
       id: "cube_front",
       size: [2.05, 1.9, 2.05],
       pos: [-.5, 1.5 + 0.45, -6.1],
-      color: "#C9D5FF",
+      color: "#dcd7ff",
       float: { speed: 0.9, height: 0.06, rot: 0.06, phase: 1.4 },
     },
     {
       id: "pink_floating",
       size: [0.95, 0.95, 0.95],
       pos: [0.35, sitOnPlatform(0.95) + 1.1, -1.4],
-      color: "#F3A9C8",
+      color: "#9b90ff",
       float: { speed: 1.05, height: 0.22, rot: 0.14, phase: 0.4 },
     },
 
@@ -131,7 +131,7 @@ const OBJECTS = {
       id: "small_pink",
       size: [0.9, 0.9, 2.5],
       pos: [-6.3, 0.5 - 0.55, 2.1],
-      color: "#F3A9C8",
+      color: "#9b90ff",
       float: { speed: 1.15, height: 0.06, rot: 0.06, phase: 1.8 },
     },
   ],
@@ -148,7 +148,7 @@ const OBJECTS = {
       id: "orange_ball",
       r: 0.63,
       pos: [-6.65, -1.66 + 0.18, 2.05],
-      color: "#FF7A00",
+      color: "#6a58ff",
       float: { speed: 1.05, height: 0.09, rot: 0.0, phase: 1.7 },
     },
     {
@@ -188,7 +188,7 @@ function Sphere({ r, color }) {
   );
 }
 
-function LinkRing({ color = "#9BA7FF" }) {
+function LinkRing({ color = "#b9b1ff" }) {
   return (
     <mesh castShadow receiveShadow>
       <torusGeometry args={[0.22, 0.06, 18, 64]} />
@@ -260,7 +260,7 @@ function Scene() {
         {/* LINK */}
         <Floaty {...OBJECTS.link.float}>
           <group position={OBJECTS.link.pos} rotation={OBJECTS.link.rot} scale={OBJECTS.link.scale}>
-            <LinkRing color={"#9BA7FF"} />
+            <LinkRing color="#b9b1ff" />
           </group>
         </Floaty>
       </group>
@@ -271,7 +271,7 @@ function Scene() {
 export default function Hero3D() {
   return (
     <Canvas
-      shadows
+      shadows="percentage"
       dpr={[1, 1.5]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
       performance={{ min: 0.75 }}

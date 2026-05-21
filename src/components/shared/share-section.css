@@ -1,0 +1,141 @@
+.shareSection {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin-top: 42px;
+  padding: 12px 14px;
+  border: 1px solid var(--glass-border-muted, var(--border-regular));
+  border-radius: var(--radius-md, 18px);
+  background: var(--glass-bg-soft, rgba(var(--surface-rgb), 0.64));
+  box-shadow: 0 12px 32px rgba(var(--accent-rgb), 0.08), inset 0 1px 0 rgba(255,255,255,.16);
+  backdrop-filter: blur(var(--glass-blur, 20px)) saturate(var(--glass-saturate, 160%));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px)) saturate(var(--glass-saturate, 160%));
+  color: var(--text-secondary);
+}
+
+.shareSection__label {
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--fontUi);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.shareSection__actions {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.shareSection__platform {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border-regular);
+  border-radius: var(--radius-sm, 12px);
+  background: var(--glass-control-bg, rgba(var(--surface-rgb), 0.54));
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.shareSection__platform svg {
+  width: 17px;
+  height: 17px;
+}
+
+.shareSection__platform--facebook {
+  color: var(--social-facebook);
+}
+
+.shareSection__platform--linkedin {
+  color: var(--social-linkedin);
+}
+
+.shareSection__platform--instagram {
+  color: var(--social-instagram);
+}
+
+.shareSection__platform--x,
+.shareSection__platform--threads {
+  color: var(--social-x);
+}
+
+.shareSection__platform:hover,
+.shareSection__platform.is-copied {
+  border-color: var(--border-accent-soft);
+  background: rgba(var(--accent-rgb), 0.12);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.shareSection__platform--linkedin:hover {
+  border-color: var(--social-linkedin-border);
+  background: var(--social-linkedin-bg);
+  color: var(--social-linkedin);
+}
+
+.shareSection__platform--facebook:hover {
+  border-color: color-mix(in srgb, var(--social-facebook) 28%, transparent);
+  background: color-mix(in srgb, var(--social-facebook) 10%, transparent);
+  color: var(--social-facebook);
+}
+
+.shareSection__platform--x:hover,
+.shareSection__platform--threads:hover {
+  color: var(--social-x);
+}
+
+.shareSection__platform--instagram:hover {
+  color: var(--social-instagram);
+}
+
+.shareSection__platform:focus-visible {
+  outline: 2px solid rgba(var(--accent-rgb), 0.72);
+  outline-offset: 3px;
+}
+
+.shareSection__copy {
+  color: var(--accent-hover);
+}
+
+.shareSection__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  .shareSection {
+    margin-top: 34px;
+    gap: 10px;
+    padding: 11px 12px;
+  }
+
+  .shareSection__actions {
+    gap: 7px;
+  }
+
+  .shareSection__platform {
+    width: 36px;
+    height: 36px;
+  }
+}

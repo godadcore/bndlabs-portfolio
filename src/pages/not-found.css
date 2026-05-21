@@ -93,7 +93,7 @@
 .notFoundPage .notFoundCard {
   position: relative;
   overflow: hidden;
-  border-radius: 30px;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border-subtle);
   background:
     radial-gradient(720px 260px at 88% 12%, rgba(var(--accent-rgb), 0.12), transparent 60%),
@@ -129,7 +129,7 @@
   max-width: 58ch;
   font-size: 16px;
   line-height: 1.85;
-  color: rgba(11, 11, 13, 0.68);
+  color: var(--text-muted);
 }
 
 .notFoundPage .notFoundActions {
@@ -145,10 +145,10 @@
   justify-content: center;
   min-height: 48px;
   padding: 0 20px;
-  border-radius: 999px;
+  border-radius: var(--button-radius);
   border: 1px solid var(--border-regular);
   background: rgba(var(--surface-rgb), 0.9);
-  color: rgba(11, 11, 13, 0.88);
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -185,7 +185,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(11, 11, 13, 0.46);
+  color: var(--text-muted);
 }
 
 .notFoundPage .notFoundMetaValue {

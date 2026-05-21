@@ -5,7 +5,7 @@ import BlogCard from "../../components/blog/BlogCard";
 import Seo from "../../components/seo/Seo";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { getInitialPosts, loadAllPosts } from "../../lib/blogData";
-import { BASE_KEYWORDS, SITE_NAME } from "../../lib/site";
+import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME } from "../../lib/site";
 import "../work/work.css";
 import "./blog.css";
 
@@ -141,13 +141,15 @@ export default function Blog() {
   return (
     <main className="page workPage blogPage">
       <Seo
-        title={`Blog | ${SITE_NAME}`}
-        description="A minimal blog page for notes, process, and design thinking from Bodunde Emmanuel."
+        title={`UI/UX Design & Frontend Blog in Nigeria by Bodunde Emmanuel | ${SITE_NAME}`}
+        description="Design notes, product thinking, UI/UX process, frontend development lessons, and digital product reflections from Bodunde Emmanuel of Bndlabs in Lagos, Nigeria."
         keywords={[
           ...BASE_KEYWORDS,
+          ...NIGERIA_LOCATION_KEYWORDS,
           "design blog",
           "product design notes",
           "UI UX writing",
+          "frontend development notes",
         ]}
         canonicalPath="/blog"
         imageAlt={`Blog page preview for ${SITE_NAME}`}

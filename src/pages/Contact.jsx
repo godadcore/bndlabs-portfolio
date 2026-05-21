@@ -1,10 +1,26 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArrowRight01Icon,
+  CallIcon,
+  Chat01Icon,
+  CheckmarkSquare01Icon,
+  Layout01Icon,
+  Layers01Icon,
+  Location01Icon,
+  MagicWand01Icon,
+  Mail01Icon,
+  MailSend01Icon,
+  Search01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
+import { LinkedinLogo, WhatsappLogo } from "@phosphor-icons/react";
 import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import FaqSection from "../components/shared/FaqSection";
+import HugeIcon from "../components/shared/HugeIcon";
 import usePullToRefresh from "../hooks/usePullToRefresh";
 import { makeContactPayload, submitContactForm } from "../lib/contactForm";
-import { BASE_KEYWORDS, SITE_NAME } from "../lib/site";
+import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME } from "../lib/site";
 import { useSiteSettings } from "../providers/siteSettingsContext.js";
 import "./contact.css";
 
@@ -19,200 +35,82 @@ const PROCESS = [
   {
     step: "01",
     title: "Research",
-    desc: "Deep-dive into your goals, users, and competitors to uncover insights that drive smart design decisions.",
+    desc: "Clarify your goals, users, category, and product constraints so the design starts from useful evidence.",
     icon: "research",
   },
   {
     step: "02",
     title: "Wireframe",
-    desc: "Translate strategy into structure - precise, efficient wireframes that map every screen and interaction.",
+    desc: "Translate strategy into structure with focused flows, screen hierarchy, and early interaction decisions.",
     icon: "wireframe",
   },
   {
     step: "03",
     title: "Design",
-    desc: "High-fidelity, pixel-perfect UI crafted to elevate your brand and delight every type of user.",
+    desc: "Build a polished interface system that feels consistent, branded, and practical for real users.",
     icon: "design",
   },
   {
     step: "04",
     title: "Deliver",
-    desc: "Clean handoff with dev-ready files, design tokens, and frontend implementation if needed.",
+    desc: "Prepare dev-ready files, design tokens, and frontend implementation support where the project needs it.",
     icon: "deliver",
   },
 ];
 
 function IconMail(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" strokeWidth="1.9" />
-      <path
-        d="M3 7l7.8 5.2a2.2 2.2 0 0 0 2.4 0L21 7"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={Mail01Icon} {...props} />;
 }
 
 function IconPhone(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M22 16.92v2.2a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 11.2 18a19.5 19.5 0 0 1-5.2-5.2A19.8 19.8 0 0 1 2.88 4.18 2 2 0 0 1 4.86 2h2.2a2 2 0 0 1 1.96 1.62c.12.82.31 1.62.58 2.38a2 2 0 0 1-.45 2.08L8.1 9.14a16 16 0 0 0 6.76 6.76l1.06-1.06a2 2 0 0 1 2.08-.45c.76.27 1.56.46 2.38.58A2 2 0 0 1 22 16.92Z"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={CallIcon} {...props} />;
 }
 
 function IconMap(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path d="M12 21s7-5.8 7-11a7 7 0 1 0-14 0c0 5.2 7 11 7 11Z" stroke="currentColor" strokeWidth="1.9" />
-      <circle cx="12" cy="10" r="2.7" stroke="currentColor" strokeWidth="1.9" />
-    </svg>
-  );
+  return <HugeIcon icon={Location01Icon} {...props} />;
 }
 
 function IconUser(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <circle cx="12" cy="7.5" r="3.5" stroke="currentColor" strokeWidth="1.9" />
-      <path d="M5 20a7 7 0 0 1 14 0" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-    </svg>
-  );
+  return <HugeIcon icon={UserIcon} {...props} />;
 }
 
 function IconMessage(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M20 15a3 3 0 0 1-3 3H9l-5 4V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3Z"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={Chat01Icon} {...props} />;
 }
 
 function IconSend(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path d="M22 2 11 13" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-      <path
-        d="m22 2-7 20-4-9-9-4 20-7Z"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={MailSend01Icon} {...props} />;
 }
 
 function IconSpark(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function IconBehance(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M9.16 11.54c1.12-.43 1.66-1.27 1.66-2.5 0-2.16-1.89-3.04-3.86-3.04H1v11h6.18c2.53 0 4.3-.98 4.3-3.48 0-1.46-.77-2.45-2.32-1.98ZM3.18 8.76h3.05c.78 0 1.4.29 1.4 1.16 0 .93-.66 1.19-1.47 1.19H3.18V8.76Zm3.24 5.48H3.18v-2.54H6.4c.95 0 1.83.22 1.83 1.24 0 1.06-.77 1.3-1.8 1.3ZM18.73 8.16c-3 0-4.8 2.2-4.8 4.9 0 2.86 1.7 4.87 4.74 4.87 2.12 0 3.74-.93 4.47-2.98h-2.47c-.26.54-1.02.95-1.88.95-1.33 0-2.08-.7-2.15-2.06H23c.2-3.15-1.5-5.68-4.27-5.68Zm-2.03 3.95c.18-1.08.82-1.94 1.97-1.94 1.24 0 1.8.92 1.88 1.94H16.7ZM16.48 6.54h4.27V5.1h-4.27v1.44Z" />
-    </svg>
-  );
-}
-
-function IconInstagram(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="currentColor" strokeWidth="1.9" />
-      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.9" />
-      <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" />
-    </svg>
-  );
+  return <HugeIcon icon={MagicWand01Icon} {...props} />;
 }
 
 function IconCheck(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path
-        d="m5 12 4.2 4.2L19 6.5"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={CheckmarkSquare01Icon} strokeWidth={2} {...props} />;
 }
 function IconLinkedIn(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3A2 2 0 1 0 5.3 7 2 2 0 0 0 5.25 3ZM20.44 12.58c0-3.46-1.85-5.07-4.33-5.07-1.99 0-2.88 1.1-3.38 1.87V8.5H9.35c.04.58 0 11.5 0 11.5h3.38v-6.42c0-.34.02-.68.13-.92.27-.68.88-1.39 1.9-1.39 1.34 0 1.88 1.03 1.88 2.54V20H20v-6.98Z" />
-    </svg>
-  );
+  return <LinkedinLogo weight="fill" {...props} />;
 }
 
 function IconWhatsApp(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M20.52 3.48A11.8 11.8 0 0 0 12.06 0C5.53 0 .2 5.33.2 11.86c0 2.1.55 4.14 1.6 5.94L0 24l6.39-1.68a11.8 11.8 0 0 0 5.67 1.45h.01c6.53 0 11.86-5.33 11.86-11.86 0-3.17-1.23-6.15-3.41-8.43ZM12.07 21.74a9.8 9.8 0 0 1-5-1.37l-.36-.21-3.79 1 1.01-3.69-.23-.38a9.77 9.77 0 0 1-1.5-5.23c0-5.42 4.41-9.83 9.84-9.83 2.63 0 5.09 1.02 6.94 2.88a9.76 9.76 0 0 1 2.88 6.94c0 5.42-4.41 9.83-9.8 9.89Zm5.39-7.35c-.29-.14-1.7-.84-1.97-.93-.26-.1-.45-.14-.64.14-.19.29-.74.93-.9 1.12-.17.19-.34.22-.63.07-.29-.14-1.22-.45-2.32-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.12-.6.13-.13.29-.34.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.55-.88-2.12-.23-.55-.47-.48-.64-.49h-.55c-.19 0-.5.07-.76.36-.26.29-1 1-.1 2.43.9 1.43 1.28 2.72 2.84 4 1.56 1.28 3.07 1.68 4.17 1.87 1.1.19 2.1.17 2.89.1.88-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33Z" />
-    </svg>
-  );
+  return <WhatsappLogo weight="fill" {...props} />;
 }
 
 function IconResearch(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.9" />
-      <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-      <path d="M11 8v6M8 11h6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-    </svg>
-  );
+  return <HugeIcon icon={Search01Icon} {...props} />;
 }
 
 function IconWireframe(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.9" />
-      <path d="M3 9h18M9 21V9" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-    </svg>
-  );
+  return <HugeIcon icon={Layout01Icon} {...props} />;
 }
 
 function IconDesign(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path d="M12 2L2 7l10 5 10-5-10-5Z" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" />
-      <path d="M2 17l10 5 10-5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M2 12l10 5 10-5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  return <HugeIcon icon={Layers01Icon} {...props} />;
 }
 
 function IconDeliver(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  return <HugeIcon icon={ArrowRight01Icon} {...props} />;
 }
 
 const PROCESS_ICONS = {
@@ -374,13 +272,14 @@ export default function Contact() {
   return (
     <main className="page contactPage">
       <Seo
-        title={`Contact Bodunde Emmanuel | UI/UX Designer in Lagos, Nigeria | ${SITE_NAME}`}
-        description="Contact Bodunde Emmanuel for UI/UX design, product design, frontend design, and brand systems. Based in Lagos, Nigeria and available for selected projects."
+        title={`Hire Bodunde Emmanuel | UI/UX Designer & Frontend Developer in Nigeria | ${SITE_NAME}`}
+        description="Contact Bodunde Emmanuel of Bndlabs for UI/UX design, product design, website design, app design, design systems, and frontend development from Lagos for clients across Nigeria."
         keywords={[
           ...BASE_KEYWORDS,
+          ...NIGERIA_LOCATION_KEYWORDS,
           "contact UI UX designer",
           "hire product designer in Nigeria",
-          "contact frontend designer Lagos",
+          "contact frontend developer Lagos",
         ]}
         canonicalPath="/contact"
         imageAlt={`Contact page preview for ${SITE_NAME}`}
@@ -394,15 +293,15 @@ export default function Contact() {
               <div className="contactHeading contactReveal contactReveal--soft">
                 <h1 className="srOnly">Contact UI/UX Designer</h1>
                 <p className="contactTitle" aria-hidden="true">
-                  Let's build something
+                  Let's build a product
                   <br />
-                  <span>beautiful together.</span>
+                  <span>people can trust.</span>
                 </p>
                 <p className="contactSubtitle">
-                  Tell me about your product, website, or idea. If you need a UI/UX designer in Lagos, Nigeria, I&apos;ll review it and get back to you with the right next step.
+                  Tell me about your product, website, or idea. If you need a UI/UX designer, product designer, or frontend developer in Lagos, Nigeria, I&apos;ll review it and reply with the right next step.
                 </p>
                <p className="contactMeta">
-  <span className="contactMetaPill">Average response time: within 1 hours</span>
+  <span className="contactMetaPill">Typical response time: within 24 hours</span>
 </p>
               </div>
 
@@ -424,7 +323,7 @@ export default function Contact() {
                     </h2>
 
                     <p className="contactLeftText">
-                      I help brands and founders create polished digital experiences through strategy, UI/UX, and frontend execution as a digital product designer based in Lagos, Nigeria.
+                      I help brands and founders create polished digital experiences through strategy, UI/UX, product design, and frontend execution from Lagos, Nigeria.
                     </p>
                   </div>
 

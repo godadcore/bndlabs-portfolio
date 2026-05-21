@@ -1,10 +1,13 @@
+import { createElement } from "react";
 import { sanitizeBlogHtml } from "./utils";
 
 function TableCell({ value, as: Tag = "td" }) {
   const html = sanitizeBlogHtml(value?.html || value?.text || value);
-  if (!html) return <Tag />;
+  if (!html) return createElement(Tag);
 
-  return <Tag dangerouslySetInnerHTML={{ __html: html }} />;
+  return createElement(Tag, {
+    dangerouslySetInnerHTML: { __html: html },
+  });
 }
 
 export default function TableBlock({ block }) {

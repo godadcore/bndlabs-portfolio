@@ -4,6 +4,15 @@ function hasExplicitProtocol(value) {
   return /^[a-zA-Z][a-zA-Z\d+.-]*:/.test(value);
 }
 
+function hasControlCharacter(value) {
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    if (code <= 31 || code === 127) return true;
+  }
+
+  return false;
+}
+
 export function sanitizeUrl(
   value,
   {
@@ -13,7 +22,7 @@ export function sanitizeUrl(
 ) {
   const normalizedValue = String(value ?? "").trim();
   if (!normalizedValue) return "";
-  if (/[\u0000-\u001F\u007F]/.test(normalizedValue)) return "";
+  if (hasControlCharacter(normalizedValue)) return "";
   if (/^\[object\s+[A-Za-z]+\]$/.test(normalizedValue)) return "";
 
   const protocolSet = new Set(

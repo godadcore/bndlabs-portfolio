@@ -1,10 +1,12 @@
 // src/components/home/Services.jsx
 import { useEffect, useRef } from "react";
-
-import figmaIcon from "../../assets/icons/figma.svg";
-import framerIcon from "../../assets/icons/framer.svg";
-import penIcon from "../../assets/icons/pen.svg";
-import brandingTextIcon from "../../assets/icons/branding-text.svg";
+import {
+  CodeIcon,
+  Layout01Icon,
+  PaintBoardIcon,
+  PenTool01Icon,
+} from "@hugeicons/core-free-icons";
+import HugeIcon from "../shared/HugeIcon";
 
 const SERVICES = [
   {
@@ -12,28 +14,28 @@ const SERVICES = [
     title: "UI/UX Design",
     desc:
       "We create intuitive, visually appealing interfaces that enhance user experience and navigation, ensuring your app is both beautiful and functional across all devices.",
-    icon: figmaIcon,
+    icon: Layout01Icon,
   },
   {
     no: "02",
     title: "Development",
     desc:
       "Our team builds reliable, scalable solutions, delivering clean code that powers websites and mobile apps with top-notch performance and security.",
-    icon: framerIcon,
+    icon: CodeIcon,
   },
   {
     no: "03",
     title: "Graphic Design",
     desc:
       "We design responsive, user-friendly visuals that blend aesthetics with functionality, delivering a seamless experience across devices and reflecting your brand identity.",
-    icon: penIcon,
+    icon: PenTool01Icon,
   },
   {
     no: "04",
     title: "Branding",
     desc:
       "We craft memorable brand identities, from logos to complete strategies, ensuring consistency and a strong connection with your audience across all platforms.",
-    icon: brandingTextIcon,
+    icon: PaintBoardIcon,
   },
 ];
 
@@ -79,13 +81,7 @@ export default function Services({ scrollRootRef }) {
             <article className="serviceCard" role="listitem" key={s.no}>
               <div className="serviceTop">
                 <span className="serviceIcon" aria-hidden="true">
-                  <img
-                    src={s.icon}
-                    alt={`${s.title} service icon`}
-                    className="serviceIconImg"
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  <HugeIcon icon={s.icon} size={24} strokeWidth={1.75} />
                 </span>
                 <p className="serviceDesc">{s.desc}</p>
               </div>

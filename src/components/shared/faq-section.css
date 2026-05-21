@@ -19,29 +19,29 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #7c3aed;
+  color: var(--accent-hover);
 }
 
 .faqTitle {
   margin: 0 0 20px;
   font-size: clamp(36px, 4vw, 58px);
-  font-weight: 800;
+  font-weight: 500;
   line-height: 1.06;
   letter-spacing: -0.04em;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-family: inherit;
 }
 
 .faqTitle em {
   font-style: italic;
-  color: #7c3aed;
+  color: var(--accent-hover);
 }
 
 .faqSubtext {
   margin: 0 0 36px;
   font-size: 16px;
   line-height: 1.75;
-  color: rgba(11, 11, 13, 0.58);
+  color: var(--text-muted);
   max-width: 360px;
   font-family: inherit;
 }
@@ -51,21 +51,21 @@
   align-items: center;
   justify-content: center;
   padding: 14px 28px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
-  color: #fff;
+  border-radius: var(--button-radius);
+  background: var(--accent);
+  color: var(--button-primary-text);
   font-size: 15px;
   font-weight: 700;
   border: none;
   cursor: pointer;
   font-family: inherit;
-  box-shadow: 0 14px 32px rgba(124, 58, 237, 0.24);
+  box-shadow: 0 12px 28px rgba(var(--accent-rgb), 0.22);
   transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .faqCta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 42px rgba(124, 58, 237, 0.32);
+  box-shadow: 0 14px 32px rgba(var(--accent-rgb), 0.28);
 }
 
 .faqRight {
@@ -75,11 +75,11 @@
 }
 
 .faqItem {
-  border-radius: 18px;
-  border: 1px solid rgba(11, 11, 13, 0.08);
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border-muted, var(--border-subtle));
+  background: var(--glass-bg-soft, rgba(var(--surface-rgb), 0.68));
+  backdrop-filter: blur(var(--glass-blur, 20px)) saturate(var(--glass-saturate, 160%));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px)) saturate(var(--glass-saturate, 160%));
   cursor: pointer;
   overflow: hidden;
   transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
@@ -87,9 +87,9 @@
 
 .faqItem:hover,
 .faqItem.is-open {
-  border-color: rgba(124, 58, 237, 0.2);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 10px 32px rgba(124, 58, 237, 0.08);
+  border-color: var(--border-accent-soft);
+  background: var(--glass-bg-strong, rgba(var(--surface-rgb), 0.9));
+  box-shadow: var(--glass-shadow, var(--brand-shadow-soft));
 }
 
 .faqItemHead {
@@ -125,7 +125,7 @@
 .faqQ {
   font-size: 16px;
   font-weight: 700;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-family: inherit;
 }
 
@@ -134,18 +134,18 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(124, 58, 237, 0.08);
+  background: var(--accent-faint);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7c3aed;
+  color: var(--accent-hover);
   transition: transform 0.25s ease, background 0.22s ease;
 }
 
 .faqItem.is-open .faqChevron {
   transform: rotate(180deg);
-  background: #7c3aed;
-  color: #fff;
+  background: var(--accent);
+  color: var(--button-primary-text);
 }
 
 .faqA {
@@ -153,7 +153,7 @@
   padding: 0 22px 20px;
   font-size: 15px;
   line-height: 1.75;
-  color: rgba(11, 11, 13, 0.68);
+  color: var(--text-secondary);
   font-family: inherit;
   animation: faqFadeIn 0.22s ease;
 }
@@ -220,15 +220,15 @@
   }
 
   .faqItem {
-    border-color: var(--border-subtle);
-    background: rgba(var(--surface-rgb), 0.68);
+    border-color: var(--glass-border-muted);
+    background: var(--glass-bg-soft);
   }
 
   .faqItem:hover,
   .faqItem.is-open {
     border-color: var(--border-accent-soft);
-    background: rgba(var(--surface-rgb), 0.9);
-    box-shadow: 0 10px 32px rgba(var(--accent-rgb), 0.08);
+    background: var(--glass-bg-strong);
+    box-shadow: var(--glass-shadow);
   }
 
   .faqChevron {
@@ -238,6 +238,7 @@
 
   .faqItem.is-open .faqChevron {
     background: var(--accent);
+    color: var(--button-primary-text);
   }
 
   .faqA {

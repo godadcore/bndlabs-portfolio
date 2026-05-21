@@ -1611,3 +1611,428 @@
     color: var(--text-secondary);
   }
 }
+
+/* Bndlabs contact refinements */
+.contactPage .contactTitle,
+.contactPage .contactTitle span,
+.contactPage .contactLeftTitle,
+.contactPage .contactFormTitle,
+.contactPage .processSectionTitle,
+.contactPage .processTitle,
+.contactPage .faqTitle,
+.contactPage .faqQ {
+  color: var(--text-primary);
+}
+
+.contactPage .contactSubtitle,
+.contactPage .contactLeftText,
+.contactPage .contactCheckLabel,
+.contactPage .processDesc,
+.contactPage .faqSubtext,
+.contactPage .contactMeta {
+  color: var(--text-muted);
+}
+
+.contactPage .contactMetaPill,
+.contactPage .availableBadge,
+.contactPage .contactServicePill,
+.contactPage .contactSocialBtn,
+.contactPage .contactInfoItem,
+.contactPage .processCard,
+.contactPage .faqItem {
+  border-radius: var(--radius-md);
+}
+
+.contactPage .contactMetaPill {
+  border: 1px solid var(--border-regular);
+  background: rgba(var(--surface-rgb), 0.72);
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.contactPage .contactCard {
+  border-radius: var(--radius-xl);
+  border-color: var(--border-subtle);
+  background:
+    linear-gradient(135deg, rgba(var(--surface-rgb), 0.88), rgba(var(--surface-soft-rgb), 0.74));
+  box-shadow: var(--shadow-card);
+}
+
+.contactPage .contactCard:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.contactPage .contactGlassGlow,
+.contactPage .contactGlassShine,
+.contactPage .contactFloatingIcons {
+  display: none;
+}
+
+.contactPage .contactLeft {
+  background: rgba(var(--surface-rgb), 0.38);
+  border-right-color: var(--border-subtle);
+}
+
+.contactPage .contactRight {
+  background: rgba(var(--surface-rgb), 0.18);
+}
+
+.contactPage .availableBadge,
+.contactPage .contactServicePill,
+.contactPage .contactInfoIcon,
+.contactPage .contactSocialBtn,
+.contactPage .processCard,
+.contactPage .faqItem {
+  border-color: var(--border-subtle);
+  background: rgba(var(--surface-rgb), 0.62);
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.contactPage .contactServicePill:hover,
+.contactPage .contactSocialBtn:hover,
+.contactPage .contactInfoItem:hover,
+.contactPage .processCard:hover,
+.contactPage .faqItem:hover,
+.contactPage .faqItem.is-open {
+  border-color: var(--border-accent-soft);
+  background: rgba(var(--surface-soft-rgb), 0.78);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+}
+
+.contactPage .pillIcon,
+.contactPage .contactInfoIcon,
+.contactPage .processIconWrap,
+.contactPage .faqChevron,
+.contactPage .processSectionEyebrow,
+.contactPage .faqEyebrow,
+.contactPage .processSectionTitle em,
+.contactPage .faqTitle em {
+  color: var(--accent-hover);
+}
+
+.contactPage .contactInfoLink,
+.contactPage .contactInfoText {
+  color: var(--text-secondary);
+}
+
+.contactPage .contactInput,
+.contactPage .contactTextarea {
+  border-color: var(--border-regular);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  color: var(--text-primary);
+}
+
+.contactPage .contactInput:hover,
+.contactPage .contactTextarea:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.contactPage .contactInput:focus,
+.contactPage .contactTextarea:focus {
+  border-color: var(--border-accent-soft);
+  background: var(--input-bg-strong);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.12);
+}
+
+.contactPage .contactSendBtn,
+.contactPage .faqCta {
+  border-radius: var(--button-radius);
+  background: var(--accent);
+  box-shadow: 0 12px 28px rgba(var(--accent-rgb), 0.22);
+}
+
+.contactPage .contactSendBtn:hover,
+.contactPage .faqCta:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 14px 32px rgba(var(--accent-rgb), 0.28);
+}
+
+.contactPage .contactCheckCustom {
+  border-color: var(--border-regular);
+  border-radius: var(--radius-xs);
+  background: rgba(var(--surface-rgb), 0.84);
+}
+
+.contactPage .contactCheckbox:checked + .contactCheckCustom {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 980px) {
+  .contactPage .contactCard {
+    border-radius: var(--radius-lg);
+  }
+
+  .contactPage .contactLeft {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+}
+
+/* Final Bndlabs contact polish: token-led, calm, and brand-aware. */
+.contactPage .contactTitle,
+.contactPage .contactTitle span,
+.contactPage .contactLeftTitle,
+.contactPage .contactFormTitle,
+.contactPage .processSectionTitle,
+.contactPage .processTitle,
+.contactPage .faqTitle,
+.contactPage .faqQ {
+  color: var(--text-primary);
+}
+
+.contactPage .contactSubtitle,
+.contactPage .contactLeftText,
+.contactPage .contactCheckLabel,
+.contactPage .processDesc,
+.contactPage .faqSubtext,
+.contactPage .contactMeta,
+.contactPage .faqA {
+  color: var(--text-muted);
+}
+
+.contactPage .contactCard {
+  background:
+    radial-gradient(920px 360px at 8% -12%, var(--brand-glow-faint), transparent 66%),
+    linear-gradient(135deg, rgba(var(--surface-rgb), 0.92), rgba(var(--surface-soft-rgb), 0.76));
+}
+
+.contactPage .contactCard:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.contactPage .availableBadge,
+.contactPage .contactServicePill,
+.contactPage .contactInfoIcon,
+.contactPage .processCard,
+.contactPage .faqItem {
+  border-color: var(--border-subtle);
+  background: rgba(var(--surface-rgb), 0.68);
+  color: var(--text-secondary);
+}
+
+.contactPage .availableDot {
+  background: var(--status-available);
+  box-shadow: 0 0 0 0 var(--status-available-soft);
+}
+
+@keyframes pulseDot {
+  0% {
+    box-shadow: 0 0 0 0 var(--status-available-soft);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.contactPage .contactInfoIcon,
+.contactPage .processIconWrap,
+.contactPage .faqChevron {
+  color: var(--accent-hover);
+  background: var(--accent-faint);
+  border-color: var(--border-accent-soft);
+  box-shadow: none;
+}
+
+.contactPage .contactInfoLink:hover {
+  color: var(--accent-hover);
+}
+
+.contactPage .contactSocials {
+  gap: 12px;
+}
+
+.contactPage .contactSocialBtn {
+  min-height: var(--button-height);
+  padding: 0 16px;
+  border-radius: var(--button-radius);
+  border: 1px solid var(--border-regular);
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  box-shadow: none;
+}
+
+.contactPage .contactSocialBtn svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: currentColor;
+}
+
+.contactPage .contactSocialBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--brand-shadow-soft);
+}
+
+.contactPage .contactSocialBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.contactPage .contactSocialBtn.social-whatsapp {
+  border-color: var(--social-whatsapp-border);
+  background: var(--social-whatsapp-bg);
+  color: var(--social-whatsapp-text);
+}
+
+.contactPage .contactSocialBtn.social-whatsapp:hover {
+  border-color: var(--social-whatsapp);
+  background: var(--social-whatsapp-hover-bg);
+}
+
+.contactPage .contactSocialBtn.social-linkedin {
+  border-color: var(--social-linkedin-border);
+  background: var(--social-linkedin-bg);
+  color: var(--social-linkedin-text);
+}
+
+.contactPage .contactSocialBtn.social-linkedin:hover {
+  border-color: var(--social-linkedin);
+  background: var(--social-linkedin-hover-bg);
+}
+
+.contactPage .contactInput,
+.contactPage .contactTextarea,
+.contactPage .contactCheckCustom {
+  background: var(--input-bg);
+}
+
+.contactPage .contactInput::placeholder,
+.contactPage .contactTextarea::placeholder {
+  color: var(--text-faint);
+}
+
+.contactPage .fieldIcon {
+  color: var(--icon-muted);
+}
+
+.contactPage .contactSendBtn,
+.contactPage .faqCta {
+  min-height: 52px;
+  color: var(--button-primary-text);
+  background: var(--button-primary-bg);
+  box-shadow: var(--brand-shadow-soft);
+}
+
+.contactPage .contactSendBtn:hover,
+.contactPage .faqCta:hover {
+  background: var(--button-primary-hover-bg);
+  box-shadow: var(--brand-shadow);
+}
+
+.contactPage .contactSendBtn:disabled {
+  opacity: 0.58;
+  box-shadow: none;
+}
+
+.contactPage .contactError {
+  color: var(--status-error);
+}
+
+@media (max-width: 560px) {
+  .contactPage .contactSocials {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .contactPage .contactSocialBtn {
+    width: 100%;
+  }
+}
+
+/* Apple-style contact glass pass */
+.contactPage .contactCard,
+.contactPage .contactLeft,
+.contactPage .contactRight,
+.contactPage .availableBadge,
+.contactPage .contactServicePill,
+.contactPage .contactInfoIcon,
+.contactPage .contactSocialBtn,
+.contactPage .processCard,
+.contactPage .faqItem,
+.contactPage .contactInput,
+.contactPage .contactTextarea {
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.contactPage .contactCard {
+  border-color: var(--glass-border-muted);
+  background:
+    radial-gradient(840px 320px at 8% -12%, var(--purple-glow), transparent 68%),
+    var(--glass-card-bg);
+  box-shadow: var(--glass-shadow-strong);
+}
+
+.contactPage .contactCard:hover {
+  box-shadow: var(--glass-shadow-strong);
+}
+
+.contactPage .contactLeft {
+  background: rgba(var(--surface-rgb), 0.32);
+  border-right-color: var(--glass-border-muted);
+}
+
+.contactPage .contactRight {
+  background: rgba(var(--surface-rgb), 0.18);
+}
+
+.contactPage .availableBadge,
+.contactPage .contactServicePill,
+.contactPage .contactInfoIcon,
+.contactPage .processCard,
+.contactPage .faqItem {
+  border-color: var(--glass-border-muted);
+  background: var(--glass-bg-soft);
+  box-shadow: none;
+}
+
+.contactPage .contactSocialBtn {
+  background: var(--glass-control-bg);
+  border-color: var(--glass-border-muted);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.contactPage .contactSocialBtn:hover,
+.contactPage .contactServicePill:hover,
+.contactPage .contactInfoItem:hover,
+.contactPage .processCard:hover,
+.contactPage .faqItem:hover,
+.contactPage .faqItem.is-open {
+  border-color: var(--border-accent-soft);
+  background: var(--glass-bg-strong);
+  box-shadow: var(--glass-shadow);
+}
+
+.contactPage .contactSocialBtn.social-whatsapp {
+  background:
+    linear-gradient(135deg, var(--social-whatsapp-bg), rgba(var(--surface-rgb), .62));
+}
+
+.contactPage .contactSocialBtn.social-linkedin {
+  background:
+    linear-gradient(135deg, var(--social-linkedin-bg), rgba(var(--surface-rgb), .62));
+}
+
+.contactPage .contactInput,
+.contactPage .contactTextarea {
+  background: rgba(var(--input-rgb), 0.78);
+}
+
+@media (max-width: 980px) {
+  .contactPage .contactLeft {
+    border-bottom-color: var(--glass-border-muted);
+  }
+}

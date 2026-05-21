@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { useLocation, useNavigate } from "react-router-dom";
+import HugeIcon from "./HugeIcon";
 import "./faq-section.css";
 
 const DEFAULT_FAQS = [
@@ -13,7 +15,7 @@ const DEFAULT_FAQS = [
   },
   {
     q: "Which industry are you best suited for?",
-    a: "I've worked across Startups, fintech, SaaS, e-commerce, and creative agencies. If your product lives on a screen and needs to feel exceptional, I'm a good fit.",
+    a: "I work best with startups, fintech products, SaaS tools, e-commerce brands, and teams that need a cleaner product experience.",
   },
   {
     q: "How does your process work with clients?",
@@ -24,14 +26,6 @@ const DEFAULT_FAQS = [
     a: "Most projects run 2-8 weeks depending on scope. A landing page might take 1-2 weeks; a full product design system can take 6-10 weeks.",
   },
 ];
-
-function IconChevron(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function joinClasses(...values) {
   return values.filter(Boolean).join(" ");
@@ -74,7 +68,7 @@ export default function FaqSection({
             the <em>answers</em>
           </h2>
           <p className="faqSubtext">
-            Bring to the table win-win strategies to ensure proactive results. At the end of the day.
+            A few practical answers about working with Bndlabs, timelines, scope, and what a typical design project includes.
           </p>
           <button className="faqCta" onClick={handleCtaClick}>
             {ctaText}
@@ -99,8 +93,8 @@ export default function FaqSection({
                 aria-expanded={openFaq === index}
               >
                 <span className="faqQ">{item.q}</span>
-                <span className="faqChevron">
-                  <IconChevron width="18" height="18" />
+                <span className="faqChevron" aria-hidden="true">
+                  <HugeIcon icon={ArrowDown01Icon} size={18} strokeWidth={1.9} />
                 </span>
               </button>
               <div className="faqBody" aria-hidden={openFaq === index ? "false" : "true"}>

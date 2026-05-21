@@ -101,7 +101,7 @@
   justify-content: center;
   min-height: 44px;
   padding: 0 18px;
-  border-radius: 999px;
+  border-radius: var(--button-radius);
   border: 1px solid var(--border-regular);
   background: rgba(var(--surface-rgb), 0.86);
   color: var(--text-secondary);
@@ -139,7 +139,7 @@
 
 .blogPostPage .blogPostArticle,
 .blogPostPage .blogPostTocInner {
-  border-radius: 30px;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border-regular);
   background:
     linear-gradient(180deg, rgba(var(--surface-rgb), 0.98), rgba(var(--surface-rgb), 0.96)),
@@ -181,7 +181,7 @@
   align-items: center;
   min-height: 28px;
   padding: 0 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-regular);
   background: rgba(var(--surface-rgb), 0.84);
   color: var(--text-primary);
@@ -352,7 +352,7 @@
 
 .blogPostPage .blogPostMediaBlock {
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-regular);
   background: var(--surface-elevated);
   box-shadow: var(--shadow-card);
@@ -362,8 +362,10 @@
 .blogPostPage .blogPostMediaBlock video {
   display: block;
   width: 100%;
+  height: auto;
   max-height: 520px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   background: var(--card-image-bg);
 }
 
@@ -413,7 +415,7 @@
   bottom: 54px;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-regular);
   background: rgba(var(--surface-rgb), 0.92);
   color: var(--text-primary);
@@ -451,7 +453,7 @@
 
 .blogPostPage .blogPostCodeBlock {
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-regular);
   background: var(--surface-soft);
   box-shadow: var(--shadow-card);
@@ -478,7 +480,7 @@
 .blogPostPage .blogPostCopyBtn {
   min-height: 34px;
   padding: 0 12px;
-  border-radius: 999px;
+  border-radius: var(--button-radius);
   border: 1px solid var(--border-regular);
   background: transparent;
   color: var(--text-secondary);
@@ -533,7 +535,7 @@
 
 .blogPostPage .blogPostTableWrap {
   overflow-x: auto;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-regular);
   background: var(--surface-elevated);
   box-shadow: var(--shadow-card);
@@ -598,7 +600,7 @@
   align-items: center;
   gap: 16px;
   padding: 18px;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-regular);
   background: var(--surface-elevated);
   box-shadow: var(--shadow-card);
@@ -767,7 +769,7 @@
   align-items: center;
   gap: 18px;
   padding: 18px;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-regular);
   background: var(--surface-elevated);
   box-shadow: var(--shadow-card);
@@ -970,4 +972,42 @@
 
 .blogPostPage .blogPostSection {
   padding-top: var(--portfolio-header-clearance);
+}
+
+/* Blog detail glass refinement */
+.blogPostPage .blogPostArticle,
+.blogPostPage .blogPostTocInner,
+.blogPostPage .blogPostMediaBlock,
+.blogPostPage .blogPostCodeBlock,
+.blogPostPage .blogPostTableWrap,
+.blogPostPage .blogPostAudioBlock,
+.blogPostPage .blogPostCallout,
+.blogPostPage .blogPostNextCard,
+.blogPostPage .blogPostBackBtn {
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.blogPostPage .blogPostArticle,
+.blogPostPage .blogPostTocInner,
+.blogPostPage .blogPostNextCard {
+  border-color: var(--glass-border-muted);
+  background: var(--glass-card-bg);
+  box-shadow: var(--glass-shadow);
+}
+
+.blogPostPage .blogPostMediaBlock,
+.blogPostPage .blogPostCodeBlock,
+.blogPostPage .blogPostTableWrap,
+.blogPostPage .blogPostAudioBlock,
+.blogPostPage .blogPostCallout {
+  border-color: var(--glass-border-muted);
+  background: var(--glass-bg-soft);
+}
+
+.blogPostPage .blogPostBackBtn,
+.blogPostPage .blogPostPlayBtn,
+.blogPostPage .blogPostCopyBtn {
+  background: var(--glass-control-bg);
+  border-color: var(--glass-border-muted);
 }

@@ -1,18 +1,10 @@
 import { Link } from "react-router-dom";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { formatBlogDate } from "../../lib/blogData";
+import HugeIcon from "../shared/HugeIcon";
 
 function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M5 12h14M12 5l7 7-7 7"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <HugeIcon icon={ArrowRight01Icon} size={20} strokeWidth={1.9} />;
 }
 
 export default function NextPostCard({ post }) {

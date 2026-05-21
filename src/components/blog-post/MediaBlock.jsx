@@ -1,3 +1,5 @@
+import { PlayIcon } from "@hugeicons/core-free-icons";
+import HugeIcon from "../shared/HugeIcon";
 import { sanitizeBlogHtml, toggleVideo } from "./utils";
 
 function MediaCaption({ html, fallback = "" }) {
@@ -60,9 +62,7 @@ export default function MediaBlock({ block, videoIndex = 0 }) {
           aria-label="Play or pause video"
           onClick={() => toggleVideo(videoId, wrapperId)}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 5v14l11-7z" />
-          </svg>
+          <HugeIcon icon={PlayIcon} size={22} strokeWidth={1.9} />
         </button>
         <MediaCaption html={block.captionHtml} fallback={block.caption} />
       </div>
