@@ -3208,3 +3208,109 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
     height: 40px;
   }
 }
+
+/* Full-bleed header and footer chrome */
+.portfolioHeaderShell.aboutStickyHeader {
+  left: 0;
+  right: auto;
+  width: 100vw;
+  max-width: none;
+  top: 0;
+  transform: none;
+}
+
+.portfolioHeader {
+  width: 100%;
+  max-width: none;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  border-radius: 0;
+  padding-inline: clamp(18px, 3.5vw, 64px);
+}
+
+.homeFooter {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.homeFooterInner {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  padding-inline: clamp(18px, 3.5vw, 64px);
+}
+
+/* Two-line animated mobile menu icon */
+.portfolioMenuButton,
+.portfolioMenuButton:hover,
+.portfolioMenuButton.is-open {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.portfolioMenuButton {
+  width: 44px;
+  height: 44px;
+  color: var(--icon-primary);
+}
+
+.portfolioMenuButton .portfolioMenuIcon {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 16px;
+  background: transparent;
+  transform: none;
+}
+
+.portfolioMenuIcon span,
+.portfolioMenuButton span {
+  display: block;
+}
+
+.portfolioMenuIcon span {
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 2.5px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: 50% 50%;
+  transition:
+    top .24s cubic-bezier(.2,.8,.2,1),
+    transform .34s cubic-bezier(.2,.8,.2,1),
+    background-color .2s ease;
+}
+
+.portfolioMenuIcon span:first-child {
+  top: 4px;
+}
+
+.portfolioMenuIcon span:last-child {
+  top: 11px;
+}
+
+.portfolioMenuButton.is-open .portfolioMenuIcon span:first-child {
+  top: 8px;
+  transform: rotate(45deg);
+}
+
+.portfolioMenuButton.is-open .portfolioMenuIcon span:last-child {
+  top: 8px;
+  transform: rotate(-45deg);
+}
+
+.portfolioMenuButton svg {
+  display: none;
+}

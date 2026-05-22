@@ -2,11 +2,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import {
   ArrowRight01Icon,
   Briefcase01Icon,
-  Cancel01Icon,
   Download01Icon,
   Home01Icon,
   Mail01Icon,
-  Menu01Icon,
   NewsIcon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
@@ -219,7 +217,10 @@ export default function Header({ active = "" }) {
             aria-controls={menuId}
             onClick={() => setMenuOpen((value) => !value)}
           >
-            <HugeIcon icon={menuOpen ? Cancel01Icon : Menu01Icon} size={22} strokeWidth={1.9} />
+            <span className="portfolioMenuIcon" aria-hidden="true">
+              <span />
+              <span />
+            </span>
           </button>
         </div>
 
