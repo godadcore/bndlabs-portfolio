@@ -3005,8 +3005,9 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .portfolioHeader > .portfolioMobilePanel {
   position: absolute !important;
   top: calc(100% + 8px);
-  left: 0;
-  right: 0;
+  left: auto;
+  right: clamp(8px, 2.5vw, 18px);
+  width: min(340px, calc(100vw - 18px));
   z-index: 3001;
 }
 
@@ -3274,6 +3275,10 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   transform: none;
 }
 
+.portfolioMenuButton.is-open .portfolioMenuIcon {
+  transform: none;
+}
+
 .portfolioMenuIcon span,
 .portfolioMenuButton span {
   display: block;
@@ -3303,14 +3308,24 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
 .portfolioMenuButton.is-open .portfolioMenuIcon span:first-child {
   top: 8px;
+  opacity: 1;
   transform: rotate(45deg);
 }
 
 .portfolioMenuButton.is-open .portfolioMenuIcon span:last-child {
   top: 8px;
+  opacity: 1;
   transform: rotate(-45deg);
 }
 
 .portfolioMenuButton svg {
   display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .portfolioMenuButton,
+  .portfolioMenuButton:hover,
+  .portfolioMenuButton.is-open {
+    color: #ffffff;
+  }
 }
