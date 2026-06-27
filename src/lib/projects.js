@@ -651,6 +651,44 @@ function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
         }
       : null;
   }
+  if (section?._type === "imageSection") {
+    const image = normalizeSanityImage(section?.image, `${heading || projectTitle} image`);
+    
+    if (image) {
+      return {
+        id,
+        type: "image",
+        heading,
+        headingContent,
+        text,
+        content,
+        image: {
+          ...image,
+          alt: firstString(section?.alt, image.alt),
+          caption: firstPlainText(section?.caption, image.caption),
+          captionContent: firstRichTextValue(section?.caption, image.captionContent, image.caption),
+        },
+      };
+    }
+  }
+
+  if (section?._type === "embeddedCodeSection") {
+    if (section?.embedUrl || section?.code) {
+      return {
+        id,
+        type: "embed",
+        heading,
+        headingContent,
+        text,
+        content,
+        embedUrl: section?.embedUrl || null,
+        code: section?.code || null,
+        language: firstPlainText(section?.language) || null,
+        caption: firstPlainText(section?.caption),
+        captionContent: firstRichTextValue(section?.caption),
+      };
+    }
+  }
 
   if (section?._type === "audioSection" || section?.audio || section?.audioUrl) {
     const audio = normalizeSanityFile(section?.audio || section?.audioUrl);

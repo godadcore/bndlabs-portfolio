@@ -1539,3 +1539,57 @@ body.project-lightbox-open .portfolioHeaderShell {
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
 }
+
+.projectDetailsPage .projectCaseEmbed {
+  width: 100%;
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--case-border);
+  box-shadow: var(--case-shadow);
+  background: var(--case-surface-soft);
+  margin-top: 28px;
+  aspect-ratio: 16 / 9;
+}
+
+.projectDetailsPage .projectCaseEmbedFrame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.projectDetailsPage .projectCaseCode {
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--case-border);
+  box-shadow: var(--case-shadow);
+  background: #1e1e1e;
+  margin-top: 28px;
+  font-family: monospace;
+}
+
+.projectDetailsPage .projectCaseCodeLang {
+  padding: 8px 16px;
+  background: #2d2d2d;
+  color: #a0a0a0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid #404040;
+}
+
+.projectDetailsPage .projectCaseCode pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.projectDetailsPage .projectCaseCode code {
+  color: #d4d4d4;
+  font-size: 14px;
+  line-height: 1.5;
+}

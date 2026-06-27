@@ -2319,6 +2319,55 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .footerLinks a svg{ width: 20px; height: 20px; }
 }
 
+@media (max-width: 480px){
+  .homeFooterInner {
+    padding: 16px 12px;
+    border-radius: var(--radius-xl);
+    gap: 12px;
+  }
+  .footerServices {
+    font-size: 14px;
+    max-width: 100%;
+  }
+  .footerActions {
+    gap: 8px;
+  }
+  .footerEmail {
+    width: 100%;
+    font-size: 13px;
+  }
+  .footerLinks {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .footerLinks a {
+    width: 36px;
+    height: 36px;
+  }
+  .footerLinks a svg {
+    width: 18px;
+    height: 18px;
+  }
+  .footerLegal {
+    font-size: 11px;
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 360px) {
+  .homeFooterInner {
+    padding: 12px 8px;
+  }
+  .footerServices {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .footerEmail {
+    padding: 0 12px;
+    font-size: 12px;
+  }
+}
+
 @media (min-width: 1100px){
   .contactSub{ max-width: none; white-space: nowrap; font-size: 14px; }
 }

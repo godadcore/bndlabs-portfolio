@@ -965,6 +965,39 @@ function FlexibleCaseStudySection({ section, index, onOpen }) {
         rows={section.table?.rows}
       />
     );
+  } else if (section?.type === "image" && section?.image?.src) {
+    content = (
+      <FeatureMedia
+        media={{ kind: "image", ...section.image }}
+        fallbackLabel={fallbackLabel}
+        onOpen={onOpen}
+      />
+    );
+  } else if (section?.type === "embed") {
+    if (section?.embedUrl) {
+      content = (
+        <div className="projectCaseEmbed">
+          <iframe
+            src={section.embedUrl}
+            title={title || "Embedded content"}
+            allowFullScreen
+            loading="lazy"
+            className="projectCaseEmbedFrame"
+          />
+        </div>
+      );
+    } else if (section?.code) {
+      content = (
+        <div className="projectCaseCode">
+          {section.language && (
+            <div className="projectCaseCodeLang">{section.language}</div>
+          )}
+          <pre>
+            <code>{section.code}</code>
+          </pre>
+        </div>
+      );
+    }
   }
 
   return (

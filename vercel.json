@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": true,
   "headers": [
     {
       "source": "/(.*)",
@@ -28,34 +27,25 @@
       ]
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/admin",
-      "destination": "/admin/index.html"
+      "handle": "filesystem"
     },
     {
-      "source": "/admin/",
-      "destination": "/admin/index.html"
+      "src": "/admin/?",
+      "dest": "/admin/index.html"
     },
     {
-      "source": "/admin/(.*)",
-      "destination": "/admin/$1"
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
     },
     {
-      "source": "/api",
-      "destination": "/api"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*\\..*)",
-      "destination": "/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }

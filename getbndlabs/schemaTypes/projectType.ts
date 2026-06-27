@@ -31,7 +31,6 @@ const mediaArrayField = (name: string, title: string) =>
             title: 'Image',
             type: 'image',
             options: {hotspot: true},
-            validation: (Rule) => Rule.required(),
           }),
           defineField({
             name: 'alt',
@@ -102,7 +101,44 @@ const tableRowsField = defineField({
   ],
 })
 
-const storySectionType = defineField({
+/* ─────────────────────────────────────────
+   SECTION TYPES  (all exported so postType.ts can reuse them)
+   Rules: no section is locked/required/undeletable
+───────────────────────────────────────── */
+
+export const imageSectionType = defineField({
+  name: 'imageSection',
+  title: 'Image',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'image',
+      options: {hotspot: true},
+    }),
+    defineField({
+      name: 'alt',
+      title: 'Alt Text',
+      type: 'string',
+    }),
+    richInlineField('caption', 'Caption'),
+  ],
+  preview: {
+    select: {
+      title: 'alt',
+      media: 'image',
+    },
+    prepare({title, media}) {
+      return {
+        title: title || 'Image section',
+        media,
+      }
+    },
+  },
+})
+
+export const storySectionType = defineField({
   name: 'storySection',
   title: 'Flexible Content Section',
   type: 'object',
@@ -140,14 +176,42 @@ const storySectionType = defineField({
   },
 })
 
-const frameGroupSectionType = defineField({
+export const frameGroupSectionType = defineField({
   name: 'frameGroupSection',
   title: 'Grouped Frames',
   type: 'object',
   fields: [
     richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
-    mediaArrayField('frames', 'Frames'),
+    defineField({
+      name: 'frames',
+      title: 'Frames',
+      type: 'array',
+      validation: (Rule) => Rule.max(10).error('Maximum 10 images per group'),
+      of: [
+        defineField({
+          name: 'framesItem',
+          title: 'Frame',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'image',
+              title: 'Image',
+              type: 'image',
+              options: {hotspot: true},
+            }),
+            defineField({name: 'alt', title: 'Alt Text', type: 'string'}),
+            defineField({name: 'caption', title: 'Caption', type: 'array', of: richTextBlocks}),
+          ],
+          preview: {
+            select: {title: 'alt', media: 'image'},
+            prepare({title, media}) {
+              return {title: title || 'Frame', media}
+            },
+          },
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {
@@ -163,7 +227,7 @@ const frameGroupSectionType = defineField({
   },
 })
 
-const videoSectionType = defineField({
+export const videoSectionType = defineField({
   name: 'videoSection',
   title: 'Video Section',
   type: 'object',
@@ -171,13 +235,18 @@ const videoSectionType = defineField({
     richInlineField('title', 'Heading'),
     richTextField('body', 'Content'),
     defineField({
+      name: 'embedUrl',
+      title: 'Embed URL',
+      type: 'url',
+      description: 'YouTube, Vimeo, or any embed-safe URL. Renders as an iframe.',
+    }),
+    defineField({
       name: 'video',
-      title: 'Video File',
+      title: 'Video File Upload',
       type: 'file',
       options: {
         accept: 'video/*',
       },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'poster',
@@ -203,7 +272,7 @@ const videoSectionType = defineField({
   },
 })
 
-const audioSectionType = defineField({
+export const audioSectionType = defineField({
   name: 'audioSection',
   title: 'Voice Note Section',
   type: 'object',
@@ -217,7 +286,6 @@ const audioSectionType = defineField({
       options: {
         accept: 'audio/*',
       },
-      validation: (Rule) => Rule.required(),
     }),
     richInlineField('caption', 'Caption'),
   ],
@@ -235,7 +303,7 @@ const audioSectionType = defineField({
   },
 })
 
-const tableSectionType = defineField({
+export const tableSectionType = defineField({
   name: 'tableSection',
   title: 'Table Section',
   type: 'object',
@@ -260,6 +328,46 @@ const tableSectionType = defineField({
     },
   },
 })
+
+export const embeddedCodeSectionType = defineField({
+  name: 'embeddedCodeSection',
+  title: 'Embedded Code / Embed',
+  type: 'object',
+  fields: [
+    richInlineField('title', 'Heading'),
+    defineField({
+      name: 'embedUrl',
+      title: 'Embed URL',
+      type: 'url',
+      description: 'YouTube, Vimeo, or any iframe-safe URL. Renders as a responsive iframe.',
+    }),
+    defineField({
+      name: 'code',
+      title: 'Code Snippet',
+      type: 'text',
+      rows: 8,
+      description: 'Raw code to display in a styled code block. Leave empty if using an Embed URL.',
+    }),
+    richInlineField('language', 'Language / Label'),
+    richInlineField('caption', 'Caption'),
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'embedUrl',
+    },
+    prepare({title, subtitle}) {
+      return {
+        title: portableTextToPlainText(title) || 'Embedded code section',
+        subtitle: subtitle || 'Code block',
+      }
+    },
+  },
+})
+
+/* ─────────────────────────────────────────
+   CASE STUDY DOCUMENT TYPE
+───────────────────────────────────────── */
 
 export const caseStudyType = defineType({
   name: 'caseStudy',
@@ -351,22 +459,21 @@ export const caseStudyType = defineType({
     }),
     richTextField('overviewText', 'Overview Text'),
     richTextField('overviewDescription', 'Overview Description'),
-    mediaArrayField(
-      'images',
-      'Project Images',
-    ),
+    mediaArrayField('images', 'Project Images'),
     defineField({
       name: 'sections',
       title: 'Project Sections',
       type: 'array',
       description:
-        'Flexible storytelling blocks. Reorder freely to control how the case study appears on the frontend.',
+        'Flexible storytelling blocks. Add in any order, reorder freely. All sections are deletable.',
       of: [
+        imageSectionType,
         storySectionType,
         frameGroupSectionType,
         videoSectionType,
         audioSectionType,
         tableSectionType,
+        embeddedCodeSectionType,
       ],
     }),
     defineField({

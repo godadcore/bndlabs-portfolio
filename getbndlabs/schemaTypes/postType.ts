@@ -6,6 +6,15 @@ import {
   richTextBlocks,
   richTextField,
 } from './richTextFields'
+import {
+  imageSectionType,
+  storySectionType,
+  frameGroupSectionType,
+  videoSectionType,
+  audioSectionType,
+  tableSectionType,
+  embeddedCodeSectionType,
+} from './projectType'
 
 const externalUrlField = (name: string, title: string, description?: string) =>
   defineField({
@@ -356,6 +365,22 @@ export const postType = defineType({
             },
           },
         }),
+      ],
+    }),
+    defineField({
+      name: 'sections',
+      title: 'Post Sections',
+      type: 'array',
+      description:
+        'Additional storytelling blocks. Reorder freely. All sections are deletable.',
+      of: [
+        imageSectionType,
+        storySectionType,
+        frameGroupSectionType,
+        videoSectionType,
+        audioSectionType,
+        tableSectionType,
+        embeddedCodeSectionType,
       ],
     }),
     defineField({

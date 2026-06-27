@@ -53,6 +53,9 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
     headers,
     videoUrl,
     audioUrl,
+    embedUrl,
+    code,
+    language,
     rows[]{
       cells
     },
