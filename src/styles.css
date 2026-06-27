@@ -705,7 +705,7 @@ h6,
   font-family: var(--fontAccent);
 }
 
-.sectionBlock{ padding: 40px var(--sectionPadX) 14px; }
+.sectionBlock{ padding: 30px var(--sectionPadX) 10px; }
 .sectionBlock__head{ margin-bottom: 18px; }
 .sectionTitle{ display:flex; align-items:flex-start; justify-content:space-between; gap: 18px; }
 .sectionTitle h2{ font-size: clamp(34px, 4.2vw, 56px); line-height: 1.0; letter-spacing: -0.03em; font-weight: var(--w-bold); }
@@ -1074,7 +1074,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .contactSection.is-inview .contactHead{ opacity: 1; transform: translateY(0); filter: blur(0); }
 .contactSection.is-inview .contactForm{ opacity: 1; transform: translateY(0); filter: blur(0); }
 
-.servicesSection{ padding: 40px var(--sectionPadX) 18px; overflow: hidden; }
+.servicesSection{ padding: 28px var(--sectionPadX) 14px; overflow: hidden; }
 .servicesGrid{ max-width: min(100%, 1600px); margin: 0 auto; display: grid; grid-template-columns: 0.95fr 1.25fr; gap: 18px; align-items: start; }
 .servicesTitle{ font-size: clamp(34px, 4.2vw, 56px); line-height: 1.0; letter-spacing: -0.03em; font-weight: var(--w-bold); color: rgba(11,11,13,.92); }
 .servicesCards{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0; align-content: start; }
@@ -1087,7 +1087,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .serviceName{ font-size: 18px; font-weight: var(--w-medium); color: rgba(11,11,13,.90); }
 .serviceNo{ font-size: 16px; font-weight: var(--w-bold); color: rgba(11,11,13,.35); }
 
-.contactSection{ padding: 40px var(--sectionPadX) 24px; overflow: hidden; }
+.contactSection{ padding: 28px var(--sectionPadX) 16px; overflow: hidden; }
 .contactShell{ position: relative; max-width: min(100%, 1600px); margin: 0 auto; border-radius: 30px; overflow: hidden; border: 1px solid rgba(11,11,13,.06); box-shadow: 0 26px 90px rgba(0,0,0,.10); padding: clamp(22px, 4.2vw, 52px); background: linear-gradient(90deg, rgba(246,246,251,.92) 0%, rgba(235,233,247,.94) 58%, rgba(223,217,243,.96) 100%); }
 .contactGlow{ position:absolute; inset:0; background: none; filter: blur(30px); opacity: .9; pointer-events:none; transform: scale(1.85); transform-origin: 80% 34%; }
 .contactHead{ position: relative; text-align: center; margin-bottom: 22px; }
@@ -1107,7 +1107,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .contactStatus.isErr{ color: rgba(170,0,0,.70); }
 .srOnly{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
-.homeFooter{ padding: 14px 10px 0; margin: 0; }
+.homeFooter{ padding: 8px 10px 0; margin: 0; }
 .homeFooterInner{
   display: grid;
   grid-template-columns: minmax(180px, .78fr) minmax(320px, 1.18fr) minmax(210px, .84fr);
@@ -1117,7 +1117,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   row-gap: 8px;
   max-width: min(100%, 1180px);
   margin: 0 auto;
-  padding: 18px clamp(18px, 2.4vw, 28px);
+  padding: 14px clamp(18px, 2.4vw, 28px);
   border-radius: 22px;
   border: 1px solid rgba(255,255,255,.20);
   background: linear-gradient(135deg, rgba(106,88,255,.98), rgba(91,73,241,.95));

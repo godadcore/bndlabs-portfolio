@@ -1,13 +1,13 @@
 // src/components/layout/Footer.jsx
 import { BehanceLogo, InstagramLogo, TiktokLogo, XLogo } from "@phosphor-icons/react";
-import { SITE_NAME } from "../../lib/site";
+import { CONTACT_EMAIL, SITE_NAME } from "../../lib/site";
 import { useSiteSettings } from "../../providers/siteSettingsContext.js";
 import OptimizedImage from "../shared/OptimizedImage";
 
 export default function Footer() {
   const year = new Date().getFullYear();
   const { contactEmail, socialLinks } = useSiteSettings();
-  const footerEmail = contactEmail || "hello@getbndlabs.com";
+  const footerEmail = contactEmail || CONTACT_EMAIL;
   const socialItems = [
     {
       key: "x",
