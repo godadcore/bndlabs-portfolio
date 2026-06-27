@@ -904,28 +904,19 @@
   padding-top: var(--portfolio-header-clearance);
 }
 
-/* Route-level glass refinement */
-.workPage .workCard,
-.workPage .workFinalCtaCard,
-.workPage .workEmptyState,
-.workPage .workCarouselNavBtn {
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-}
-
 .workPage .workCard {
-  border-color: var(--glass-border-muted);
-  background: var(--glass-card-bg);
-  box-shadow: var(--glass-shadow);
+  border-color: var(--border-subtle);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-card);
 }
 
 .workPage .workCard__footer {
-  background: rgba(var(--surface-rgb), 0.34);
+  background: var(--surface-elevated);
 }
 
 .workPage .workProjectsGrid .workCard:hover,
 .workPage .workProjectsGrid .workCard:focus-within {
-  box-shadow: var(--glass-shadow-strong);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .workPage .workFinalCtaCard,
@@ -933,12 +924,12 @@
   border-color: var(--border-accent-soft);
   background:
     radial-gradient(1100px 380px at 50% -8%, var(--purple-glow), transparent 72%),
-    var(--glass-card-bg);
-  box-shadow: var(--glass-shadow-strong);
+    var(--surface-elevated);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .workPage .workCarouselNavBtn {
-  border-color: var(--glass-border-muted);
-  background: var(--glass-control-bg);
-  box-shadow: var(--glass-shadow);
+  border-color: var(--border-regular);
+  background: rgba(var(--surface-rgb), 0.96);
+  box-shadow: var(--brand-shadow-soft);
 }

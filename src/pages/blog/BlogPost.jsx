@@ -53,6 +53,106 @@ function InlineHtml({ html, className = "", as: Tag = "span" }) {
   });
 }
 
+
+function renderFlexibleSection(section, index) {
+  if (!section) return null;
+
+  if (section.type === "text") {
+    return (
+      <div key={String(index)} className="blogPostSectionBlock textSection">
+        {section.heading && (
+          <h2 dangerouslySetInnerHTML={{ __html: section.headingHtml || section.heading }} />
+        )}
+        {section.body && (
+          <div className="blogPostText" dangerouslySetInnerHTML={{ __html: section.bodyHtml || section.body }} />
+        )}
+      </div>
+    );
+  }
+
+  if (section.type === "image" && section.image) {
+    return (
+      <MediaBlock
+        key={String(index)}
+        block={{
+          type: "image",
+          images: [{ url: section.image.src, caption: section.image.caption, alt: section.image.alt }]
+        }}
+        videoIndex={index}
+      />
+    );
+  }
+
+  if (section.type === "video" && section.video) {
+    return (
+      <MediaBlock
+        key={String(index)}
+        block={{
+          type: "video",
+          url: section.video.src,
+          caption: section.video.caption
+        }}
+        videoIndex={index}
+      />
+    );
+  }
+
+  if (section.type === "audio" && section.audio) {
+    return (
+      <AudioBlock
+        key={String(index)}
+        block={{
+          type: "audio",
+          url: section.audio.src,
+          caption: section.audio.caption
+        }}
+      />
+    );
+  }
+
+  if (section.type === "table" && section.table) {
+    return (
+      <TableBlock
+        key={String(index)}
+        block={{
+          type: "table",
+          headers: section.table.columns || [],
+          rows: section.table.rows || []
+        }}
+      />
+    );
+  }
+
+  if (section.type === "embed" && section.embedUrl) {
+    return (
+      <div key={String(index)} className="projectCaseEmbed">
+        <iframe
+          src={section.embedUrl}
+          title="Embedded content"
+          allowFullScreen
+          loading="lazy"
+          className="projectCaseEmbedFrame"
+        />
+      </div>
+    );
+  }
+
+  if (section.type === "code" && section.code) {
+    return (
+      <CodeBlock
+        key={String(index)}
+        block={{
+          type: "code",
+          code: section.code,
+          language: section.language || "code"
+        }}
+      />
+    );
+  }
+
+  return null;
+}
+
 function renderBlock(block, index) {
   if (!block) return null;
 
@@ -178,7 +278,7 @@ function BlogPostContent({ slug }) {
     return () => observer.disconnect();
   }, [post]);
 
-  const hasContent = Boolean(post?.contentBlocks?.length);
+  const hasContent = Boolean(post?.contentBlocks?.length || post?.sections?.length);
   const relatedPosts = selectRelatedPosts(posts, post?.slug || slug);
   const hasRelatedPosts = relatedPosts.length > 0;
   const seoTitle = post?.title ? `${post.title} | Design Blog by Bodunde Emmanuel | ${SITE_NAME}` : `Design Blog Post | ${SITE_NAME}`;
@@ -261,7 +361,8 @@ function BlogPostContent({ slug }) {
                       </div>
 
                       <div className="blogPostBody">
-                        {post.contentBlocks.map((block, index) => renderBlock(block, index))}
+                        {post.contentBlocks?.map((block, index) => renderBlock(block, index))}
+                        {post.sections?.map((section, index) => renderFlexibleSection(section, index))}
                       </div>
 
                       <ShareSection

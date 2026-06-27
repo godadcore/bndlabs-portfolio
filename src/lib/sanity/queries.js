@@ -217,6 +217,71 @@ export const publishedPostsQuery = groq`*[_type == "post"] | order(coalesce(date
       initials,
       avatar_url
     }
+  },
+  sections[]{
+    _key,
+    _type,
+    title,
+    heading,
+    body,
+    description,
+    text,
+    alt,
+    caption,
+    columns,
+    headers,
+    videoUrl,
+    audioUrl,
+    embedUrl,
+    code,
+    language,
+    rows[]{
+      cells
+    },
+    image{
+      asset->{
+        url
+      }
+    },
+    poster{
+      asset->{
+        url
+      }
+    },
+    video{
+      asset->{
+        url
+      }
+    },
+    audio{
+      asset->{
+        url
+      }
+    },
+    images[]{
+      alt,
+      caption,
+      asset->{
+        url
+      },
+      image{
+        asset->{
+          url
+        }
+      }
+    },
+    frames[]{
+      alt,
+      caption,
+      asset->{
+        url
+      },
+      image{
+        asset->{
+          url
+        }
+      }
+    }
   }
 }`;
 

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { getInitialProjects, loadAllProjects } from "../../lib/projectData";
 import WorkCard from "./WorkCard";
+import BlogCard from "../blog/BlogCard";
 import "./selected-work.css";
 
 export default function SelectedWork({ scrollRootRef }) {
@@ -73,7 +74,12 @@ export default function SelectedWork({ scrollRootRef }) {
 
         <div className="selectedWorkRight">
           <div className="featuredCard">
-            <WorkCard project={featured} featured />
+            <BlogCard
+              project={featured}
+              priority
+              linkLabel="View Case Study"
+              href={featured?.slug ? `/work/${featured.slug}` : "/work"}
+            />
           </div>
 
           <div className="twoCards">

@@ -228,7 +228,7 @@
   --button-height-sm: 38px;
   --cardRadius: var(--radius-xl);
 
-  --background: #f7f8fb;
+  --background: #ffffff;
   --background-rgb: 247, 248, 251;
   --surface: #ffffff;
   --surface-muted: #f1f3f7;
@@ -331,13 +331,9 @@
   --shadow-hero: 0 26px 80px rgba(16, 22, 36, 0.14);
   --shadow-card:
     0 2px 8px rgba(16, 22, 36, 0.04),
-    0 18px 52px rgba(16, 22, 36, 0.08),
-    0 12px 36px rgba(var(--accent-rgb), 0.06),
     0 0 0 1px rgba(16, 22, 36, 0.06);
   --shadow-card-hover:
-    0 3px 12px rgba(16, 22, 36, 0.06),
-    0 24px 60px rgba(16, 22, 36, 0.10),
-    0 16px 42px rgba(var(--accent-rgb), 0.09),
+    0 4px 16px rgba(16, 22, 36, 0.08),
     0 0 0 1px rgba(16, 22, 36, 0.10);
 
   --dropdown-bg: var(--surface);
@@ -359,7 +355,7 @@
   --glass-bg-soft:
     linear-gradient(135deg, rgba(255,255,255,.74), rgba(255,255,255,.54));
   --glass-card-bg:
-    radial-gradient(700px 260px at 14% -18%, rgba(var(--accent-rgb), .105), transparent 62%),
+
     linear-gradient(145deg, rgba(255,255,255,.88), rgba(255,255,255,.66));
   --glass-control-bg: rgba(255, 255, 255, .56);
   --glass-border: rgba(255, 255, 255, .62);
@@ -367,13 +363,11 @@
   --glass-highlight: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.16));
   --glass-reflection: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.38) 28%, rgba(255,255,255,.12) 48%, transparent 70%);
   --glass-shadow:
-    0 24px 70px rgba(16,22,36,.14),
-    0 12px 34px rgba(var(--accent-rgb), .085),
+    0 2px 8px rgba(16,22,36,.04),
     inset 0 1px 0 rgba(255,255,255,.72),
     inset 0 -1px 0 rgba(255,255,255,.22);
   --glass-shadow-strong:
-    0 30px 90px rgba(16,22,36,.18),
-    0 16px 42px rgba(var(--accent-rgb), .12),
+    0 4px 16px rgba(16,22,36,.08),
     inset 0 1px 0 rgba(255,255,255,.76);
   --purple-glow: rgba(var(--accent-rgb), .18);
   --footer-bg: linear-gradient(135deg, rgba(255,255,255,.96), rgba(241,243,247,.98));
@@ -404,10 +398,10 @@
 @media (prefers-color-scheme: dark){
   :root{
     color-scheme: dark;
-    --background: #080b12;
+    --background: #0a0a0a;
     --background-rgb: 8, 11, 18;
     --surface: #0e1421;
-    --surface-muted: #141b2a;
+    --surface-muted: #1a1a1a;
     --surface-muted-rgb: 20, 27, 42;
     --surface-elevated: #182033;
     --surface-elevated-rgb: 24, 32, 51;
@@ -506,12 +500,10 @@
     --card-arrow-color: var(--background);
     --shadow-hero: 0 26px 90px rgba(0, 0, 0, 0.42);
     --shadow-card:
-      0 14px 38px rgba(0, 0, 0, 0.28),
-      0 10px 34px rgba(var(--accent-rgb), 0.10),
+      0 2px 8px rgba(0, 0, 0, 0.16),
       0 0 0 1px rgba(246, 243, 235, 0.08);
     --shadow-card-hover:
-      0 18px 48px rgba(0, 0, 0, 0.34),
-      0 14px 42px rgba(var(--accent-rgb), 0.14),
+      0 4px 16px rgba(0, 0, 0, 0.24),
       0 0 0 1px rgba(246, 243, 235, 0.13);
 
     --dropdown-bg: #121827;
@@ -531,7 +523,7 @@
     --glass-bg-soft:
       linear-gradient(135deg, rgba(24,32,51,.72), rgba(10,14,23,.56));
     --glass-card-bg:
-      radial-gradient(700px 260px at 14% -18%, rgba(var(--accent-rgb), .18), transparent 62%),
+
       linear-gradient(145deg, rgba(24,32,51,.78), rgba(8,11,18,.64));
     --glass-control-bg: rgba(246, 243, 235, .068);
     --glass-border: rgba(246, 243, 235, .14);
@@ -539,13 +531,11 @@
     --glass-highlight: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.025));
     --glass-reflection: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.10) 28%, rgba(255,255,255,.035) 48%, transparent 70%);
     --glass-shadow:
-      0 26px 78px rgba(0,0,0,.38),
-      0 14px 40px rgba(var(--accent-rgb), .14),
+      0 2px 8px rgba(0,0,0,.16),
       inset 0 1px 0 rgba(255,255,255,.09),
       inset 0 -1px 0 rgba(255,255,255,.035);
     --glass-shadow-strong:
-      0 32px 96px rgba(0,0,0,.48),
-      0 18px 48px rgba(var(--accent-rgb), .18),
+      0 4px 16px rgba(0,0,0,.24),
       inset 0 1px 0 rgba(255,255,255,.12);
     --purple-glow: rgba(var(--accent-rgb), .24);
     --footer-bg: linear-gradient(135deg, rgba(18,24,39,.96), rgba(8,11,18,.98));
@@ -780,8 +770,8 @@ h6,
   opacity: .6;
   z-index: 1;
   background:
-    repeating-radial-gradient(circle at 50% 38%, rgba(120,90,255,.16) 0 1px, transparent 1px 70px),
-    radial-gradient(circle at 50% 38%, rgba(130,90,255,.18), transparent 58%);
+
+    none;
   filter: blur(.2px);
 }
 @media (max-width: 520px){ .left .ringBg{ opacity: .65; } }
@@ -877,7 +867,7 @@ h6,
 .whatidoGrid{ width: 100%; min-height: 100%; display: grid; grid-template-columns: 1.08fr .92fr; align-items: stretch; }
 
 .whatidoLeft{ position: relative; padding: var(--whatidoPadY) var(--whatidoPadX); display: grid; align-content: start; gap: 18px; min-width: 0; }
-.whatidoLeft::after{ content:""; position:absolute; inset:0; background: repeating-radial-gradient(circle at 45% 30%, rgba(120,90,255,.10) 0 1px, transparent 1px 78px); opacity:.18; pointer-events:none; }
+.whatidoLeft::after{ content:""; position:absolute; inset:0; background: none; opacity:.18; pointer-events:none; }
 .whatidoLeft > *{ position: relative; z-index: 2; }
 
 .whatidoLabel{ display:flex; align-items:center; gap: 12px; color: rgba(106,88,255,.95); font-weight: 650; font-size: var(--whatidoLabelSize); }
@@ -983,7 +973,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .servicesGrid{ max-width: min(100%, 1600px); margin: 0 auto; display: grid; grid-template-columns: 0.95fr 1.25fr; gap: 18px; align-items: start; }
 .servicesTitle{ font-size: clamp(34px, 4.2vw, 56px); line-height: 1.0; letter-spacing: -0.03em; font-weight: var(--w-bold); color: rgba(11,11,13,.92); }
 .servicesCards{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0; align-content: start; }
-.serviceCard{ display: flex; flex-direction: column; justify-content: space-between; background: rgba(255,255,255,.92); border: 1px solid rgba(11,11,13,.06); box-shadow: 0 22px 70px rgba(0,0,0,.08); border-radius: 22px; padding: 16px 16px 14px; overflow: hidden; min-height: 160px; }
+.serviceCard{ display: flex; flex-direction: column; justify-content: space-between; background: rgba(255,255,255,.92); border: 1px solid rgba(11,11,13,.06); box-shadow: 0 2px 8px rgba(0,0,0,.02); border-radius: 22px; padding: 16px 16px 14px; overflow: hidden; min-height: 160px; }
 .serviceTop{ display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: start; flex: 1; }
 .serviceIcon{ width: 48px; height: 48px; border-radius: 999px; display: grid; place-items: center; color: rgba(106,88,255,.96); background: rgba(106,88,255,.14); border: 1px solid rgba(106,88,255,.26); }
 .serviceIconImg{ width: 30px; height: 30px; display: block; object-fit: contain; }
@@ -993,8 +983,8 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .serviceNo{ font-size: 16px; font-weight: var(--w-bold); color: rgba(11,11,13,.35); }
 
 .contactSection{ padding: 40px var(--sectionPadX) 24px; overflow: hidden; }
-.contactShell{ position: relative; max-width: min(100%, 1600px); margin: 0 auto; border-radius: 30px; overflow: hidden; border: 1px solid rgba(11,11,13,.06); box-shadow: 0 26px 90px rgba(0,0,0,.10); padding: clamp(22px, 4.2vw, 52px); background: radial-gradient(900px 380px at 92% 16%, rgba(106,88,255,.10), transparent 62%), linear-gradient(90deg, rgba(246,246,251,.92) 0%, rgba(235,233,247,.94) 58%, rgba(223,217,243,.96) 100%); }
-.contactGlow{ position:absolute; inset:0; background: radial-gradient(circle at 80% 34%, rgba(106,88,255,.16), transparent 58%); filter: blur(30px); opacity: .9; pointer-events:none; transform: scale(1.85); transform-origin: 80% 34%; }
+.contactShell{ position: relative; max-width: min(100%, 1600px); margin: 0 auto; border-radius: 30px; overflow: hidden; border: 1px solid rgba(11,11,13,.06); box-shadow: 0 26px 90px rgba(0,0,0,.10); padding: clamp(22px, 4.2vw, 52px); background: linear-gradient(90deg, rgba(246,246,251,.92) 0%, rgba(235,233,247,.94) 58%, rgba(223,217,243,.96) 100%); }
+.contactGlow{ position:absolute; inset:0; background: none; filter: blur(30px); opacity: .9; pointer-events:none; transform: scale(1.85); transform-origin: 80% 34%; }
 .contactHead{ position: relative; text-align: center; margin-bottom: 22px; }
 .contactTitle{ font-size: clamp(30px, 4.2vw, 56px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 760; color: rgba(11,11,13,.90); }
 .contactSub{ margin-top: 10px; color: rgba(11,11,13,.62); font-weight: 560; max-width: 70ch; margin-left: auto; margin-right: auto; font-size: 14.5px; line-height: 1.45; }
@@ -1150,7 +1140,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   border-radius: 22px;
   background-color: rgba(10,10,20,.58);
   background-image:
-    radial-gradient(circle at 16% 0%, rgba(106,88,255,.24), transparent 36%),
+
     linear-gradient(135deg, rgba(18,18,32,.64), rgba(8,8,16,.46));
   box-shadow:
     0 18px 45px rgba(0,0,0,.18),
@@ -1417,7 +1407,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 20px;
   background:
-    radial-gradient(circle at 18% 0%, rgba(106,88,255,.24), transparent 46%),
+
     linear-gradient(135deg, rgba(18,18,30,.96), rgba(10,10,18,.84)),
     rgba(10,10,20,.92);
   box-shadow: 0 24px 62px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.10);
@@ -1644,7 +1634,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
     border-color: rgba(245,247,251,.12);
     background-color: rgba(10,10,20,.58);
     background-image:
-      radial-gradient(circle at 16% 0%, rgba(111,92,255,.22), transparent 38%),
+
       linear-gradient(135deg, rgba(16,18,28,.66), rgba(8,9,16,.50));
     box-shadow:
       0 18px 45px rgba(0,0,0,.24),
@@ -1792,7 +1782,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .aboutProcessTitle{ margin: 0 0 18px; font-size: clamp(38px, 4.4vw, 72px); line-height: 1.04; letter-spacing: -0.04em; font-weight: 400; color: #0b0b0d; }
 .aboutProcessHighlight{ display: inline-block; padding: 2px 16px 6px; border-radius: 14px; background: #6a58ff; color: #fff; transform: rotate(-4deg); }
 .aboutProcessText{ margin: 0 0 24px; max-width: 440px; font-size: 19px; line-height: 1.72; color: var(--text-secondary); }
-.aboutProcessBtn{ display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 22px; border-radius: 16px; background: #6a58ff; color: #fff; text-decoration: none; font-size: 18px; font-weight: 600; box-shadow: 0 10px 26px rgba(106,88,255,.35); }
+.aboutProcessBtn{ display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 22px; border-radius: 16px; background: #6a58ff; color: #fff; text-decoration: none; font-size: 18px; font-weight: 600; box-shadow: none; }
 .aboutProcessSteps{ display: flex; flex-direction: column; gap: 22px; }
 .aboutStepCard{ position: relative; display: flex; align-items: flex-start; gap: 18px; padding: 30px 28px 28px; border: 2px solid rgba(11,11,13,.90); border-radius: 26px; background: transparent; }
 .aboutStepCard--one{ transform: rotate(2deg); }
@@ -2135,7 +2125,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
     border-color: var(--border-subtle);
     box-shadow: 0 26px 90px rgba(0,0,0,.24);
     background:
-      radial-gradient(900px 380px at 92% 16%, rgba(var(--accent-rgb), .12), transparent 62%),
+
       linear-gradient(90deg, rgba(var(--surface-rgb), .96) 0%, rgba(var(--surface-soft-rgb), .96) 58%, rgba(var(--surface-soft-2-rgb), .96) 100%);
   }
 
@@ -2380,7 +2370,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 /* Premium system polish */
 .page {
   background:
-    radial-gradient(900px 420px at 12% -10%, rgba(var(--accent-rgb), 0.12), transparent 62%),
+
     var(--bg-canvas);
 }
 
@@ -2397,8 +2387,8 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 .left .ringBg {
   opacity: .44;
   background:
-    repeating-radial-gradient(circle at 50% 38%, rgba(var(--accent-rgb), .12) 0 1px, transparent 1px 74px),
-    radial-gradient(circle at 50% 38%, rgba(var(--accent-rgb), .14), transparent 58%);
+
+    none;
 }
 
 .h1,
@@ -2753,12 +2743,12 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
 .contactShell {
   background:
-    radial-gradient(900px 380px at 92% 16%, var(--brand-glow-soft), transparent 62%),
+
     linear-gradient(90deg, rgba(var(--surface-rgb), .92) 0%, rgba(var(--surface-soft-rgb), .94) 58%, rgba(var(--surface-soft-2-rgb), .96) 100%);
 }
 
 .contactGlow {
-  background: radial-gradient(circle at 80% 34%, var(--brand-glow), transparent 58%);
+  background: none;
 }
 
 .field input,
@@ -2854,7 +2844,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   z-index: 0;
   border-radius: inherit;
   background:
-    radial-gradient(520px 180px at 12% 0%, var(--purple-glow), transparent 66%),
+
     var(--glass-highlight);
   pointer-events: none;
 }
@@ -2929,14 +2919,14 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
 .contactShell {
   background:
-    radial-gradient(900px 380px at 92% 16%, var(--purple-glow), transparent 64%),
+
     var(--glass-card-bg);
 }
 
 .homeFooterInner {
   border-color: var(--glass-border-muted);
   background:
-    radial-gradient(620px 220px at 12% 0%, rgba(var(--accent-rgb), .16), transparent 68%),
+
     var(--glass-bg-strong);
   box-shadow: var(--glass-shadow);
 }
@@ -2964,7 +2954,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   border-radius: 20px;
   border-color: var(--glass-border-muted);
   background:
-    radial-gradient(560px 140px at 10% 0%, rgba(var(--accent-rgb), .12), transparent 62%),
+
     linear-gradient(135deg, rgba(var(--surface-rgb), .92), rgba(var(--surface-rgb), .76));
   box-shadow:
     0 16px 44px rgba(16, 22, 36, .12),
@@ -3064,7 +3054,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   border-radius: 18px;
   border-color: var(--glass-border-muted);
   background:
-    radial-gradient(520px 180px at 14% -10%, rgba(var(--accent-rgb), .13), transparent 64%),
+
     linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(246, 247, 251, .90)),
     rgba(255, 255, 255, .92);
   box-shadow:
@@ -3077,7 +3067,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
 .portfolioMobilePanel::before {
   background:
-    radial-gradient(460px 150px at 14% -12%, rgba(var(--accent-rgb), .16), transparent 66%),
+
     linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.14));
   opacity: .72;
 }
@@ -3156,7 +3146,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .portfolioHeader {
     border-color: var(--glass-border-muted);
     background:
-      radial-gradient(560px 140px at 10% 0%, rgba(var(--accent-rgb), .18), transparent 62%),
+
       linear-gradient(135deg, rgba(var(--surface-rgb), .88), rgba(var(--bg-canvas-rgb), .78));
     box-shadow:
       0 18px 50px rgba(0, 0, 0, .34),
@@ -3167,7 +3157,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
   .portfolioMobilePanel {
     border-color: rgba(246, 243, 235, .14);
     background:
-      radial-gradient(520px 180px at 14% -10%, rgba(var(--accent-rgb), .22), transparent 64%),
+
       linear-gradient(135deg, rgba(15, 21, 34, .96), rgba(5, 8, 15, .94)),
       rgba(5, 8, 15, .94);
     box-shadow:
@@ -3178,7 +3168,7 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
 
   .portfolioMobilePanel::before {
     background:
-      radial-gradient(460px 150px at 14% -12%, rgba(var(--accent-rgb), .24), transparent 66%),
+
       linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.025));
     opacity: .58;
   }

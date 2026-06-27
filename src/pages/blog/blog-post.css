@@ -351,11 +351,11 @@
 }
 
 .blogPostPage .blogPostMediaBlock {
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-regular);
-  background: var(--surface-elevated);
-  box-shadow: var(--shadow-card);
+  overflow: visible;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .blogPostPage .blogPostMediaBlock img,
@@ -366,7 +366,8 @@
   max-height: 520px;
   object-fit: contain;
   object-position: center;
-  background: var(--card-image-bg);
+  background: transparent;
+  border-radius: 16px; /* rounded corners on the artwork itself */
 }
 
 .blogPostPage .blogPostMediaBlock--video {
@@ -974,10 +975,8 @@
   padding-top: var(--portfolio-header-clearance);
 }
 
-/* Blog detail glass refinement */
 .blogPostPage .blogPostArticle,
 .blogPostPage .blogPostTocInner,
-.blogPostPage .blogPostMediaBlock,
 .blogPostPage .blogPostCodeBlock,
 .blogPostPage .blogPostTableWrap,
 .blogPostPage .blogPostAudioBlock,
@@ -996,7 +995,6 @@
   box-shadow: var(--glass-shadow);
 }
 
-.blogPostPage .blogPostMediaBlock,
 .blogPostPage .blogPostCodeBlock,
 .blogPostPage .blogPostTableWrap,
 .blogPostPage .blogPostAudioBlock,

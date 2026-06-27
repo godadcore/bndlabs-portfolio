@@ -254,7 +254,7 @@ export default function Work() {
           scale = 1; opacity = 1; z = 10;
           tx = nudge; ty = 0; blur = 0; break;
         case 1:
-          scale = 0.92; opacity = 0.1; z = 4;
+          scale = 0.92; opacity = 1; z = 0;
           tx = sign * (vw * 0.82) + nudge; ty = 8; blur = 0; break;
         default:
           scale = 0.76; opacity = 0; z = 0;
@@ -268,14 +268,14 @@ export default function Work() {
           scale = 1; opacity = 1; z = 10;
           tx = nudge; ty = 0; blur = 0; break;
         case 1:
-          scale = 0.84; opacity = 0.42; z = 5;
+          scale = 0.84; opacity = 1; z = 5;
           tx = sign * 250 + nudge; ty = 24; blur = 0; break;
         case 2:
-          scale = 0.7; opacity = 0.16; z = 2;
-          tx = sign * 390; ty = 34; blur = 0.5; break;
+          scale = 0.7; opacity = 1; z = 0;
+          tx = sign * 390; ty = 34; blur = 0; break;
         default:
           scale = 0.45; opacity = 0; z = 0;
-          tx = sign * vw; ty = 40; blur = 1;
+          tx = sign * vw; ty = 40; blur = 0;
       }
       width = "70vw";
       maxWidth = "560px";
@@ -285,14 +285,14 @@ export default function Work() {
           scale = 1; opacity = 1; z = 10;
           tx = nudge; ty = -8; blur = 0; break;
         case 1:
-          scale = 0.84; opacity = 0.54; z = 5;
+          scale = 0.84; opacity = 1; z = 5;
           tx = sign * 470 + nudge; ty = 30; blur = 0; break;
         case 2:
-          scale = 0.72; opacity = 0.24; z = 2;
-          tx = sign * 760; ty = 42; blur = 0.8; break;
+          scale = 0.72; opacity = 1; z = 0;
+          tx = sign * 760; ty = 42; blur = 0; break;
         default:
           scale = 0.45; opacity = 0; z = 0;
-          tx = sign * vw; ty = 70; blur = 2;
+          tx = sign * vw; ty = 70; blur = 0;
       }
       width = "66vw";
       maxWidth = "1180px";
@@ -393,6 +393,7 @@ export default function Work() {
                           >
                             <WorkCard
                               project={project}
+                              className={isActive ? "is-active-carousel" : ""}
                               priority={isActive}
                               arrowClickable={isActive}
                               onArrowEnter={stopAutoplay}

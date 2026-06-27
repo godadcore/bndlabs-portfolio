@@ -27,14 +27,12 @@
 }
 
 .blogPage .workCarouselStage .workCard__visual {
-  padding: 18px 18px 0;
+  padding: 0; /* Zero padding to make images edge-to-edge */
 }
 
 .blogPage .workCarouselStage .workCard__image {
-  height: auto;
-  aspect-ratio: 16 / 10;
-  min-height: 0;
-  max-height: none;
+  height: 220px; /* Reduced height for blog carousel */
+  overflow: hidden;
 }
 
 .blogPage .workCarouselStage .workCard__footer {

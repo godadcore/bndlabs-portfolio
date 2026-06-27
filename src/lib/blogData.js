@@ -1,4 +1,4 @@
-import { safeLowerSlug } from "./projects.js";
+import { safeLowerSlug, normalizeFlexibleCaseStudySection } from "./projects.js";
 import {
   normalizeRichTextValue,
   richTextToHtml,

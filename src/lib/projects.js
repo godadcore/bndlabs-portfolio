@@ -618,7 +618,7 @@ function createTableSection({ id, heading, text, content, columns, rows }) {
   };
 }
 
-function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
+export function normalizeFlexibleCaseStudySection(section, index, projectTitle) {
   if (!section || typeof section !== "object") return null;
 
   const headingContent = firstRichTextValue(section?.heading, section?.title);
