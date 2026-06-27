@@ -2427,7 +2427,14 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
     gap: 12px;
     order: 3;
   }
-  .footerEmail{ min-height: 40px; font-size: 14px; }
+  .footerEmail{
+    width: min(100%, 360px);
+    min-height: 40px;
+    font-size: 14px;
+    justify-content: center;
+    text-align: center;
+    align-self: center;
+  }
   .footerLinks{ justify-content: center; width: 100%; gap: 10px; }
   .footerLegal{ order: 4; white-space: normal; }
   .footerLinks a{ width: 40px; height: 40px; }
@@ -2478,8 +2485,11 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
     line-height: 1.5;
   }
   .footerEmail {
+    width: min(100%, 320px);
     padding: 0 12px;
     font-size: 12px;
+    justify-content: center;
+    text-align: center;
   }
 }
 
@@ -3492,3 +3502,4 @@ html, body, #root{ width: 100%; max-width: 100%; overflow-x: hidden; overflow: h
     color: #ffffff;
   }
 }
+
