@@ -9,6 +9,8 @@ import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import usePullToRefresh from "../hooks/usePullToRefresh";
 import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME } from "../lib/site";
+import OptimizedImage from "../components/shared/OptimizedImage";
+
 
 export default function Home() {
   const location = useLocation();
@@ -122,12 +124,15 @@ export default function Home() {
 
             <div className="right">
               <div className="heroPortraitWrap" aria-hidden="true">
-                <img
+                <OptimizedImage
                   className="heroPortrait"
                   src="/home-hero-portrait.png"
                   alt=""
-                  loading="eager"
+                  width="4986"
+                  height="4184"
+                  priority
                   decoding="async"
+                  sizes="(max-width: 768px) 92vw, (max-width: 1200px) 36vw, 30vw"
                 />
               </div>
             </div>

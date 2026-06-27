@@ -11,22 +11,18 @@ import Footer from "../../components/layout/Footer";
 import Seo from "../../components/seo/Seo";
 import ShareSection from "../../components/shared/ShareSection";
 import usePullToRefresh from "../../hooks/usePullToRefresh";
-import {
-  formatBlogDate,
-  getInitialPosts,
-  getPostBySlug,
-  loadAllPosts,
-} from "../../lib/blogData";
+import { formatBlogDate, getInitialPosts, getPostBySlug, loadAllPosts } from "../../lib/blogData";
 import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME, buildBlogPostSchema } from "../../lib/site";
 import { useSiteSettings } from "../../providers/siteSettingsContext.js";
 import { sanitizeBlogHtml } from "../../components/blog-post/utils";
+import OptimizedImage from "../../components/shared/OptimizedImage";
 import "./blog-post.css";
 
 function AuthorAvatar({ author }) {
   if (author?.avatarUrl) {
     return (
       <div className="blogPostAuthorAvatar">
-        <img src={author.avatarUrl} alt={author.name || "Author"} loading="lazy" decoding="async" />
+        <OptimizedImage src={author.avatarUrl} alt={author.name || "Author"} loading="lazy" decoding="async" />
       </div>
     );
   }

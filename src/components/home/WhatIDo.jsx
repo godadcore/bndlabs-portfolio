@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import OptimizedImage from "../shared/OptimizedImage";
 
 export default function WhatIDo({ onContactClick }) {
   const sectionRef = useRef(null);
@@ -52,12 +53,15 @@ export default function WhatIDo({ onContactClick }) {
         <div className={`whatidoRight ${inView ? "in-view" : ""}`} aria-hidden="true">
           {inView ? (
             <div className="whatidoPortraitWrap">
-              <img
+              <OptimizedImage
                 className="whatidoPortrait whatidoPortrait--flipped"
                 src="/whatido-portrait.png"
                 alt=""
+                width="2836"
+                height="7942"
                 loading="lazy"
                 decoding="async"
+                sizes="(max-width: 768px) 88vw, 360px"
               />
             </div>
           ) : null}

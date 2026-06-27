@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { formatBlogDate } from "../../lib/blogData";
 import { richTextToInlineHtml } from "../../lib/richText.js";
 import "./blog-card.css";
+import OptimizedImage from "../shared/OptimizedImage";
+
 
 function InlineRichText({ value, fallback = "", className = "", as: Tag = "span" }) {
   const html = richTextToInlineHtml(value || fallback);
@@ -115,8 +117,8 @@ export default function BlogCard({
       <div className="workCard__visual">
         <div className="workCard__image">
           {cardImage ? (
-            <img
-              src={cardImage}
+            <OptimizedImage
+              image={image || thumbnail || cover}
               alt={imageAlt}
               loading={priority ? "eager" : "lazy"}
               fetchPriority={priority ? "high" : undefined}

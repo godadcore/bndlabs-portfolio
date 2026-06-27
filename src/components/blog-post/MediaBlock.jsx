@@ -1,6 +1,8 @@
 import { PlayIcon } from "@hugeicons/core-free-icons";
 import HugeIcon from "../shared/HugeIcon";
 import { sanitizeBlogHtml, toggleVideo } from "./utils";
+import OptimizedImage from "../shared/OptimizedImage";
+
 
 function MediaCaption({ html, fallback = "" }) {
   const sanitizedHtml = sanitizeBlogHtml(html || fallback);
@@ -14,7 +16,7 @@ function MediaImage({ item }) {
 
   return (
     <div className="blogPostMediaBlock">
-      <img src={item.url} alt={item.alt || "Blog media"} loading="lazy" decoding="async" />
+      <OptimizedImage src={item.url} alt={item.alt || "Blog media"} loading="lazy" decoding="async" sizes="(max-width: 768px) 92vw, 700px" />
       <MediaCaption html={item.captionHtml} fallback={item.caption} />
     </div>
   );
@@ -43,7 +45,7 @@ export default function MediaBlock({ block, videoIndex = 0 }) {
   if (block.type === "gif") {
     return (
       <div className="blogPostMediaBlock">
-        <img src={block.url} alt={block.alt || "Blog GIF"} loading="lazy" decoding="async" />
+        <OptimizedImage src={block.url} alt={block.alt || "Blog GIF"} loading="lazy" decoding="async" sizes="(max-width: 768px) 92vw, 760px" />
         <MediaCaption html={block.captionHtml} fallback={block.caption} />
       </div>
     );

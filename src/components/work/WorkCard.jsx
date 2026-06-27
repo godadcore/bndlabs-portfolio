@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 import { richTextToInlineHtml } from "../../lib/richText.js";
 import HugeIcon from "../shared/HugeIcon";
+import OptimizedImage from "../shared/OptimizedImage";
+
 
 const ArrowIcon = () => (
   <HugeIcon icon={ArrowUpRight01Icon} size={18} strokeWidth={1.9} />
@@ -128,8 +130,8 @@ export default function WorkCard({
       <div className="workCard__visual">
         <div className="workCard__image">
           {imageSrc ? (
-            <img
-              src={imageSrc}
+                        <OptimizedImage
+              image={image || cover || thumbnail}
               alt={title ? `${title} UI UX design project by Bodunde Emmanuel` : "UI UX design project by Bodunde Emmanuel"}
               loading={priority ? "eager" : "lazy"}
               fetchPriority={priority ? "high" : undefined}

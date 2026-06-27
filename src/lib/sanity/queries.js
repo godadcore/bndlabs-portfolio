@@ -24,17 +24,35 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   tags,
   brandLogo{
     asset->{
-      url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
     }
   },
   heroImage{
     asset->{
-      url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
     }
   },
   overviewImage{
     asset->{
-      url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
     }
   },
   overviewText,
@@ -61,33 +79,69 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
     },
     image{
       asset->{
-        url
+        _ref,
+        url,
+        extension,
+        mimeType,
+        metadata{
+          dimensions
+        }
       }
     },
     poster{
       asset->{
-        url
+        _ref,
+        url,
+        extension,
+        mimeType,
+        metadata{
+          dimensions
+        }
       }
     },
     video{
       asset->{
-        url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
       }
+    }
     },
     audio{
       asset->{
-        url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
       }
+    }
     },
     images[]{
       alt,
       caption,
       asset->{
-        url
+        _ref,
+        url,
+        extension,
+        mimeType,
+        metadata{
+          dimensions
+        }
       },
       image{
         asset->{
-          url
+          _ref,
+          url,
+          extension,
+          mimeType,
+          metadata{
+            dimensions
+          }
         }
       }
     },
@@ -95,11 +149,23 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
       alt,
       caption,
       asset->{
-        url
+        _ref,
+        url,
+        extension,
+        mimeType,
+        metadata{
+          dimensions
+        }
       },
       image{
         asset->{
-          url
+          _ref,
+          url,
+          extension,
+          mimeType,
+          metadata{
+            dimensions
+          }
         }
       }
     }
@@ -119,19 +185,37 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   researchText,
   researchImages[]{
     asset->{
-      url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
     }
   },
   wireframeText,
   wireframeImages[]{
     asset->{
-      url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
     }
   },
   prototypeText,
   prototypeImages[]{
     asset->{
-      url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
     }
   },
   results[]{
@@ -140,7 +224,13 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   },
   finalImages[]{
     asset->{
-      url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
     }
   }
 }`;
@@ -240,46 +330,94 @@ export const publishedPostsQuery = groq`*[_type == "post"] | order(coalesce(date
     },
     image{
       asset->{
-        url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
       }
+    }
     },
     poster{
       asset->{
-        url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
       }
+    }
     },
     video{
       asset->{
-        url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
       }
+    }
     },
     audio{
       asset->{
-        url
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
       }
+    }
     },
     images[]{
       alt,
       caption,
       asset->{
-        url
-      },
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
+    },
       image{
         asset->{
-          url
-        }
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
+    }
       }
     },
     frames[]{
       alt,
       caption,
       asset->{
-        url
-      },
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
+    },
       image{
         asset->{
-          url
-        }
+      _ref,
+      url,
+      extension,
+      mimeType,
+      metadata{
+        dimensions
+      }
+    }
       }
     }
   }

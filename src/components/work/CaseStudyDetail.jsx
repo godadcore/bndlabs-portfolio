@@ -10,6 +10,7 @@ import {
   Tick01Icon,
   UserCircleIcon,
 } from "@hugeicons/core-free-icons";
+import OptimizedImage from "../shared/OptimizedImage";
 import { Link } from "react-router-dom";
 import BlogCard from "../blog/BlogCard";
 import Footer from "../layout/Footer";
@@ -665,12 +666,13 @@ function MediaSlider({ items, label, onOpen, className = "" }) {
           onClick={handleImageClick}
           aria-label={`Open ${label} ${currentIndex + 1}`}
         >
-          <img
+          <OptimizedImage
             className="projectCaseImageSliderImage slider-image"
-            src={activeItem.src}
+            image={activeItem.sanityImage || activeItem}
             alt={activeItem.alt || `${label} ${currentIndex + 1}`}
             loading="lazy"
             decoding="async"
+            sizes="(max-width: 768px) 94vw, 840px"
           />
         </button>
 
@@ -744,7 +746,7 @@ function FeatureMedia({ media, fallbackLabel, onOpen }) {
         onClick={() => onOpen?.([{ ...media, alt: media.alt || fallbackLabel }], 0)}
         aria-label={`Open ${fallbackLabel}`}
       >
-        <img src={media.src} alt={media.alt || fallbackLabel} loading="lazy" decoding="async" />
+        <OptimizedImage image={media.sanityImage || media} alt={media.alt || fallbackLabel} loading="lazy" decoding="async" sizes="(max-width: 768px) 94vw, 900px" />
       </button>
       {media.caption ? (
         <figcaption>
@@ -1129,7 +1131,7 @@ function Lightbox({ items, index, onClose, onNext, onPrev }) {
             </div>
           ) : null}
           <figure className="projectCaseLightboxFigure">
-            <img src={activeItem.src} alt={activeItem.alt || activeItem.label || "Expanded project media"} />
+            <OptimizedImage image={activeItem.sanityImage || activeItem} alt={activeItem.alt || activeItem.label || "Expanded project media"} sizes="(max-width: 768px) 94vw, 980px" />
             {activeItem.caption || activeItem.label ? (
               <figcaption className="projectCaseLightboxCaption">
                 <InlineRichTextContent
@@ -1657,7 +1659,7 @@ export default function CaseStudyDetail({ slug }) {
                       </h1>
                     )}
                     {caseStudy.brandLogo ? (
-                      <img className="projectCaseBrandLogo" src={caseStudy.brandLogo} alt={brandName} loading="lazy" decoding="async" />
+                      <OptimizedImage className="projectCaseBrandLogo" image={caseStudy.brandLogo?.sanityImage || caseStudy.brandLogo} alt={brandName} loading="lazy" decoding="async" sizes="160px" />
                     ) : (
                       <p className="projectCaseBrandName">{brandName}</p>
                     )}
@@ -1737,12 +1739,14 @@ export default function CaseStudyDetail({ slug }) {
                         onClick={() => openLightbox([coverImage], 0)}
                         aria-label={`Open ${project.title} cover image`}
                       >
-                        <img
+                        <OptimizedImage
                           className="projectCaseCoverImage"
-                          src={coverImage.src}
+                          image={coverImage.sanityImage || coverImage}
                           alt={coverImage.alt || `${project.title} cover image`}
-                          loading="lazy"
+                          loading="eager"
+                          fetchPriority="high"
                           decoding="async"
+                          sizes="(max-width: 768px) 94vw, 980px"
                         />
                       </button>
                     </div>

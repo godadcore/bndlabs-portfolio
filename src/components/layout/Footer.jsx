@@ -2,6 +2,7 @@
 import { BehanceLogo, InstagramLogo, TiktokLogo, XLogo } from "@phosphor-icons/react";
 import { SITE_NAME } from "../../lib/site";
 import { useSiteSettings } from "../../providers/siteSettingsContext.js";
+import OptimizedImage from "../shared/OptimizedImage";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -43,13 +44,14 @@ export default function Footer() {
       <div className="homeFooterInner">
         <div className="footerBrand">
           <div className="footerLogoSlot" aria-hidden="true">
-            <img
+            <OptimizedImage
               className="footerLogoMark"
               src="/brand-icon.svg"
               alt=""
               width="100"
               height="100"
               decoding="async"
+              sizes="72px"
             />
           </div>
           <span className="footerText">

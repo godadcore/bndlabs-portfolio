@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SITE_NAME } from "../../lib/site";
 import cvDownloadUrl from "../../Bodunde_Emmanuel_CV.pdf";
 import HugeIcon from "../shared/HugeIcon";
+import OptimizedImage from "../shared/OptimizedImage";
 
 const NAV_ITEMS = [
   { key: "home", label: "Home", to: "/#home", section: "home", icon: "home" },
@@ -155,13 +156,14 @@ export default function Header({ active = "" }) {
         >
           <picture>
             <source srcSet="/brand-logo.svg" media="(prefers-color-scheme: dark)" />
-            <img
+            <OptimizedImage
               className="logo-image"
               src="/brand-logo-dark-text.svg"
               alt={`${SITE_NAME} logo`}
               width="346"
               height="86"
               decoding="async"
+              sizes="260px"
             />
           </picture>
         </a>

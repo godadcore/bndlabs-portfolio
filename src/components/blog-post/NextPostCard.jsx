@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { formatBlogDate } from "../../lib/blogData";
 import HugeIcon from "../shared/HugeIcon";
+import OptimizedImage from "../shared/OptimizedImage";
+
 
 function ArrowIcon() {
   return <HugeIcon icon={ArrowRight01Icon} size={20} strokeWidth={1.9} />;
@@ -16,7 +18,7 @@ export default function NextPostCard({ post }) {
       <Link className="blogPostNextCard" to={`/blog/${post.slug}`}>
         {post.thumbnail ? (
           <div className="blogPostNextThumb">
-            <img src={post.thumbnail} alt={post.title || "Next post"} loading="lazy" decoding="async" />
+            <OptimizedImage src={post.thumbnail} alt={post.title || "Next post"} loading="lazy" decoding="async" sizes="220px" />
           </div>
         ) : null}
         <div className="blogPostNextBody">

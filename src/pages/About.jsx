@@ -6,6 +6,7 @@ import {
   Chat01Icon,
   Package01Icon,
 } from "@hugeicons/core-free-icons";
+import OptimizedImage from "../components/shared/OptimizedImage";
 import Footer from "../components/layout/Footer";
 import greeting from "../assets/About Greeting GIF.webm";
 import portfolio1 from "../assets/Portfolio Image 1.png";
@@ -353,11 +354,14 @@ export default function About() {
                       ease: [0.16, 1, 0.3, 1],
                     }}
                   >
-                    <img
+                    <OptimizedImage
                       src={portfolio3}
                       alt="UI UX dashboard design project by Bodunde Emmanuel"
+                      width="1024"
+                      height="1536"
                       loading="lazy"
                       decoding="async"
+                      sizes="(max-width: 768px) 88vw, (max-width: 1200px) 28vw, 22vw"
                     />
                   </Motion.div>
 
@@ -390,11 +394,14 @@ export default function About() {
                       ease: [0.16, 1, 0.3, 1],
                     }}
                   >
-                    <img
+                    <OptimizedImage
                       src={portfolio1}
                       alt="Product design case study layout by Bodunde Emmanuel"
+                      width="1024"
+                      height="1536"
                       loading="lazy"
                       decoding="async"
+                      sizes="(max-width: 768px) 88vw, (max-width: 1200px) 28vw, 22vw"
                     />
                   </Motion.div>
                 </div>
@@ -429,11 +436,14 @@ export default function About() {
                       ease: [0.16, 1, 0.3, 1],
                     }}
                   >
-                    <img
+                    <OptimizedImage
                       src={portfolio2}
                       alt="Brand and interface design work by Bodunde Emmanuel"
+                      width="1024"
+                      height="1536"
                       loading="lazy"
                       decoding="async"
+                      sizes="(max-width: 768px) 88vw, (max-width: 1200px) 30vw, 24vw"
                     />
                   </Motion.div>
                 </div>
