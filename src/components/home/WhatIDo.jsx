@@ -1,6 +1,4 @@
-import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
-
-const WhatIDo3D = lazy(() => import("./WhatIDo3D"));
+import React, { useEffect, useRef, useState } from "react";
 
 export default function WhatIDo({ onContactClick }) {
   const sectionRef = useRef(null);
@@ -53,9 +51,15 @@ export default function WhatIDo({ onContactClick }) {
 
         <div className={`whatidoRight ${inView ? "in-view" : ""}`} aria-hidden="true">
           {inView ? (
-            <Suspense fallback={null}>
-              <WhatIDo3D progress={ratio} />
-            </Suspense>
+            <div className="whatidoPortraitWrap">
+              <img
+                className="whatidoPortrait whatidoPortrait--flipped"
+                src="/whatido-portrait.png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
           ) : null}
         </div>
       </div>

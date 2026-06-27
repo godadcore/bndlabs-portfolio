@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import WhatIDo from "../components/home/WhatIDo";
 import SelectedBlog from "../components/blog/SelectedBlog";
@@ -9,8 +9,6 @@ import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import usePullToRefresh from "../hooks/usePullToRefresh";
 import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME } from "../lib/site";
-
-const Hero3D = lazy(() => import("../components/home/Hero3D"));
 
 export default function Home() {
   const location = useLocation();
@@ -108,25 +106,29 @@ export default function Home() {
               <div className="copy">
                 <h1 className="srOnly">UI/UX Designer &amp; Product Designer</h1>
 
-                <div className="byline">
-                  <span className="byline-rule"></span>
-                  <span className="byline-name">Bodunde Emmanuel</span>
+                <div className="heroEyebrow">
+                  <span>Welcome 👋</span>
                 </div>
 
-                <p className="h1" aria-hidden="true">
-                  Hello, my <br />
-                  name&apos;s Emmanuel. <br />
-                  I&apos;m a Product <br />
-                  Designer (UI/UX Designer).
-                </p>
+                <div className="heroHeadline" aria-hidden="true">
+                  <p className="heroName">I&apos;m Bodunde Emmanuel.</p>
+                  <p className="heroRole">Product Designer.</p>
+                  <p className="heroDescription">
+                    I design intuitive digital products and meaningful brand experiences that help businesses grow.
+                  </p>
+                </div>
               </div>
             </div>
 
             <div className="right">
-              <div className="hero3d" aria-hidden="false">
-                <Suspense fallback={null}>
-                  <Hero3D />
-                </Suspense>
+              <div className="heroPortraitWrap" aria-hidden="true">
+                <img
+                  className="heroPortrait"
+                  src="/home-hero-portrait.png"
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                />
               </div>
             </div>
           </section>
