@@ -1567,19 +1567,19 @@ body.project-lightbox-open .portfolioHeaderShell {
   overflow: hidden;
   border: 1px solid var(--case-border);
   box-shadow: var(--case-shadow);
-  background: #1e1e1e;
+  background: var(--case-surface);
   margin-top: 28px;
   font-family: monospace;
 }
 
 .projectDetailsPage .projectCaseCodeLang {
   padding: 8px 16px;
-  background: #2d2d2d;
-  color: #a0a0a0;
+  background: var(--case-surface-soft);
+  color: var(--case-muted);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  border-bottom: 1px solid #404040;
+  border-bottom: 1px solid var(--case-border-strong);
 }
 
 .projectDetailsPage .projectCaseCode pre {
@@ -1589,7 +1589,7 @@ body.project-lightbox-open .portfolioHeaderShell {
 }
 
 .projectDetailsPage .projectCaseCode code {
-  color: #d4d4d4;
+  color: var(--case-muted-strong);
   font-size: 14px;
   line-height: 1.5;
 }

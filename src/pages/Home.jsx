@@ -124,16 +124,19 @@ export default function Home() {
 
             <div className="right">
               <div className="heroPortraitWrap" aria-hidden="true">
-                <OptimizedImage
-                  className="heroPortrait"
-                  src="/home-hero-portrait.png"
-                  alt=""
-                  width="4986"
-                  height="4184"
-                  priority
-                  decoding="async"
-                  sizes="(max-width: 768px) 92vw, (max-width: 1200px) 36vw, 30vw"
-                />
+                <picture>
+                  <source srcSet="/home-hero-portrait.webp" type="image/webp" />
+                  <OptimizedImage
+                    className="heroPortrait"
+                    src="/home-hero-portrait.png"
+                    alt="Bodunde Emmanuel - Product Designer based in Lagos, Nigeria"
+                    width="2000"
+                    height="1678"
+                    priority
+                    decoding="async"
+                    sizes="(max-width: 768px) 92vw, (max-width: 1200px) 36vw, 30vw"
+                  />
+                </picture>
               </div>
             </div>
           </section>

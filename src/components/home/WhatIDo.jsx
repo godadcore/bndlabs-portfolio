@@ -4,7 +4,6 @@ import OptimizedImage from "../shared/OptimizedImage";
 export default function WhatIDo({ onContactClick }) {
   const sectionRef = useRef(null);
   const [inView, setInView] = useState(false);
-  const [ratio, setRatio] = useState(0);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -14,7 +13,6 @@ export default function WhatIDo({ onContactClick }) {
       ([entry]) => {
         if (!entry.isIntersecting || entry.intersectionRatio <= 0.2) return;
         setInView(true);
-        setRatio(1);
         io.disconnect();
       },
       { threshold: [0, 0.15, 0.35, 0.55, 0.75, 1] }
@@ -53,16 +51,19 @@ export default function WhatIDo({ onContactClick }) {
         <div className={`whatidoRight ${inView ? "in-view" : ""}`} aria-hidden="true">
           {inView ? (
             <div className="whatidoPortraitWrap">
-              <OptimizedImage
-                className="whatidoPortrait whatidoPortrait--flipped"
-                src="/whatido-portrait.png"
-                alt=""
-                width="2836"
-                height="7942"
-                loading="lazy"
-                decoding="async"
-                sizes="(max-width: 768px) 88vw, 360px"
-              />
+              <picture>
+                <source srcSet="/whatido-portrait.webp" type="image/webp" />
+                <OptimizedImage
+                  className="whatidoPortrait whatidoPortrait--flipped"
+                  src="/whatido-portrait.png"
+                  alt="Bodunde Emmanuel - Product Design Processes"
+                  width="1200"
+                  height="3360"
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(max-width: 768px) 88vw, 360px"
+                />
+              </picture>
             </div>
           ) : null}
         </div>

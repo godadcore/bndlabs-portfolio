@@ -155,12 +155,12 @@
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.05em;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-family: inherit;
 }
 
 .contactTitle span {
-  color: #1c1c22;
+  color: var(--text-primary);
 }
 
 .contactSubtitle {
@@ -326,7 +326,7 @@
   font-weight: 800;
   line-height: 1.06;
   letter-spacing: -0.04em;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-family: inherit;
 }
 
@@ -354,7 +354,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(11, 11, 13, 0.07);
-  color: #1f1f24;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 700;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
@@ -368,7 +368,7 @@
 }
 
 .pillIcon {
-  color: #7c3aed;
+  color: var(--accent);
 }
 
 .contactInfoList {
@@ -405,7 +405,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #7c3aed;
+  color: var(--accent);
   box-shadow: 0 8px 20px rgba(124, 58, 237, 0.08);
 }
 
@@ -442,7 +442,7 @@
 }
 
 .contactInfoLink:hover {
-  color: #7c3aed;
+  color: var(--accent);
 }
 
 .contactSocials {
@@ -460,7 +460,7 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.76);
   border: 1px solid rgba(124, 58, 237, 0.14);
-  color: #1f1f24;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
@@ -489,7 +489,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7c3aed;
+  color: var(--accent);
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(124, 58, 237, 0.12);
   box-shadow: 0 12px 30px rgba(11, 11, 13, 0.06);
@@ -562,7 +562,7 @@
   margin: 0 0 8px;
   font-size: 36px;
   font-weight: 800;
-  color: #0b0b0d;
+  color: var(--text-primary);
   letter-spacing: -0.03em;
   font-family: inherit;
 }
@@ -594,7 +594,7 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #7f8593;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   pointer-events: none;
@@ -608,7 +608,7 @@
 }
 
 .contactField:hover .fieldIcon {
-  color: #7c3aed;
+  color: var(--accent);
 }
 
 .contactInput,
@@ -617,7 +617,7 @@
   border-radius: 14px;
   border: 1px solid rgba(11, 11, 13, 0.08);
   background: rgba(255, 255, 255, 0.74);
-  color: #0b0b0d;
+  color: var(--text-primary);
   outline: none;
   font-family: inherit;
   transition:
@@ -734,7 +734,7 @@
 
 .contactCheckbox:checked + .contactCheckCustom {
   background: #7c3aed;
-  border-color: #7c3aed;
+  border-color: var(--accent);
 }
 
 .checkIcon {
@@ -802,7 +802,7 @@
   gap: 16px;
   padding: 64px 20px;
   text-align: center;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-size: 17px;
   line-height: 1.6;
   font-family: inherit;
@@ -815,7 +815,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #7c3aed;
+  color: var(--accent);
   background: rgba(124, 58, 237, 0.08);
   border: 1px solid rgba(124, 58, 237, 0.14);
   box-shadow: 0 12px 30px rgba(124, 58, 237, 0.1);
@@ -1057,13 +1057,13 @@
   font-weight: 400;
   line-height: 1.04;
   letter-spacing: -0.04em;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-family: var(--fontHeading);
 }
 
 .processSectionTitle em {
   font-style: italic;
-  color: #7c3aed;
+  color: var(--accent);
 }
 
 .processGrid {
@@ -1107,7 +1107,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7c3aed;
+  color: var(--accent);
   box-shadow: 0 8px 20px rgba(124, 58, 237, 0.1);
 }
 
@@ -1123,7 +1123,7 @@
   margin: 0 0 10px;
   font-size: 24px;
   font-weight: 400;
-  color: #0b0b0d;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   font-family: var(--fontHeading);
 }
@@ -1185,7 +1185,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #7c3aed;
+  color: var(--accent);
 }
 
 .faqTitle {
@@ -1194,13 +1194,13 @@
   font-weight: 800;
   line-height: 1.06;
   letter-spacing: -0.04em;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-family: inherit;
 }
 
 .faqTitle em {
   font-style: italic;
-  color: #7c3aed;
+  color: var(--accent);
 }
 
 .faqSubtext {
@@ -1268,7 +1268,7 @@
 .faqQ {
   font-size: 16px;
   font-weight: 700;
-  color: #0b0b0d;
+  color: var(--text-primary);
   font-family: inherit;
 }
 
@@ -1281,7 +1281,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7c3aed;
+  color: var(--accent);
   transition: transform 0.25s ease, background 0.22s ease;
 }
 
