@@ -137,8 +137,7 @@
   min-width: 0;
 }
 
-.blogPostPage .blogPostArticle,
-.blogPostPage .blogPostTocInner {
+.blogPostPage .blogPostArticle {
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-regular);
   background:
@@ -664,19 +663,30 @@
 
 .blogPostPage .blogPostToc {
   position: sticky;
-  top: 28px;
+  top: calc(var(--portfolio-header-clearance) - 20px);
+  width: 100%;
+  max-width: 230px;
 }
 
 .blogPostPage .blogPostTocInner {
-  padding: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.blogPostPage .blogPostTocMobileToggle {
+  display: none;
 }
 
 .blogPostPage .blogPostTocTitle {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   color: var(--text-muted);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -684,32 +694,41 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.blogPostPage .blogPostTocList li {
+  margin: 0;
 }
 
 .blogPostPage .blogPostTocList li + li {
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .blogPostPage .blogPostTocLink {
   display: block;
-  padding: 8px 10px;
+  padding: 4px 16px;
+  margin-left: -1px;
   border-left: 2px solid transparent;
-  border-radius: 10px;
+  border-radius: 0;
   color: var(--text-muted);
   text-decoration: none;
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.5;
   transition:
-    color 0.18s ease,
-    border-color 0.18s ease,
-    background-color 0.18s ease;
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.blogPostPage .blogPostTocLink:hover,
+.blogPostPage .blogPostTocLink:hover {
+  color: var(--text-primary);
+}
+
 .blogPostPage .blogPostTocLink.is-active {
   color: var(--text-primary);
   border-left-color: var(--accent);
-  background: rgba(var(--accent-rgb), 0.08);
+  font-weight: 600;
+  background: transparent;
 }
 
 .blogPostPage .blogPostTocEmpty {
@@ -910,7 +929,117 @@
   }
 
   .blogPostPage .blogPostToc {
+    display: block;
+    position: relative;
+    top: auto;
+    width: 100%;
+    max-width: none;
+    margin-bottom: 24px;
+    order: -1;
+    z-index: 200;
+  }
+
+  .blogPostPage .blogPostTocMobileToggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border-regular);
+    background: var(--glass-card-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: var(--fontUi);
+    font-size: 14px;
+    text-align: left;
+    transition: border-color 0.18s ease, background 0.18s ease;
+    box-shadow: var(--glass-shadow);
+  }
+
+  .blogPostPage .blogPostTocMobileToggle:hover {
+    border-color: var(--border-strong);
+    background: rgba(var(--surface-rgb), 0.94);
+  }
+
+  .blogPostPage .blogPostTocMobileLabel {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .blogPostPage .blogPostTocMobileActive {
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: auto;
+  }
+
+  .blogPostPage .blogPostTocMobileIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+
+  .blogPostPage .blogPostTocMobileIcon.is-open {
+    transform: rotate(180deg);
+  }
+
+  .blogPostPage .blogPostTocInner {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 300;
+    margin-top: 6px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border-regular);
+    background: var(--glass-card-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    box-shadow: var(--dropdown-shadow);
+  }
+
+  .blogPostPage .blogPostTocInner.is-open {
+    display: block;
+  }
+
+  .blogPostPage .blogPostTocTitle {
+    display: none;
+  }
+
+  .blogPostPage .blogPostTocList {
+    border-left: none;
+  }
+
+  .blogPostPage .blogPostTocList li + li {
+    margin-top: 4px;
+  }
+
+  .blogPostPage .blogPostTocLink {
+    padding: 10px 14px;
+    border-left: none;
+    border-radius: 8px;
+    margin-left: 0;
+  }
+
+  .blogPostPage .blogPostTocLink.is-active {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
   }
 }
 
@@ -976,7 +1105,6 @@
 }
 
 .blogPostPage .blogPostArticle,
-.blogPostPage .blogPostTocInner,
 .blogPostPage .blogPostCodeBlock,
 .blogPostPage .blogPostTableWrap,
 .blogPostPage .blogPostAudioBlock,
@@ -988,7 +1116,6 @@
 }
 
 .blogPostPage .blogPostArticle,
-.blogPostPage .blogPostTocInner,
 .blogPostPage .blogPostNextCard {
   border-color: var(--glass-border-muted);
   background: var(--glass-card-bg);
