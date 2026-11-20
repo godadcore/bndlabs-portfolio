@@ -1,93 +1,68 @@
-// src/components/layout/Footer.jsx
-import { BehanceLogo, InstagramLogo, TiktokLogo, XLogo } from "@phosphor-icons/react";
-import { CONTACT_EMAIL, SITE_NAME } from "../../lib/site";
-import { useSiteSettings } from "../../providers/siteSettingsContext.js";
-import OptimizedImage from "../shared/OptimizedImage";
+import {
+  BehanceLogo,
+  GithubLogo,
+  InstagramLogo,
+  LinkedinLogo,
+  TiktokLogo,
+  WhatsappLogo,
+  XLogo,
+} from "@phosphor-icons/react";
+import Wordmark from "../brand/Wordmark";
+import SocialLink from "../social/SocialLink";
+import { NOTES_LABEL } from "../../content/labels";
+import { SOCIAL_LINKS } from "../../lib/site";
+
+const NAV = [
+  ["Home", "/"],
+  ["About", "/about"],
+  [NOTES_LABEL, "/notes"],
+  ["Contact", "/contact"],
+];
+
+const SOCIAL = [
+  ["LinkedIn", SOCIAL_LINKS.linkedin, LinkedinLogo],
+  ["GitHub", "https://github.com/godadcore", GithubLogo],
+  ["Behance", SOCIAL_LINKS.behance, BehanceLogo],
+  ["X", SOCIAL_LINKS.x, XLogo],
+  ["Instagram", SOCIAL_LINKS.instagram, InstagramLogo],
+  ["TikTok", SOCIAL_LINKS.tiktok, TiktokLogo],
+  ["WhatsApp", SOCIAL_LINKS.whatsapp, WhatsappLogo],
+].filter(([, href]) => href);
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const { contactEmail, socialLinks } = useSiteSettings();
-  const footerEmail = contactEmail || CONTACT_EMAIL;
-  const socialItems = [
-    {
-      key: "x",
-      href: socialLinks?.x,
-      label: "X",
-      className: "footerSocialLink--x",
-      icon: <XLogo size={21} weight="fill" aria-hidden="true" />,
-    },
-    {
-      key: "behance",
-      href: socialLinks?.behance,
-      label: "Behance",
-      className: "footerSocialLink--behance",
-      icon: <BehanceLogo size={21} weight="fill" aria-hidden="true" />,
-    },
-    {
-      key: "instagram",
-      href: socialLinks?.instagram,
-      label: "Instagram",
-      className: "footerSocialLink--instagram",
-      icon: <InstagramLogo size={21} weight="regular" aria-hidden="true" />,
-    },
-    {
-      key: "tiktok",
-      href: socialLinks?.tiktok,
-      label: "TikTok",
-      className: "footerSocialLink--tiktok",
-      icon: <TiktokLogo size={21} weight="fill" aria-hidden="true" />,
-    },
-  ].filter((item) => item.href);
 
   return (
-    <footer className="homeFooter" aria-label="Footer">
-      <div className="homeFooterInner">
-        <div className="footerBrand">
-          <div className="footerLogoSlot" aria-hidden="true">
-            <OptimizedImage
-              className="footerLogoMark"
-              src="/brand-icon.svg"
-              alt=""
-              width="100"
-              height="100"
-              decoding="async"
-              sizes="72px"
-            />
-          </div>
-          <span className="footerText">
-            {SITE_NAME}
-            <span className="dot">.</span>
-          </span>
-        </div>
-
-        <p className="footerServices">
-          UI/UX Designer and Frontend Developer in Lagos, helping startups, brands, and businesses across Nigeria build clean, functional digital products.
-        </p>
-
-        <div className="footerActions">
-          <a className="footerEmail" href={`mailto:${footerEmail}`}>
-            {footerEmail}
+    <footer className="close">
+      <div className="closeInner">
+        <div className="closeBrand">
+          <a className="closeMark" href="/" aria-label="Bndlabs home">
+            <Wordmark />
           </a>
-
-          <nav className="footerLinks" aria-label="Social links">
-            {socialItems.map((item) => (
-              <a
-                className={`footerSocialLink ${item.className}`}
-                href={item.href}
-                aria-label={item.label}
-                target="_blank"
-                rel="noreferrer noopener"
-                key={item.key}
-              >
-                {item.icon}
-              </a>
+          <p>I design digital products, build software, and work with AI.</p>
+        </div>
+        <div className="closeAside">
+          <nav className="closeLinks" aria-label="Footer">
+            <ul>
+              {NAV.map(([label, href]) => (
+                <li key={href}><a href={href}>{label}</a></li>
+              ))}
+            </ul>
+          </nav>
+          <nav className="socialIcons" aria-label="Social">
+            {SOCIAL.map(([label, href, Icon]) => (
+              <SocialLink key={label} label={label} href={href}>
+                <Icon size={18} weight="regular" />
+              </SocialLink>
             ))}
           </nav>
         </div>
-
-        <p className="footerLegal">
-          {"\u00A9"} {year} {SITE_NAME}. All rights reserved.
-        </p>
+      </div>
+      <div className="closeRail">
+        <span>© {year} Bndlabs</span>
+        <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+          Back to top
+        </button>
       </div>
     </footer>
   );

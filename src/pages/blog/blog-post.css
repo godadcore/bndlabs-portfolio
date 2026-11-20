@@ -66,7 +66,7 @@
 }
 
 .blogPostPage .aboutTopbar .menu-wrapper--desktop .hamburger span {
-  background: var(--ink);
+  background: var(--text);
 }
 
 .blogPostPage .aboutTopbar .menu-wrapper--mobile {
@@ -101,10 +101,10 @@
   justify-content: center;
   min-height: 44px;
   padding: 0 18px;
-  border-radius: var(--button-radius);
-  border: 1px solid var(--border-regular);
-  background: rgba(var(--surface-rgb), 0.86);
-  color: var(--text-secondary);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
@@ -116,8 +116,8 @@
 
 .blogPostPage .blogPostBackBtn:hover {
   transform: translateY(-1px);
-  border-color: var(--border-strong);
-  background: rgba(var(--surface-rgb), 0.96);
+  border-color: var(--border);
+  background: transparent;
 }
 
 .blogPostPage .blogPostBackBtn:focus-visible,
@@ -138,12 +138,11 @@
 }
 
 .blogPostPage .blogPostArticle {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-regular);
-  background:
-    linear-gradient(180deg, rgba(var(--surface-rgb), 0.98), rgba(var(--surface-rgb), 0.96)),
-    var(--surface-soft);
-  box-shadow: var(--shadow-card);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, transparent, transparent),
+    var(--surface);
+  box-shadow: var(--border);
 }
 
 .blogPostPage .blogPostArticle {
@@ -171,19 +170,19 @@
 .blogPostPage .blogPostMetaDot {
   width: 4px;
   height: 4px;
-  border-radius: 50%;
-  background: var(--border-regular);
+  border-radius: 0;
+  background: var(--border);
 }
 
 .blogPostPage .blogPostMetaTag {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
-  padding: 0 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-regular);
-  background: rgba(var(--surface-rgb), 0.84);
-  color: var(--text-primary);
+  border-radius: 0;
+  border: 1px solid var(--accent);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--pad-xs) var(--pad-sm);
+  white-space: nowrap;
 }
 
 .blogPostPage .blogPostTitle {
@@ -193,7 +192,7 @@
   font-weight: 400;
   line-height: 1.04;
   letter-spacing: -0.03em;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .blogPostPage .blogPostTitle a,
@@ -211,20 +210,20 @@
   margin-top: 28px;
   margin-bottom: 36px;
   padding-bottom: 28px;
-  border-bottom: 1px solid var(--border-regular);
+  border-bottom: 1px solid var(--border);
 }
 
 .blogPostPage .blogPostAuthorAvatar {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: 0;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: var(--surface-soft-2);
-  color: var(--text-primary);
+  background: var(--surface);
+  color: var(--text);
   font-size: 14px;
   font-weight: 700;
 }
@@ -243,7 +242,7 @@
 
 .blogPostPage .blogPostAuthorName {
   margin: 0;
-  color: var(--text-primary);
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
 }
@@ -265,13 +264,13 @@
   font-weight: 400;
   line-height: 1.08;
   letter-spacing: -0.03em;
-  color: var(--text-primary);
+  color: var(--text);
   scroll-margin-top: 96px;
 }
 
 .blogPostPage .blogPostText p {
   margin: 0 0 16px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 16px;
   line-height: 1.85;
 }
@@ -285,7 +284,7 @@
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .blogPostPage .blogPostText h1 {
@@ -308,7 +307,7 @@
 .blogPostPage .blogPostText ol {
   margin: 0 0 16px;
   padding-left: 1.2rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 16px;
   line-height: 1.85;
 }
@@ -320,8 +319,8 @@
 .blogPostPage .blogPostText blockquote {
   margin: 0 0 16px;
   padding-left: 14px;
-  border-left: 2px solid rgba(var(--accent-rgb), 0.24);
-  color: var(--text-primary);
+  border-left: 2px solid transparent;
+  color: var(--text);
 }
 
 .blogPostPage .blogPostText code,
@@ -331,8 +330,8 @@
 .blogPostPage .blogPostTable td code,
 .blogPostPage .blogPostAudioCaption code {
   padding: 0.08em 0.4em;
-  border-radius: 0.45em;
-  background: rgba(var(--accent-rgb), 0.08);
+  border-radius: 0;
+  background: transparent;
   font-size: 0.95em;
 }
 
@@ -346,7 +345,7 @@
 }
 
 .blogPostPage .blogPostText a:hover {
-  color: var(--accent-hover);
+  color: var(--accent);
 }
 
 .blogPostPage .blogPostMediaBlock {
@@ -366,7 +365,7 @@
   object-fit: contain;
   object-position: center;
   background: transparent;
-  border-radius: 16px; /* rounded corners on the artwork itself */
+  border-radius: 0;
 }
 
 .blogPostPage .blogPostMediaBlock--video {
@@ -375,7 +374,7 @@
 
 .blogPostPage .blogPostMediaCaption {
   padding: 12px 16px;
-  border-top: 1px solid var(--border-regular);
+  border-top: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.6;
@@ -415,10 +414,10 @@
   bottom: 54px;
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-regular);
-  background: rgba(var(--surface-rgb), 0.92);
-  color: var(--text-primary);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -428,7 +427,7 @@
 
 .blogPostPage .blogPostPlayBtn:hover {
   transform: scale(1.06);
-  background: rgba(var(--surface-rgb), 0.98);
+  background: transparent;
 }
 
 .blogPostPage .blogPostPlayBtn svg {
@@ -453,10 +452,10 @@
 
 .blogPostPage .blogPostCodeBlock {
   overflow: hidden;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-regular);
-  background: var(--surface-soft);
-  box-shadow: var(--shadow-card);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--border);
 }
 
 .blogPostPage .blogPostCodeHeader {
@@ -465,8 +464,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border-regular);
-  background: rgba(var(--surface-rgb), 0.78);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
 }
 
 .blogPostPage .blogPostCodeLang {
@@ -480,10 +479,10 @@
 .blogPostPage .blogPostCopyBtn {
   min-height: 34px;
   padding: 0 12px;
-  border-radius: var(--button-radius);
-  border: 1px solid var(--border-regular);
+  border-radius: 0;
+  border: 1px solid var(--border);
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -493,8 +492,8 @@
 .blogPostPage .blogPostCopyBtn:hover,
 .blogPostPage .blogPostCopyBtn.is-copied {
   border-color: var(--accent);
-  color: var(--text-primary);
-  background: rgba(var(--accent-rgb), 0.08);
+  color: var(--text);
+  background: transparent;
 }
 
 .blogPostPage .blogPostCodeBlock pre {
@@ -507,7 +506,7 @@
   font-family: var(--fontUi);
   font-size: 13px;
   line-height: 1.72;
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .blogPostPage .blogPostCodeBlock .kw,
@@ -516,16 +515,16 @@
 }
 
 .blogPostPage .blogPostCodeBlock .fn {
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .blogPostPage .blogPostCodeBlock .str {
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 .blogPostPage .blogPostCodeBlock .num,
 .blogPostPage .blogPostCodeBlock .cls {
-  color: var(--accent-hover);
+  color: var(--accent);
 }
 
 .blogPostPage .blogPostCodeBlock .cmt {
@@ -535,10 +534,10 @@
 
 .blogPostPage .blogPostTableWrap {
   overflow-x: auto;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-regular);
-  background: var(--surface-elevated);
-  box-shadow: var(--shadow-card);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--border);
 }
 
 .blogPostPage .blogPostTable {
@@ -550,11 +549,11 @@
 .blogPostPage .blogPostTable td {
   padding: 14px 18px;
   text-align: left;
-  border-bottom: 1px solid var(--border-regular);
+  border-bottom: 1px solid var(--border);
 }
 
 .blogPostPage .blogPostTable th {
-  background: rgba(var(--surface-rgb), 0.82);
+  background: transparent;
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
@@ -563,7 +562,7 @@
 }
 
 .blogPostPage .blogPostTable td {
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -588,7 +587,7 @@
 }
 
 .blogPostPage .blogPostTable tbody tr:hover {
-  background: rgba(var(--surface-rgb), 0.56);
+  background: transparent;
 }
 
 .blogPostPage .blogPostTable tbody tr:last-child td {
@@ -600,10 +599,10 @@
   align-items: center;
   gap: 16px;
   padding: 18px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-regular);
-  background: var(--surface-elevated);
-  box-shadow: var(--shadow-card);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--border);
 }
 
 .blogPostPage .blogPostAudioIcon {
@@ -634,16 +633,16 @@
   align-items: flex-start;
   gap: 12px;
   padding: 18px 20px;
-  border-radius: 18px;
-  border: 1px solid var(--border-regular);
+  border-radius: 0;
+  border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  background: rgba(var(--surface-rgb), 0.7);
-  color: var(--text-secondary);
+  background: transparent;
+  color: var(--text-muted);
   line-height: 1.8;
 }
 
 .blogPostPage .blogPostCallout strong {
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .blogPostPage .blogPostCallout p,
@@ -694,7 +693,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  border-left: 1px solid var(--border-subtle);
+  border-left: 1px solid var(--border);
 }
 
 .blogPostPage .blogPostTocList li {
@@ -721,11 +720,11 @@
 }
 
 .blogPostPage .blogPostTocLink:hover {
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .blogPostPage .blogPostTocLink.is-active {
-  color: var(--text-primary);
+  color: var(--text);
   border-left-color: var(--accent);
   font-weight: 600;
   background: transparent;
@@ -742,7 +741,7 @@
 .blogPostPage .blogPostNext {
   margin-top: 64px;
   padding-top: 32px;
-  border-top: 1px solid var(--border-regular);
+  border-top: 1px solid var(--border);
 }
 
 .blogPostPage .blogPostMoreLabel,
@@ -758,7 +757,7 @@
 .blogPostPage .blogPostMoreTitle {
   margin: 0;
   font-family: var(--fontHeading);
-  color: var(--text-primary);
+  color: var(--text);
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   font-weight: 400;
   line-height: 1.08;
@@ -789,10 +788,10 @@
   align-items: center;
   gap: 18px;
   padding: 18px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-regular);
-  background: var(--surface-elevated);
-  box-shadow: var(--shadow-card);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--border);
   text-decoration: none;
   transition:
     transform 0.18s ease,
@@ -803,16 +802,16 @@
 .blogPostPage .blogPostNextCard:hover {
   transform: translateY(-2px);
   border-color: var(--accent);
-  box-shadow: var(--shadow-card-hover);
+  box-shadow: var(--border);
 }
 
 .blogPostPage .blogPostNextThumb {
   width: 92px;
   height: 72px;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: 0;
   flex-shrink: 0;
-  background: var(--card-image-bg);
+  background: var(--bg);
 }
 
 .blogPostPage .blogPostNextThumb img {
@@ -835,7 +834,7 @@
 .blogPostPage .blogPostNextTitle {
   margin: 0;
   font-family: var(--fontHeading);
-  color: var(--text-primary);
+  color: var(--text);
   font-size: 1.2rem;
   font-weight: 400;
   line-height: 1.22;
@@ -869,7 +868,7 @@
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 400;
   line-height: 1.05;
-  color: var(--text-primary);
+  color: var(--text);
 }
 
 .blogPostPage .blogPostEmptyState p {
@@ -945,23 +944,23 @@
     justify-content: space-between;
     width: 100%;
     padding: 12px 16px;
-    border-radius: 14px;
-    border: 1px solid var(--border-regular);
-    background: var(--glass-card-bg);
+    border-radius: 0;
+    border: 1px solid var(--border);
+    background: var(--bg);
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    color: var(--text-secondary);
+    color: var(--text-muted);
     cursor: pointer;
     font-family: var(--fontUi);
     font-size: 14px;
     text-align: left;
     transition: border-color 0.18s ease, background 0.18s ease;
-    box-shadow: var(--glass-shadow);
+    box-shadow: var(--border);
   }
 
   .blogPostPage .blogPostTocMobileToggle:hover {
-    border-color: var(--border-strong);
-    background: rgba(var(--surface-rgb), 0.94);
+    border-color: var(--border);
+    background: transparent;
   }
 
   .blogPostPage .blogPostTocMobileLabel {
@@ -976,7 +975,7 @@
 
   .blogPostPage .blogPostTocMobileActive {
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1006,12 +1005,12 @@
     z-index: 300;
     margin-top: 6px;
     padding: 12px;
-    border-radius: 14px;
-    border: 1px solid var(--border-regular);
-    background: var(--glass-card-bg);
+    border-radius: 0;
+    border: 1px solid var(--border);
+    background: var(--bg);
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    box-shadow: var(--dropdown-shadow);
+    box-shadow: var(--border);
   }
 
   .blogPostPage .blogPostTocInner.is-open {
@@ -1033,12 +1032,12 @@
   .blogPostPage .blogPostTocLink {
     padding: 10px 14px;
     border-left: none;
-    border-radius: 8px;
+    border-radius: 0;
     margin-left: 0;
   }
 
   .blogPostPage .blogPostTocLink.is-active {
-    background: rgba(var(--accent-rgb), 0.08);
+    background: transparent;
     color: var(--accent);
   }
 }
@@ -1117,22 +1116,160 @@
 
 .blogPostPage .blogPostArticle,
 .blogPostPage .blogPostNextCard {
-  border-color: var(--glass-border-muted);
-  background: var(--glass-card-bg);
-  box-shadow: var(--glass-shadow);
+  border-color: var(--border);
+  background: var(--bg);
+  box-shadow: var(--border);
 }
 
 .blogPostPage .blogPostCodeBlock,
 .blogPostPage .blogPostTableWrap,
 .blogPostPage .blogPostAudioBlock,
 .blogPostPage .blogPostCallout {
-  border-color: var(--glass-border-muted);
-  background: var(--glass-bg-soft);
+  border-color: var(--border);
+  background: var(--bg);
 }
 
 .blogPostPage .blogPostBackBtn,
 .blogPostPage .blogPostPlayBtn,
 .blogPostPage .blogPostCopyBtn {
-  background: var(--glass-control-bg);
-  border-color: var(--glass-border-muted);
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+.blogPostPage .blogPostSection,
+.blogPostPage .aboutShell {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.blogPostPage .blogPostInner {
+  width: min(1320px, calc(100% - clamp(20px, 5vw, 56px) * 2));
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+.blogPostPage .aboutStickyHeader {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.blogPostPage,
+.blogPostPage .hero,
+.blogPostPage .aboutCard,
+.blogPostPage .cardScroll,
+.blogPostPage .blogPostArticle,
+.blogPostPage .blogPostSection {
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+.blogPostPage .blogPostArticle {
+  border: 0;
+  padding: 0;
+}
+
+.blogPostPage .blogPostSection {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.blogPostPage .blogPostLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
+  gap: 40px;
+  align-items: start;
+}
+
+.blogPostPage .blogPostBackBtn {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  padding: 0;
+}
+
+.blogPostPage .blogPostMeta {
+  color: var(--text-muted);
+}
+
+.blogPostPage .blogPostMetaTag {
+  border: 1px solid var(--accent);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--pad-xs) var(--pad-sm);
+  white-space: nowrap;
+}
+
+.blogPostPage .blogPostMetaTag a {
+  color: var(--text);
+}
+
+.blogPostPage .blogPostTitle {
+  color: var(--text);
+  font-size: clamp(40px, 5vw, 72px);
+}
+
+.blogPostPage .blogPostTitle em {
+  font-family: "Instrument Serif", "Newsreader", serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.blogPostPage .blogPostAuthorRow {
+  border-bottom: 0;
+}
+
+.blogPostPage .blogPostAuthorAvatar {
+  display: none;
+}
+
+.blogPostPage .blogPostBody {
+  max-width: 68ch;
+  color: var(--text);
+}
+
+.blogPostPage .blogPostToc,
+.blogPostPage .blogPostTocInner {
+  position: sticky;
+  top: 96px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.blogPostPage .blogPostTocLink.is-active {
+  background: transparent;
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text);
+}
+
+@media (max-width: 767px) {
+  .blogPostPage .blogPostLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .blogPostPage .blogPostToc,
+  .blogPostPage .blogPostTocInner {
+    position: static;
+  }
+}
+
+.page.blogPostPage {
+  display: block;
+  height: auto;
+  padding: 0;
+  background: transparent;
+}
+
+.blogPostPage .hero {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  border: 0;
+  background: transparent;
 }

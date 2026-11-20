@@ -61,10 +61,10 @@ export default function BlogCard({
   } = content;
   const cardLabel = isProjectCard
     ? `Open ${title || "case study"}`
-    : `Read ${title || "blog post"}`;
+    : `Read ${title || "note"}`;
   const resolvedHref =
     href ||
-    (isProjectCard ? (slug ? `/work/${slug}` : "/work") : slug ? `/blog/${slug}` : "/blog");
+    (isProjectCard ? (slug ? `/work/${slug}` : "/work") : slug ? `/notes/${slug}` : "/notes");
   const cardImage = image || thumbnail || cover || "";
   const titleValue = pickRichTextValue(
     { text: title, content: content.titleContent },
@@ -135,6 +135,7 @@ export default function BlogCard({
         <div className="workCard__text">
           <div className="workCard__meta">
             {publishedDate ? <p className="blogCard__date">{publishedDate}</p> : null}
+            {!isProjectCard && content.tag ? <span className="noteTag">{content.tag}</span> : null}
             <h3 className="workCard__title">
               <InlineRichText value={titleValue.content} fallback={titleValue.text || "Untitled"} />
             </h3>

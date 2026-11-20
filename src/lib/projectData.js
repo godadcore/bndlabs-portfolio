@@ -15,18 +15,6 @@ function hasProjectSummary(project) {
   return Boolean(String(project?.summary ?? project?.description ?? "").trim());
 }
 
-function hasProjectImage(project) {
-  const imageCandidates = [
-    project?.cover,
-    project?.image,
-    project?.thumbnail,
-  ]
-    .map((value) => String(value ?? "").trim())
-    .filter(Boolean);
-
-  return imageCandidates.length > 0;
-}
-
 function hasProjectDate(project) {
   return Boolean(String(project?.date ?? project?.createdAt ?? project?.updatedAt ?? "").trim());
 }
@@ -38,7 +26,6 @@ function isDisplayableProject(project) {
       project?.id &&
       isPublishedProject(project) &&
       hasProjectSummary(project) &&
-      hasProjectImage(project) &&
       hasProjectDate(project)
   );
 }
@@ -103,11 +90,21 @@ async function fetchProjectsFromSanity() {
       source: payload?.source || "unknown",
     });
     cachedProjectsSnapshot = [];
-    return cachedProjectsSnapshot;
+    return appendSamples(cachedProjectsSnapshot);
   }
 
   cachedProjectsSnapshot = sortProjectsNewestFirst(normalizedProjects);
-  return cachedProjectsSnapshot;
+  return appendSamples(cachedProjectsSnapshot);
+}
+
+async function appendSamples(projects) {
+  if (!import.meta.env.DEV || import.meta.env.VITE_SHOW_SAMPLES !== "true") return projects;
+  const { sampleProjects } = await import("../samples/projects.js");
+  const real = (Array.isArray(projects) ? projects : []).filter((project) => !project?.sample);
+  const samples = sampleProjects
+    .map((project) => normalizeProject(project))
+    .filter(isDisplayableProject);
+  return sortProjectsNewestFirst([...real, ...samples]);
 }
 
 export function getInitialProjects() {
@@ -123,7 +120,7 @@ export async function loadAllProjects(options = {}) {
         message: error instanceof Error ? error.message : String(error),
       });
       cachedProjectsSnapshot = [];
-      return cachedProjectsSnapshot;
+      return appendSamples([]);
     });
   }
 

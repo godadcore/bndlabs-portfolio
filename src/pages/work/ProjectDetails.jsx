@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
-import CaseStudyDetail from "../../components/work/CaseStudyDetail";
+import ProjectStory from "./ProjectStory";
 
 export default function ProjectDetails() {
   const { slug } = useParams();
-  return <CaseStudyDetail slug={slug || ""} />;
+  return <ProjectStory slug={slug || ""} />;
 }

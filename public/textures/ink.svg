@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
+  <g fill="none" stroke="#16141c" stroke-width="0.45" opacity="0.28">
+    <path d="M-10 30L230 10M-10 70L230 50M-10 110L230 90M-10 150L230 130M-10 190L230 170"/>
+  </g>
+  <g fill="none" stroke="#5f50d6" stroke-width="0.45" opacity="0.35">
+    <path d="M10 -10L-10 230M50 -10L30 230M90 -10L70 230M130 -10L110 230M170 -10L150 230M210 -10L190 230"/>
+  </g>
+</svg>

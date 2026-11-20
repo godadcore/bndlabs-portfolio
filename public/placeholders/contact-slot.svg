@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1100" viewBox="0 0 900 1100">
+  <rect width="900" height="1100" fill="#e7eef1"/>
+  <path d="M70 80 H520 V260 H180 V520 H640 V180 H830 V980 H70 V80" fill="none" stroke="#16323a" stroke-width="3"/>
+  <path d="M250 700 H620 V860 H390 V980" fill="none" stroke="#2f8f9f" stroke-width="3"/>
+  <text x="450" y="560" text-anchor="middle" font-family="sans-serif" font-size="36" fill="#16323a">Image</text>
+</svg>

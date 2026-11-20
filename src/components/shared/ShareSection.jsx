@@ -41,7 +41,7 @@ async function copyToClipboard(value) {
   fallbackCopyToClipboard(value);
 }
 
-export default function ShareSection({ path = "", shareTitle = "", className = "" }) {
+export default function ShareSection({ path = "", shareTitle = "", className = "", iconWeight = "fill" }) {
   const location = useLocation();
   const resetTimerRef = useRef(0);
   const [copiedTarget, setCopiedTarget] = useState("");
@@ -115,7 +115,7 @@ export default function ShareSection({ path = "", shareTitle = "", className = "
             aria-label={item.label}
             title={item.label}
           >
-            {createElement(Icon, { size: 17, weight: "fill" })}
+            {createElement(Icon, { size: 17, weight: iconWeight })}
           </a>
         ))}
         <button

@@ -1,0 +1,71 @@
+/* Reusable Bndlabs surface treatments.
+   Density changes by section. These classes are opt-in. */
+
+:root {
+  --texture-paper:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
+  --texture-grid:
+    linear-gradient(to right, var(--text) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--text) 1px, transparent 1px);
+  --texture-hairline:
+    repeating-linear-gradient(
+      -18deg,
+      transparent,
+      transparent 10px,
+      var(--accent) 10px,
+      var(--accent) 11px
+    );
+  --texture-rules:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 27px,
+      var(--text) 28px
+    );
+}
+
+body {
+  background-image: var(--texture-paper);
+  background-size: 180px 180px;
+}
+
+.surface-paper {
+  background-image: var(--texture-paper);
+  background-size: 180px 180px;
+}
+
+.surface-technical {
+  background-image: var(--texture-grid), var(--texture-paper);
+  background-size: 28px 28px, 180px 180px;
+}
+
+.surface-product {
+  background-image: var(--texture-hairline), var(--texture-paper);
+  background-size: auto, 180px 180px;
+}
+
+.surface-editorial {
+  background-image: var(--texture-rules);
+  background-size: auto;
+}
+
+.surface-media {
+  background-image: var(--texture-paper);
+  background-size: 140px 140px;
+}
+
+.surface-footer {
+  background-image: var(--texture-grid);
+  background-size: 20px 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .surface-paper,
+  .surface-technical,
+  .surface-product,
+  .surface-editorial,
+  .surface-media,
+  .surface-footer {
+    background-attachment: scroll;
+  }
+}

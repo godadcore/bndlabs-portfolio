@@ -81,9 +81,9 @@
   min-height: 42px;
   margin-top: auto;
   padding: 0 18px;
-  border-radius: var(--button-radius);
+  border-radius: 0;
   background: var(--accent);
-  color: var(--button-primary-text);
+  color: var(--on-accent);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
@@ -96,13 +96,13 @@
 }
 
 .blogCard__button:hover {
-  background: var(--accent-hover);
+  background: var(--accent);
   transform: translateY(-2px);
   box-shadow: none;
 }
 
 .blogCard__button:active {
-  background: var(--accent-active);
+  background: var(--accent);
   transform: translateY(0);
 }
 

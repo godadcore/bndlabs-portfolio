@@ -1,0 +1,762 @@
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+}
+
+.wordmark img {
+  width: 28px;
+  height: auto;
+}
+
+.wordmarkText {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.07em;
+  line-height: 1;
+}
+
+.wordmarkText span {
+  color: var(--accent);
+}
+
+.brandHome,
+.replayIntro {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.bandHead button {
+  border: 0;
+  border-bottom: 1px solid var(--accent);
+  background: transparent;
+  color: inherit;
+  font: 600 14px/1 "Space Grotesk", sans-serif;
+  cursor: pointer;
+}
+
+.siteNav .brandHome {
+  color: var(--text);
+}
+
+.navPanel {
+}
+
+.navPanel a:hover strong,
+.navPanel a:focus-visible strong {
+  color: var(--accent);
+}
+
+.replayIntro {
+  margin: 16px 0 12px;
+  padding: 0;
+  color: var(--accent);
+  font: 600 14px/1 "Space Grotesk", sans-serif;
+}
+
+.close .wordmarkText {
+  color: var(--bg);
+  font-size: 24px;
+}
+
+.close .closeMark {
+  width: auto;
+}
+
+.splash {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  overflow: hidden;
+  color: var(--text);
+  background: var(--bg) var(--paper-img);
+  background-size: 700px;
+}
+
+.routeVeil {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  display: grid;
+  place-items: end start;
+  pointer-events: none;
+}
+
+.routeVeil p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0 0 48px 36px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(42px, 7vw, 92px);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+
+.splash.is-leaving {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.splashPath {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.splashPath path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-dasharray: 2 12;
+  animation: splashDraw 2.8s linear infinite;
+}
+
+.splashTop,
+.splashStage,
+.splashPercent,
+.splashEnter {
+  position: relative;
+  z-index: 1;
+}
+
+.splashTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px;
+}
+
+.splashSkip,
+.splashEnter {
+  min-width: 108px;
+  height: 42px;
+  border: 1px solid var(--text);
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 600 14px/1 "Space Grotesk", sans-serif;
+  cursor: pointer;
+}
+
+.splashStage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 380px);
+  gap: 36px;
+  align-items: center;
+  width: min(1080px, calc(100% - 56px));
+  margin: 7vh auto 0;
+}
+
+.splashStage h1 {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(40px, 6vw, 78px);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+}
+
+.splashStage h1 span {
+  display: block;
+  animation: lineIn 0.7s ease both;
+}
+
+.splashStage h1 span:nth-child(2) { animation-delay: 0.2s; }
+.splashStage h1 span:nth-child(3) { animation-delay: 0.4s; }
+
+.splashStage figure {
+  margin: 0;
+}
+
+.splashStage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  animation: splashImage 7s ease-in-out infinite;
+}
+
+.splashPercent,
+.splashEnter {
+  position: absolute;
+  left: 28px;
+  bottom: 24px;
+  margin: 0;
+  font: 500 15px/1 "IBM Plex Mono", monospace;
+}
+
+.folioGate {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  color: var(--text);
+  background: transparent url("/textures/grain-fine.svg");
+  animation: gateOut 1.6s linear forwards;
+}
+
+.folioGate p,
+.folioGate h2 {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.folioGate h2 {
+  font-size: clamp(48px, 7vw, 88px);
+  letter-spacing: -0.05em;
+}
+
+.folioFrame {
+  width: min(280px, 60vw);
+  height: 140px;
+  border: 1px solid var(--border);
+}
+
+.folioLine {
+  position: absolute;
+  right: 8%;
+  bottom: 18%;
+  left: 8%;
+  height: 2px;
+  background: var(--accent);
+  transform-origin: left center;
+  animation: gateLine 1.3s linear;
+}
+
+.heroPath {
+  overflow: visible;
+  pointer-events: none;
+}
+
+.heroPathDesk {
+  position: absolute;
+  z-index: 2;
+  top: 36px;
+  right: calc(100% + 16px);
+  left: auto;
+  width: 64px;
+  height: 76px;
+}
+
+.heroPathMobile {
+  display: none;
+}
+
+.heroPath path {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linejoin: miter;
+  stroke-linecap: square;
+}
+
+.heroPathLine {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: heroDraw 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards, heroDrift 10s linear 1.5s infinite;
+}
+
+.heroPathHead {
+  opacity: 0;
+  animation: heroHead 0.35s ease 1.15s forwards;
+}
+
+.menuToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuIcon {
+  display: none;
+  width: 18px;
+  gap: 4px;
+}
+
+.menuIcon i {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+}
+
+.menuToggle.is-open .menuIcon i:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.menuToggle.is-open .menuIcon i:nth-child(2) {
+  opacity: 0;
+}
+
+.menuToggle.is-open .menuIcon i:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.themeSwitch {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.themeSwitch button {
+  min-width: 72px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.themeSwitch button[aria-pressed="true"] {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.tipWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 3;
+  padding: 4px 6px;
+  background: var(--text);
+  color: var(--bg);
+  font: 500 11px/1 "Space Grotesk", sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 140ms linear;
+}
+
+.tipWrap:hover .tip,
+.tipWrap:focus-within .tip {
+  opacity: 1;
+}
+
+.noteList a {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 170px;
+  gap: 8px 24px;
+  align-items: start;
+}
+
+.noteList p {
+  grid-column: 2;
+  margin: 0;
+  -webkit-line-clamp: unset;
+  display: block;
+}
+
+.contactLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.8fr);
+  gap: 36px;
+  align-items: start;
+}
+
+.homeWork {
+  margin-top: 8px;
+  padding-top: 36px;
+  border-top: 0;
+  background: transparent;
+}
+
+.homeClose {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 28px;
+  align-items: center;
+  margin-top: 48px;
+  padding: 28px 0 8px;
+  border-top: 0;
+}
+
+.homeClose svg {
+  width: 100%;
+  height: auto;
+}
+
+.homeClose path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.closeInner {
+  grid-template-columns: 1.3fr 0.6fr auto;
+  align-items: start;
+  padding-top: 22px;
+  padding-bottom: 10px;
+}
+
+.close p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.socialIcons {
+  max-width: none;
+}
+
+.deptIndex {
+  margin-top: 12px;
+}
+
+.deptRow {
+  display: grid;
+  grid-template-columns: 64px minmax(180px, 0.8fr) minmax(220px, 1.2fr) 120px;
+  gap: var(--space-4);
+  align-items: center;
+  padding: 18px 0;
+  border: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.deptRow:hover,
+.deptRow:focus-visible {
+  background: var(--hover-bg);
+}
+
+.deptRow strong {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.deptMark {
+  display: block;
+  width: 120px;
+  height: 72px;
+  border: 1px solid var(--border);
+  background: var(--hover-bg);
+}
+
+.deptMark img,
+.deptMark i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pageIntro .roles {
+  max-width: 70ch;
+}
+
+.storyIntro h1 {
+  max-width: 16ch;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 28px 0 0;
+}
+
+.facts div {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.facts dt {
+  color: var(--accent);
+  font: 500 11px/1.4 "IBM Plex Mono", monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 6px 0 0;
+}
+
+.storyHero,
+.storyCopy {
+  margin-top: 36px;
+}
+
+.storyHero img,
+.storyFrames img,
+.storyGallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+}
+
+.storyFrames,
+.storyGallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.storyCopy h2 {
+  margin: 0 0 10px;
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.storyCopy p,
+.storyCopy li {
+  max-width: 68ch;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.storyReel {
+  display: grid;
+  grid-template-columns: minmax(220px, 380px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  margin-top: 28px;
+}
+
+.reel,
+.reelEmpty {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border: 1px solid var(--border);
+  background: var(--text);
+}
+
+.reel video,
+.reel iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  object-fit: contain;
+  background: var(--text);
+}
+
+.reelEmpty {
+  display: grid;
+  place-items: end start;
+  padding: 16px;
+  color: var(--bg);
+}
+
+.photoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.photoSlot {
+  margin: 0;
+  border: 1px solid var(--border);
+}
+
+.photoSlot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.practiceGrid,
+.toolList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 28px;
+}
+
+.practiceGrid article,
+.toolList li {
+  border: 0;
+  padding-top: 12px;
+}
+
+.toolList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toolList li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.toolList span,
+.toolList p {
+  display: block;
+  margin: 2px 0 0;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.contactHero h1 {
+  margin: 0;
+  font-size: clamp(64px, 9vw, 120px);
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+}
+
+.contactMail {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(22px, 3vw, 36px);
+  letter-spacing: -0.04em;
+}
+
+.socialIconsDark {
+  max-width: none;
+  margin-top: 18px;
+}
+
+.socialIconsDark a {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.contactForm {
+  max-width: 760px;
+}
+
+.noteIndex {
+  max-width: 820px;
+}
+
+.noteList p {
+  margin: 6px 0 0;
+  color: var(--accent);
+}
+
+@keyframes splashDraw {
+  to { stroke-dashoffset: -280; }
+}
+
+@keyframes lineIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes splashImage {
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes gateLine {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes gateOut {
+  0%, 72% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@media (max-width: 900px) {
+  .splashStage,
+  .storyReel,
+  .deptRow,
+  .facts,
+  .photoRow,
+  .practiceGrid,
+  .toolList,
+  .storyFrames,
+  .storyGallery {
+    grid-template-columns: 1fr;
+  }
+
+  .heroPathDesk {
+    display: none;
+  }
+
+  .heroPathMobile {
+    display: block;
+    width: 72px;
+    height: 56px;
+    grid-column: 1 / -1;
+  }
+
+  .deptMark {
+    width: 100%;
+    height: 88px;
+  }
+
+  .splashStage,
+  .contactLayout,
+  .homeClose,
+  .noteList a,
+  .closeInner {
+    grid-template-columns: 1fr;
+  }
+
+  .noteList p {
+    grid-column: auto;
+  }
+
+  .menuWord {
+    display: none;
+  }
+
+  .menuIcon {
+    display: grid;
+  }
+
+  .menuToggle {
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+  }
+
+  .splashStage {
+    margin-top: 4vh;
+  }
+}
+
+@keyframes heroDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes heroDrift {
+  from { stroke-dasharray: 0.05 0.035; stroke-dashoffset: 0; }
+  to { stroke-dasharray: 0.05 0.035; stroke-dashoffset: -0.34; }
+}
+
+@keyframes heroHead {
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroPathLine {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  .heroPathHead {
+    opacity: 1;
+    animation: none;
+  }
+
+  .splashPath path,
+  .splashStage h1 span,
+  .splashStage img,
+  .stageLink path,
+  .folioLine,
+  .folioGate {
+    animation: none;
+  }
+}

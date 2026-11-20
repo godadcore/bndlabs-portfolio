@@ -147,9 +147,28 @@ function vercelApiBridge() {
   };
 }
 
+function rejectSampleContent() {
+  return {
+    name: "reject-sample-content",
+    generateBundle(_options, bundle) {
+      const markers = ["Sample: ", "sample-product-flow", "assets/samples/"];
+      for (const file of Object.values(bundle)) {
+        const source = file.type === "chunk"
+          ? file.code
+          : typeof file.source === "string"
+            ? file.source
+            : "";
+        if (markers.some((marker) => source.includes(marker))) {
+          this.error(`Sample content leaked into the production bundle (${file.fileName}).`);
+        }
+      }
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), decapAdminRewrite(), vercelApiBridge()],
+  plugins: [react(), decapAdminRewrite(), vercelApiBridge(), rejectSampleContent()],
   build: {
     rollupOptions: {
       output: {

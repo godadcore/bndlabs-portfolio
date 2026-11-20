@@ -213,7 +213,15 @@ function sanitizeMediaUrl(value) {
   return sanitizeUrl(value, { allowRelative: true });
 }
 
-function makePlaceholderImage(seed) {
+function sampleOrExternalUrl(raw, value) {
+  const href = firstString(value);
+  if (raw?.sample && href.startsWith("/demos/")) {
+    return sanitizeUrl(href, { allowRelative: true });
+  }
+  return sanitizeExternalUrl(href);
+}
+
+function makeFallbackImage(seed) {
   const safeSeed = encodeURIComponent(safeLowerSlug(seed) || "project");
   return `https://picsum.photos/seed/${safeSeed}/1600/1000`;
 }
@@ -938,6 +946,44 @@ function buildWhatsAppUrl(number, pageUrl = "[page url]") {
   return `https://wa.me/${normalized}?text=${encodeURIComponent(buildBrokenLinkMessage(pageUrl))}`;
 }
 
+function normalizeDemonstrationVideos(value) {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((item) => {
+      const poster = sanitizeMediaUrl(firstString(item?.poster?.src, item?.poster, item?.posterUrl));
+      const hostedUrl = sanitizeExternalUrl(firstString(item?.hostedUrl, item?.url));
+      const embedUrl = sanitizeExternalUrl(firstString(item?.embedUrl));
+      const title = firstPlainText(item?.title);
+
+      if (!title) return null;
+
+      return {
+        title,
+        provider: firstString(item?.provider),
+        hostedUrl,
+        embedUrl,
+        providerVideoId: firstString(item?.providerVideoId, item?.videoId),
+        poster,
+        posterAlt: firstString(item?.posterAlt, item?.poster?.alt, title),
+        credit: firstString(item?.credit),
+        duration: firstString(item?.duration),
+        aspectRatio: firstString(item?.aspectRatio),
+        category: firstString(item?.category),
+        playback: {
+          autoplay: false,
+          muted: true,
+          inline: true,
+          lazy: true,
+          viewportAware: true,
+          singlePlayback: true,
+        },
+        connected: Boolean(hostedUrl || embedUrl || firstString(item?.providerVideoId, item?.videoId)),
+      };
+    })
+    .filter(Boolean);
+}
+
 function normalizeModernCaseStudy(raw) {
   const looksLikeCaseStudy =
     raw &&
@@ -994,8 +1040,9 @@ function normalizeModernCaseStudy(raw) {
   const fallbackImage =
     heroImage?.src ||
     overviewImage?.src ||
-    makePlaceholderImage(slug || title);
-  const liveUrl = sanitizeExternalUrl(firstString(raw?.liveUrl, raw?.liveProjectUrl));
+    makeFallbackImage(slug || title);
+  const liveUrl = sampleOrExternalUrl(raw, firstString(raw?.liveUrl, raw?.liveProjectUrl));
+  const repositoryUrl = sanitizeExternalUrl(firstString(raw?.repositoryUrl));
   const prototypeUrl = sanitizeExternalUrl(firstString(raw?.prototypeUrl));
   const twitterUrl = sanitizeExternalUrl(firstString(raw?.twitterUrl));
   const whatsappNumber = firstString(raw?.whatsappNumber);
@@ -1031,6 +1078,9 @@ function normalizeModernCaseStudy(raw) {
   return {
     id,
     slug,
+    sample: Boolean(raw?.sample),
+    featured: Boolean(raw?.featured),
+    discipline: firstString(raw?.discipline),
     createdAt: firstString(raw?._createdAt),
     updatedAt: firstString(raw?._updatedAt),
     title,
@@ -1127,8 +1177,10 @@ function normalizeModernCaseStudy(raw) {
       results,
       finalImages,
       liveUrl,
-      liveProjectUrl: sanitizeExternalUrl(firstString(raw?.liveProjectUrl)),
+      repositoryUrl,
+      liveProjectUrl: sampleOrExternalUrl(raw, firstString(raw?.liveProjectUrl, raw?.liveUrl)),
       prototypeUrl,
+      videos: normalizeDemonstrationVideos(raw?.videos),
       twitterUrl,
       whatsappNumber,
       whatsappUrl,
@@ -1566,15 +1618,15 @@ export function normalizeProject(raw) {
   const description = firstPlainText(raw?.description, raw?.summary);
   const subtitleContent = firstRichTextValue(raw?.subtitle);
   const subtitle = firstPlainText(raw?.subtitle);
-  const placeholderImage = makePlaceholderImage(slug || id || title);
+  const fallbackImage = makeFallbackImage(slug || id || title);
   const image = sanitizeMediaUrl(
-    firstString(raw?.image, imagesRaw?.cover, raw?.cover, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage)
+    firstString(raw?.image, imagesRaw?.cover, raw?.cover, imagesRaw?.thumbnail, raw?.thumbnail, fallbackImage)
   );
   const cover = sanitizeMediaUrl(
-    firstString(imagesRaw?.cover, raw?.cover, image, imagesRaw?.thumbnail, raw?.thumbnail, placeholderImage)
+    firstString(imagesRaw?.cover, raw?.cover, image, imagesRaw?.thumbnail, raw?.thumbnail, fallbackImage)
   );
   const thumbnail = sanitizeMediaUrl(
-    firstString(imagesRaw?.thumbnail, raw?.thumbnail, image, cover, placeholderImage)
+    firstString(imagesRaw?.thumbnail, raw?.thumbnail, image, cover, fallbackImage)
   );
   const overview = firstString(raw?.overview, raw?.description, summary, description);
   const firstChallenge = Array.isArray(raw?.challenges) ? raw.challenges[0] : null;

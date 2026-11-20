@@ -7,6 +7,7 @@ import CodeBlock from "../../components/blog-post/CodeBlock";
 import MediaBlock from "../../components/blog-post/MediaBlock";
 import TableBlock from "../../components/blog-post/TableBlock";
 import TocSidebar from "../../components/blog-post/TocSidebar";
+import BackMark from "../../components/shared/BackMark";
 import Footer from "../../components/layout/Footer";
 import Seo from "../../components/seo/Seo";
 import ShareSection from "../../components/shared/ShareSection";
@@ -18,16 +19,8 @@ import { sanitizeBlogHtml } from "../../components/blog-post/utils";
 import OptimizedImage from "../../components/shared/OptimizedImage";
 import "./blog-post.css";
 
-function AuthorAvatar({ author }) {
-  if (author?.avatarUrl) {
-    return (
-      <div className="blogPostAuthorAvatar">
-        <OptimizedImage src={author.avatarUrl} alt={author.name || "Author"} loading="lazy" decoding="async" />
-      </div>
-    );
-  }
-
-  return <div className="blogPostAuthorAvatar">{author?.initials || "BE"}</div>;
+function AuthorMark() {
+  return <div className="blogPostAuthorAvatar" aria-hidden="true">UX</div>;
 }
 
 function TextBlock({ block }) {
@@ -37,6 +30,24 @@ function TextBlock({ block }) {
   if (!sanitizedHtml) return null;
 
   return <div className="blogPostText" dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+}
+
+function accentTitle(html) {
+  const value = String(html || "");
+  if (!value || /<em\b|<i\b/i.test(value)) return value;
+  const skip = new Set(["the", "a", "an", "of", "to", "and", "or", "for", "on", "in", "why", "how", "your"]);
+  const parts = value.split(/(\s+)/);
+  let words = 0;
+  for (let index = 0; index < parts.length; index += 1) {
+    if (!/[A-Za-z]/.test(parts[index])) continue;
+    const bare = parts[index].replace(/<[^>]+>/g, "").replace(/[^A-Za-z]/g, "").toLowerCase();
+    words += 1;
+    if (words > 1 && bare && !skip.has(bare)) {
+      parts[index] = `<em>${parts[index]}</em>`;
+      break;
+    }
+  }
+  return parts.join("");
 }
 
 function InlineHtml({ html, className = "", as: Tag = "span" }) {
@@ -277,19 +288,19 @@ function BlogPostContent({ slug }) {
   const hasContent = Boolean(post?.contentBlocks?.length || post?.sections?.length);
   const relatedPosts = selectRelatedPosts(posts, post?.slug || slug);
   const hasRelatedPosts = relatedPosts.length > 0;
-  const seoTitle = post?.title ? `${post.title} | Design Blog by Bodunde Emmanuel | ${SITE_NAME}` : `Design Blog Post | ${SITE_NAME}`;
-  const seoDescription = post?.excerpt || "A blog post from bndlabs.";
+  const seoTitle = post?.title ? `${post.title} | ${SITE_NAME}` : `Notes | ${SITE_NAME}`;
+  const seoDescription = post?.excerpt || "A note from Bndlabs.";
   const seoKeywords = post
     ? [
         ...BASE_KEYWORDS,
         ...NIGERIA_LOCATION_KEYWORDS,
         post.title,
         post.tag,
-        "design blog",
+        "notes",
         "product design notes",
-        "UI UX design blog Nigeria",
+        "UI UX notes Nigeria",
       ].filter(Boolean)
-    : [...BASE_KEYWORDS, ...NIGERIA_LOCATION_KEYWORDS, "design blog", "product design notes"];
+    : [...BASE_KEYWORDS, ...NIGERIA_LOCATION_KEYWORDS, "notes", "product design notes"];
 
   return (
     <main className="page blogPostPage">
@@ -297,21 +308,19 @@ function BlogPostContent({ slug }) {
         title={seoTitle}
         description={seoDescription}
         keywords={seoKeywords}
-        canonicalPath={`/blog/${slug}`}
+        canonicalPath={`/notes/${slug}`}
         type="article"
         image={post?.thumbnail || post?.image || undefined}
-        imageAlt={post?.title ? `${post.title} blog post preview for ${SITE_NAME}` : `Blog post preview for ${SITE_NAME}`}
+        imageAlt={post?.title ? `${post.title} note preview for ${SITE_NAME}` : `Note preview for ${SITE_NAME}`}
         schema={post ? buildBlogPostSchema(post, siteSettings) : undefined}
       />
 
-      <section className="hero aboutCard" aria-label="Blog post">
+      <section className="hero aboutCard" aria-label="Note">
         <div className="cardScroll" ref={scrollRootRef}>
-          <section className="blogPostSection" id="top" aria-label="Blog post content">
+          <section className="blogPostSection" id="top" aria-label="Note">
             <div className="blogPostInner">
               <div className="blogPostToolbar">
-                <Link className="blogPostBackBtn" to="/blog">
-                  Back to Blog
-                </Link>
+                <BackMark to="/notes" label="Notes" />
               </div>
 
               <div className="blogPostLayout">
@@ -339,11 +348,11 @@ function BlogPostContent({ slug }) {
                       <InlineHtml
                         as="h1"
                         className="blogPostTitle"
-                        html={post.titleHtml || post.title}
+                        html={accentTitle(post.titleHtml || post.title)}
                       />
 
                       <div className="blogPostAuthorRow">
-                        <AuthorAvatar author={post.author} />
+                        <AuthorMark />
                         <div className="blogPostAuthorInfo">
                           <InlineHtml
                             as="p"
@@ -351,7 +360,7 @@ function BlogPostContent({ slug }) {
                             html={post.author?.nameHtml || post.author?.name || "Bodunde Emmanuel"}
                           />
                           <p className="blogPostAuthorDate">
-                            {formatBlogDate(post.date) ? `Posted on ${formatBlogDate(post.date)}` : "Published on BND Labs"}
+                            {formatBlogDate(post.date) ? `Posted on ${formatBlogDate(post.date)}` : "Published on Bndlabs"}
                           </p>
                         </div>
                       </div>
@@ -363,7 +372,7 @@ function BlogPostContent({ slug }) {
 
                       <ShareSection
                         className="blogPostShare"
-                        path={`/blog/${post.slug || slug}`}
+                        path={`/notes/${post.slug || slug}`}
                         shareTitle={seoTitle}
                       />
 
@@ -371,7 +380,7 @@ function BlogPostContent({ slug }) {
                         <section className="blogPostMore" aria-labelledby="blog-post-more-title">
                           <p className="blogPostMoreLabel">Related Posts</p>
                           <h2 className="blogPostMoreTitle" id="blog-post-more-title">
-                            Latest from the blog
+                            More notes
                           </h2>
 
                           <div className="blogPostMoreGrid">
@@ -395,12 +404,8 @@ function BlogPostContent({ slug }) {
 
                   {!post || !hasContent ? (
                     <div className="blogPostEmptyState">
-                      <h1>{isLoading ? "Loading post" : "No content yet"}</h1>
-                      <p>
-                        {isLoading
-                          ? "Fetching the latest blog content from Sanity."
-                          : "No content yet - start adding blocks in your CMS."}
-                      </p>
+                      <h1>{isLoading ? "Loading note" : "This note is not available."}</h1>
+                      <p>{isLoading ? "Loading the note." : "New writing is on the way."}</p>
                     </div>
                   ) : null}
                 </article>

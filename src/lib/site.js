@@ -121,6 +121,21 @@ function uniqueStrings(values) {
     .filter((value, index, items) => items.indexOf(value) === index);
 }
 
+function assetUrl(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value.trim();
+  return String(value?.asset?.url || value?.url || "").trim();
+}
+
+function textSetting(input, key) {
+  const value = input?.[key];
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function recordList(value) {
+  return Array.isArray(value) ? value.filter((item) => item && typeof item === "object") : [];
+}
+
 function normalizeWhatsAppLink(value) {
   const digits = String(value ?? "").replace(/\D+/g, "");
   if (!digits) return "";
@@ -147,6 +162,20 @@ export function buildSiteSettings(value = {}) {
       tiktok: sanitizeExternalUrl(input?.tiktok || defaults?.tiktok),
       whatsapp: normalizeWhatsAppLink(input?.whatsapp_number || defaults?.whatsapp_number),
     },
+    splashMessage: textSetting(input, "splashMessage"),
+    splashImage: assetUrl(input?.splashImage),
+    contactImage: assetUrl(input?.contactImage),
+    intro: textSetting(input, "intro"),
+    aboutIntro: textSetting(input, "aboutIntro"),
+    aboutBiography: textSetting(input, "aboutBiography"),
+    professionalTitles: textSetting(input, "professionalTitles"),
+    heroImages: recordList(input?.heroImages).map(assetUrl).filter(Boolean),
+    profilePhotos: recordList(input?.profilePhotos).map(assetUrl).filter(Boolean),
+    aboutPortrait: assetUrl(input?.aboutPortrait || input?.portrait),
+    experience: recordList(input?.experience),
+    education: recordList(input?.education),
+    tools: recordList(input?.tools),
+    clips: recordList(input?.clips),
   };
 }
 
@@ -450,7 +479,7 @@ export function buildProjectSchema(project, siteData = fallbackSiteSettings) {
 }
 
 export function buildBlogPostSchema(post, siteData = fallbackSiteSettings) {
-  const path = `/blog/${post?.slug || ""}`;
+  const path = `/notes/${post?.slug || ""}`;
   const image = toAbsoluteAssetUrl(post?.thumbnail || post?.image);
 
   return {

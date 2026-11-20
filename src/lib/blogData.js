@@ -475,14 +475,14 @@ export function normalizePostSummary(raw) {
     excerptHtml: firstBlockHtml(excerptContent || excerpt),
     image: sanitizeUrl(thumbnail, { allowRelative: true }),
     thumbnail: sanitizeUrl(thumbnail, { allowRelative: true }),
-    href: slug ? `/blog/${slug}` : "/blog",
+    href: slug ? `/notes/${slug}` : "/notes",
     date: firstString(raw?.date, raw?._createdAt),
     readTime: firstPlainText(raw?.read_time, raw?.readTime, "5 min read"),
     readTimeContent,
     readTimeHtml: firstInlineHtml(readTimeContent || raw?.read_time || raw?.readTime || "5 min read"),
-    tag: firstPlainText(raw?.tag, "Blog"),
+    tag: firstPlainText(raw?.tag, "Note"),
     tagContent,
-    tagHtml: firstInlineHtml(tagContent || raw?.tag || "Blog"),
+    tagHtml: firstInlineHtml(tagContent || raw?.tag || "Note"),
     author,
   };
 }
@@ -524,6 +524,7 @@ export function normalizePost(raw) {
     excerpt,
     contentBlocks,
     headings,
+    sample: Boolean(raw?.sample),
     nextPost,
     createdAt: firstString(raw?._createdAt, raw?.createdAt, raw?.date),
     updatedAt: firstString(raw?._updatedAt, raw?.updatedAt, raw?._createdAt, raw?.date),
@@ -635,6 +636,16 @@ export function getPostBySlug(slug) {
   );
 }
 
+async function withSampleNotes(posts) {
+  if (!import.meta.env.DEV || import.meta.env.VITE_SHOW_SAMPLES !== "true") return posts;
+  const { sampleNotes } = await import("../samples/notes.js");
+  const extras = sampleNotes.map((note) => normalizePost(note)).filter(isDisplayablePost);
+  const real = (Array.isArray(posts) ? posts : []).filter((post) => !post?.sample);
+  const next = sortPostsNewestFirst([...real, ...extras]);
+  cachedPostsSnapshot = next;
+  return next;
+}
+
 export async function loadAllPosts(options = {}) {
   const forceRefresh = options?.force === true;
 
@@ -648,7 +659,7 @@ export async function loadAllPosts(options = {}) {
     });
   }
 
-  return cachedRemotePostsPromise;
+  return withSampleNotes(await cachedRemotePostsPromise);
 }
 
 export async function loadPostBySlug(slug, options = {}) {
