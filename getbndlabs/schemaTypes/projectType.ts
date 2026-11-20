@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {PracticeField} from './practiceField'
 import {
   portableTextToPlainText,
   richInlineField,
@@ -345,10 +346,18 @@ export const embeddedCodeSectionType = defineField({
       name: 'code',
       title: 'Code Snippet',
       type: 'text',
-      rows: 8,
-      description: 'Raw code to display in a styled code block. Leave empty if using an Embed URL.',
+      rows: 12,
+      description: 'Paste the code. It is colored on the project page.',
     }),
-    richInlineField('language', 'Language / Label'),
+    defineField({
+      name: 'codeLanguage',
+      title: 'Language',
+      type: 'string',
+      options: {
+        list: ['JavaScript', 'TypeScript', 'Python', 'HTML', 'CSS', 'JSON', 'Bash'],
+      },
+    }),
+    richInlineField('language', 'Language label'),
     richInlineField('caption', 'Caption'),
   ],
   preview: {
@@ -369,10 +378,76 @@ export const embeddedCodeSectionType = defineField({
    CASE STUDY DOCUMENT TYPE
 ───────────────────────────────────────── */
 
+const CODE = ['software-engineering', 'ai-machine-learning']
+const WRITING = ['graphic-design', 'content-language']
+const VIDEO = ['video-clipping']
+const RESEARCH_PICTURES = ['product-design', 'graphic-design']
+const PAGE_NOTES = ['software-engineering', 'ai-machine-learning', 'graphic-design', 'content-language', 'video-clipping']
+const LINKED = ['product-design', 'software-engineering', 'ai-machine-learning']
+
+type PracticeContext = {document?: {discipline?: string}; parent?: {discipline?: string}}
+
+const practiceOf = ({document, parent}: PracticeContext) =>
+  document?.discipline || parent?.discipline || ''
+
+const showFor = (slugs: string[]) => (context: PracticeContext) => !slugs.includes(practiceOf(context))
+
+const practiceTitles = {
+  researchText: {
+    'product-design': 'Research',
+    'software-engineering': 'Notes',
+    'ai-machine-learning': 'Method',
+    'graphic-design': 'Exploration',
+    'content-language': 'Research',
+    'video-clipping': 'Approach',
+  },
+  wireframeText: {
+    'software-engineering': 'Interface',
+    'ai-machine-learning': 'System',
+    'graphic-design': 'Identity',
+    'content-language': 'Draft',
+    'video-clipping': 'Edit',
+  },
+  prototypeText: {
+    'product-design': 'Results introduction',
+    'software-engineering': 'Results introduction',
+    'ai-machine-learning': 'Results introduction',
+    'graphic-design': 'Results introduction',
+    'content-language': 'Results introduction',
+    'video-clipping': 'Results introduction',
+  },
+  finalImages: {
+    'product-design': 'Final interface',
+    'software-engineering': 'Screens',
+    'ai-machine-learning': 'Output',
+    'graphic-design': 'Final artwork',
+    'content-language': 'Pictures',
+    'video-clipping': 'Stills',
+  },
+  liveUrl: {
+    'product-design': 'Website link',
+    'software-engineering': 'Live site link',
+    'ai-machine-learning': 'Live site link',
+  },
+  writing: {
+    'graphic-design': 'Guidelines',
+    'content-language': 'Writing',
+  },
+  researchImages: {
+    'product-design': 'Research pictures',
+    'graphic-design': 'Exploration pictures',
+  },
+}
+
 export const caseStudyType = defineType({
   name: 'caseStudy',
-  title: 'Case Studies',
+  title: 'Projects',
   type: 'document',
+  groups: [
+    {name: 'basics', title: 'Basics', default: true},
+    {name: 'story', title: 'Story'},
+    {name: 'pictures', title: 'Pictures'},
+  ],
   fields: [
     defineField({
       name: 'title',
@@ -380,6 +455,7 @@ export const caseStudyType = defineType({
       type: 'array',
       of: richTextBlocks,
       validation: (Rule) => Rule.required(),
+      group: 'basics',
     }),
     defineField({
       name: 'slug',
@@ -389,6 +465,7 @@ export const caseStudyType = defineType({
         source: (doc) => portableTextToPlainText(doc?.title),
       },
       validation: (Rule) => Rule.required(),
+      group: 'basics',
     }),
     defineField({
       name: 'brandLogo',
@@ -396,19 +473,44 @@ export const caseStudyType = defineType({
       type: 'image',
       options: {hotspot: true},
       description: 'Logo image only. Do not include brand name text in the artwork.',
+      group: 'pictures',
+      hidden: () => true,
     }),
     defineField({
       name: 'description',
       title: 'Short Intro',
+      description: 'The sentence under the title.',
       type: 'array',
       of: richTextBlocks,
       validation: (Rule) => Rule.required(),
+      group: 'basics',
     }),
-    richInlineField('category', 'Category'),
+    {...richInlineField('category', 'Category'), group: 'basics'},
+    defineField({
+      name: 'discipline',
+      title: 'Practice',
+      type: 'string',
+      description: 'Choose this first. The rest of the form changes to match that page.',
+      options: {
+        list: [
+          {title: 'Product Design & UI/UX', value: 'product-design'},
+          {title: 'Software Engineering', value: 'software-engineering'},
+          {title: 'AI & Machine Learning', value: 'ai-machine-learning'},
+          {title: 'Graphic Design & Branding', value: 'graphic-design'},
+          {title: 'Content & Language', value: 'content-language'},
+          {title: 'Video Clipping & Creative Media', value: 'video-clipping'},
+        ],
+        layout: 'dropdown',
+      },
+      group: 'basics',
+      validation: (Rule) => Rule.required(),
+    }),
     defineField({
       name: 'publishedDate',
-      title: 'Published Date',
+      title: 'Year',
+      description: 'Shown beside Category, Role, and Tools. Only the year is used.',
       type: 'date',
+      group: 'basics',
     }),
     defineField({
       name: 'status',
@@ -422,50 +524,71 @@ export const caseStudyType = defineType({
           {title: 'Concept', value: 'Concept'},
         ],
       },
+      group: 'basics',
     }),
     defineField({
       name: 'liveUrl',
-      title: 'Visit Website URL',
+      title: 'Website link',
+      description: 'The button under the title. Leave it empty if this page has no button.',
       type: 'url',
+      group: 'basics',
+      hidden: showFor(LINKED),
+      components: {field: PracticeField},
+      options: {practiceTitles: practiceTitles.liveUrl},
+    }),
+    defineField({
+      name: 'repositoryUrl',
+      title: 'GitHub link',
+      description: 'The button that says View on GitHub.',
+      type: 'url',
+      group: 'basics',
+      hidden: showFor(CODE),
     }),
     defineField({
       name: 'prototypeUrl',
       title: 'View Prototype URL',
       type: 'url',
+      hidden: () => true,
     }),
     defineField({
       name: 'twitterUrl',
       title: 'View on X URL',
       type: 'url',
+      hidden: () => true,
     }),
     defineField({
       name: 'whatsappNumber',
       title: 'WhatsApp Number',
       type: 'string',
-      description: 'Digits only, including country code. Example: 2348012345678',
+      hidden: () => true,
     }),
     defineField({
       name: 'heroImage',
-      title: 'Hero Image',
+      title: 'Cover',
+      description: 'The large picture under the title.',
       type: 'image',
       options: {hotspot: true},
       validation: (Rule) => Rule.required(),
+      group: 'pictures',
     }),
     defineField({
       name: 'overviewImage',
       title: 'Overview Image',
       type: 'image',
       options: {hotspot: true},
+      group: 'pictures',
+      hidden: () => true,
     }),
-    richTextField('overviewText', 'Overview Text'),
-    richTextField('overviewDescription', 'Overview Description'),
-    mediaArrayField('images', 'Project Images'),
+    {...richTextField('overviewText', 'Overview'), description: 'The first section on the page.', group: 'story'},
+    {...richTextField('overviewDescription', 'Overview Description'), hidden: () => true},
+    {...mediaArrayField('images', 'Project Images'), group: 'pictures', hidden: () => true},
     defineField({
       name: 'sections',
       title: 'Project Sections',
       type: 'array',
-      description:
-        'Flexible storytelling blocks. Add in any order, reorder freely. All sections are deletable.',
+      description: 'Add a block for text, images, video, or code.',
+      group: 'story',
+      hidden: () => true,
       of: [
         imageSectionType,
         storySectionType,
@@ -481,6 +604,7 @@ export const caseStudyType = defineType({
       title: 'Overview',
       type: 'array',
       of: richTextBlocks,
+      hidden: () => true,
     }),
     defineField({
       name: 'stats',
@@ -513,13 +637,15 @@ export const caseStudyType = defineType({
           },
         }),
       ],
+      hidden: () => true,
     }),
-    richInlineListField('role', 'Role', 'roleItem', 'Role Item'),
-    richInlineListField('tools', 'Tools', 'toolItem', 'Tool Item'),
-    richInlineListField('timeline', 'Timeline', 'timelineItem', 'Timeline Item'),
+    {...richInlineListField('role', 'Role', 'roleItem', 'Role Item'), description: 'Shown beside the year.', group: 'basics'},
+    {...richInlineListField('tools', 'Tools', 'toolItem', 'Tool Item'), description: 'Shown beside the year.', group: 'basics'},
+    {...richInlineListField('timeline', 'Timeline', 'timelineItem', 'Timeline Item'), hidden: () => true},
     defineField({
       name: 'problems',
-      title: 'Problems',
+      title: 'Problem',
+      description: 'Each item is one numbered point. The title is the bold line.',
       type: 'array',
       of: [
         defineField({
@@ -549,13 +675,152 @@ export const caseStudyType = defineType({
           },
         }),
       ],
+      group: 'story',
     }),
-    richTextField('researchText', 'Research Text'),
-    imageArrayField('researchImages', 'Research Images'),
-    richTextField('wireframeText', 'Wireframe Text'),
-    imageArrayField('wireframeImages', 'Wireframe Images'),
-    richTextField('prototypeText', 'Prototype Text'),
-    imageArrayField('prototypeImages', 'Prototype Images'),
+    {
+      ...richTextField('researchText', 'Research'),
+      description: 'The paragraph for this section.',
+      group: 'story',
+      components: {field: PracticeField},
+      options: {practiceTitles: practiceTitles.researchText},
+    },
+    {
+      ...imageArrayField('researchImages', 'Research pictures'),
+      description: 'Pictures that sit in that same section.',
+      group: 'pictures',
+      hidden: showFor(RESEARCH_PICTURES),
+      components: {field: PracticeField},
+      options: {practiceTitles: practiceTitles.researchImages},
+    },
+    {
+      ...richTextField('wireframeText', 'Interface'),
+      description: 'The paragraph for this section.',
+      group: 'story',
+      hidden: showFor(PAGE_NOTES),
+      components: {field: PracticeField},
+      options: {practiceTitles: practiceTitles.wireframeText},
+    },
+    {...imageArrayField('wireframeImages', 'Identity pictures'), group: 'pictures', hidden: () => true},
+    defineField({
+      name: 'writing',
+      title: 'Writing',
+      description: 'Each block becomes its own heading on the page. Write the heading, then the paragraph.',
+      group: 'story',
+      hidden: showFor(WRITING),
+      components: {field: PracticeField},
+      options: {practiceTitles: practiceTitles.writing},
+      type: 'array',
+      of: [
+        defineField({
+          name: 'writingItem',
+          title: 'Writing',
+          type: 'object',
+          fields: [
+            defineField({name: 'heading', title: 'Heading', type: 'string'}),
+            defineField({name: 'body', title: 'Paragraph', type: 'text', rows: 8}),
+          ],
+          preview: {
+            select: {title: 'heading'},
+            prepare({title}) {
+              return {title: title || 'Writing'}
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'codeSamples',
+      title: 'Code',
+      description: 'Each block is a heading, a short note, and the code. The code is colored on the page.',
+      group: 'story',
+      hidden: showFor(CODE),
+      type: 'array',
+      of: [
+        defineField({
+          name: 'codeSample',
+          title: 'Code',
+          type: 'object',
+          fields: [
+            defineField({name: 'heading', title: 'Heading', type: 'string'}),
+            defineField({name: 'note', title: 'Note', type: 'text', rows: 3}),
+            defineField({
+              name: 'language',
+              title: 'Language',
+              type: 'string',
+              options: {
+                list: ['JavaScript', 'TypeScript', 'Python', 'HTML', 'CSS', 'JSON', 'Bash'],
+              },
+            }),
+            defineField({name: 'code', title: 'Code', type: 'text', rows: 16}),
+          ],
+          preview: {
+            select: {title: 'heading', subtitle: 'language'},
+            prepare({title, subtitle}) {
+              return {title: title || 'Code', subtitle: subtitle || ''}
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'videos',
+      title: 'Videos',
+      description: 'One film. It is the player on the project page. Paste a YouTube, Shorts, TikTok, Vimeo, X, or MP4 link.',
+      group: 'story',
+      hidden: showFor(VIDEO),
+      type: 'array',
+      of: [
+        defineField({
+          name: 'videoItem',
+          title: 'Video',
+          type: 'object',
+          fields: [
+            defineField({name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required()}),
+            defineField({
+              name: 'hostedUrl',
+              title: 'Video link',
+              description: 'YouTube, YouTube Shorts, TikTok, Vimeo, X, or a direct MP4 or WebM file.',
+              type: 'url',
+            }),
+            defineField({name: 'poster', title: 'Poster', type: 'image', options: {hotspot: true}}),
+            defineField({name: 'credit', title: 'Credit', type: 'string'}),
+            defineField({name: 'duration', title: 'Length', description: 'Shown under the player, for example 0:30.', type: 'string'}),
+            defineField({
+              name: 'orientation',
+              title: 'Shape',
+              description: 'Portrait for a phone video. Landscape for a wide video.',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Landscape', value: 'landscape'},
+                  {title: 'Portrait', value: 'portrait'},
+                ],
+              },
+            }),
+            defineField({name: 'aspectRatio', title: 'Aspect ratio', description: 'Optional. For example 16:9 or 9:16.', type: 'string'}),
+            defineField({name: 'startSeconds', title: 'Start at (seconds)', type: 'number'}),
+            defineField({name: 'endSeconds', title: 'End at (seconds)', type: 'number'}),
+            defineField({name: 'autoplay', title: 'Play when on screen', type: 'boolean', initialValue: true}),
+            defineField({name: 'muted', title: 'Start muted', type: 'boolean', initialValue: true}),
+            defineField({name: 'loop', title: 'Loop', type: 'boolean', initialValue: false}),
+          ],
+          preview: {
+            select: {title: 'title', media: 'poster'},
+            prepare({title, media}) {
+              return {title: title || 'Video', media}
+            },
+          },
+        }),
+      ],
+    }),
+    {
+      ...richTextField('prototypeText', 'Results introduction'),
+      description: 'The paragraph at the start of Results.',
+      group: 'story',
+      components: {field: PracticeField},
+      options: {practiceTitles: practiceTitles.prototypeText},
+    },
+    {...imageArrayField('prototypeImages', 'Prototype Images'), group: 'pictures', hidden: () => true},
     defineField({
       name: 'results',
       title: 'Results',
@@ -588,18 +853,26 @@ export const caseStudyType = defineType({
           },
         }),
       ],
+      group: 'story',
     }),
-    imageArrayField('finalImages', 'Final Images'),
-    richInlineListField('nextSteps', 'Next Steps', 'nextStepItem', 'Next Step'),
-    richInlineListField('tasks', 'Tasks', 'taskItem', 'Task'),
-    richInlineListField('tags', 'Tags', 'tagItem', 'Tag'),
-    richInlineField('client', 'Client'),
-    richInlineField('industry', 'Industry'),
+    {
+      ...imageArrayField('finalImages', 'Final images'),
+      description: 'Extra pictures for this section. The cover is already at the top.',
+      group: 'pictures',
+      components: {field: PracticeField},
+      options: {practiceTitles: practiceTitles.finalImages},
+    },
+    {...richInlineListField('nextSteps', 'Next Steps', 'nextStepItem', 'Next Step'), hidden: () => true},
+    {...richInlineListField('tasks', 'Tasks', 'taskItem', 'Task'), hidden: () => true},
+    {...richInlineListField('tags', 'Tags', 'tagItem', 'Tag'), hidden: () => true},
+    {...richInlineField('client', 'Client'), hidden: () => true},
+    {...richInlineField('industry', 'Industry'), hidden: () => true},
     defineField({
       name: 'date',
       title: 'Legacy Date',
       type: 'datetime',
       description: 'Optional alias kept for imported legacy project data.',
+      hidden: () => true,
     }),
     defineField({
       name: 'liveProjectUrl',
@@ -612,6 +885,7 @@ export const caseStudyType = defineType({
           allowRelative: false,
           scheme: ['https', 'http'],
         }),
+      hidden: () => true,
     }),
   ],
   preview: {

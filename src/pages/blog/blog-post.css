@@ -511,20 +511,20 @@
 
 .blogPostPage .blogPostCodeBlock .kw,
 .blogPostPage .blogPostCodeBlock .ann {
-  color: var(--accent);
+  color: var(--code-keyword);
 }
 
 .blogPostPage .blogPostCodeBlock .fn {
-  color: var(--text);
+  color: var(--accent);
 }
 
 .blogPostPage .blogPostCodeBlock .str {
-  color: var(--text-muted);
+  color: var(--code-string);
 }
 
 .blogPostPage .blogPostCodeBlock .num,
 .blogPostPage .blogPostCodeBlock .cls {
-  color: var(--accent);
+  color: var(--code-number);
 }
 
 .blogPostPage .blogPostCodeBlock .cmt {

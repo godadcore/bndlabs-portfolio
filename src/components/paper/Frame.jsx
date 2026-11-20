@@ -1,11 +1,11 @@
-export default function Frame({ src, alt = "", variant = "hero" }) {
-  if (!src) return null;
+export default function Frame({ src, alt = "", variant = "hero", allowEmpty = false }) {
+  if (!src && !allowEmpty) return null;
   return (
     <figure className={`paperFrame is-${variant}`}>
       <span className="paperStage">
         <span className="paperSlab" aria-hidden="true" />
         <span className="paperMat">
-          <img src={src} alt={alt} />
+          {src ? <img src={src} alt={alt} /> : <span className="paperFill" />}
           <span className="paperWipe" aria-hidden="true" />
         </span>
       </span>

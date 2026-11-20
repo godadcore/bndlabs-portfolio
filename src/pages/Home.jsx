@@ -3,15 +3,30 @@ import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import Seo from "../components/seo/Seo";
 import OptimizedImage from "../components/shared/OptimizedImage";
-import { departmentsWithWork, projectDiscipline } from "../content/departments";
+import { departmentsWithWork, getDepartment, projectDiscipline } from "../content/departments";
 import Frame from "../components/paper/Frame";
+import homePortrait from "../assets/home/portrait.png";
+
 import { displayImage, projectImage } from "../lib/media";
+import { sortProjectsNewestFirst } from "../lib/projectData";
 import { useSiteSettings } from "../providers/siteSettingsContext";
 import { NOTES_LABEL } from "../content/labels";
 import { formatBlogDate, loadAllPosts } from "../lib/blogData";
 import { loadAllProjects } from "../lib/projectData";
 import { SITE_NAME } from "../lib/site";
 import "./home/home-layout.css";
+
+const RECENT_PRACTICES = ["product-design", "software-engineering", "ai-machine-learning"];
+
+function latestFromEachPractice(projects) {
+  const list = Array.isArray(projects) ? projects : [];
+  const picks = RECENT_PRACTICES.map((slug) => {
+    const inPractice = list.filter((project) => projectDiscipline(project) === slug);
+    const real = inPractice.filter((project) => !project.sample);
+    return sortProjectsNewestFirst(real.length ? real : inPractice)[0];
+  }).filter(Boolean);
+  return sortProjectsNewestFirst(picks);
+}
 
 const localHeroFiles = import.meta.glob("../assets/hero/portrait.*", {
   eager: true,
@@ -57,7 +72,7 @@ export default function Home() {
     };
   }, []);
 
-  const selected = projects.filter((project) => !project.sample).slice(0, 3);
+  const selected = latestFromEachPractice(projects);
   const openWork = () => navigate("/work");
 
   return (
@@ -68,7 +83,7 @@ export default function Home() {
         canonicalPath="/"
       />
 
-      <section className={`shell homeHero${heroSrc ? "" : " is-type"}`}>
+      <section className={`shell homeHero has-figure${heroSrc ? "" : " is-type"}`}>
         <div className="homeIntro">
           <h1>
             Bodunde
@@ -95,6 +110,9 @@ export default function Home() {
             <Frame src={heroSrc} alt="Bodunde Emmanuel Olatunde" />
           </div>
         ) : null}
+        <figure className="homeFigure" aria-hidden="true">
+          <img src={homePortrait} alt="" />
+        </figure>
       </section>
 
       <section className="homeShell homeWork" aria-labelledby="selected-title">
@@ -103,7 +121,9 @@ export default function Home() {
           <Link to="/work">Work</Link>
         </div>
         <div className="studyRows">
-          {selected.map((project, index) => (
+          {selected.map((project, index) => {
+            const department = getDepartment(projectDiscipline(project));
+            return (
             <article key={project.slug} className={index % 2 ? "is-flip" : undefined}>
               <Link to={`/work/${project.slug}`}>
                 <figure className="shot">
@@ -112,14 +132,15 @@ export default function Home() {
                   </span>
                 </figure>
                 <div>
-                  <span className="meta categoryTag">0{index + 1} · {plain(project.category) || "Product design"}</span>
+                  <span className="meta categoryTag">{department?.index || `0${index + 1}`} · {plain(project.category) || department?.title}</span>
                   {project.sample ? <span className="sampleTag">SAMPLE</span> : null}
                   <h3>{plain(project.title)}</h3>
                   <p className="clamp">{plain(project.summary || project.description)}</p>
                 </div>
               </Link>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 

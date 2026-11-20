@@ -12,9 +12,9 @@ function plain(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
 }
 
-function ProjectGrid({ projects }) {
+function ProjectGrid({ projects, clips = false }) {
   return (
-    <div className="projectGrid">
+    <div className={`projectGrid${clips ? " is-clips" : ""}`}>
       {projects.map((project) => {
         const image = projectImage(project);
         return (
@@ -148,7 +148,7 @@ export default function DepartmentPage() {
       {state === "error" ? <p>Work could not be loaded.</p> : null}
       {state === "ready" && projects.length ? (
         <section>
-          <ProjectGrid projects={projects} />
+          <ProjectGrid projects={projects} clips={department.slug === "video-clipping"} />
         </section>
       ) : null}
       {state === "ready" && !projects.length ? (

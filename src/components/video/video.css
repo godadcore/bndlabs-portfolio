@@ -1,0 +1,183 @@
+/*
+  Bndlabs video viewport.
+  Map the four aliases below to YOUR token names (the right-hand side).
+  No raw colours, no rounded corners, no divider lines.
+*/
+.vv {
+  --vv-accent: var(--accent);      /* your purple token */
+  --vv-ink: var(--text);           /* your primary text token */
+  --vv-bg: var(--bg);
+  --vv-surface: var(--surface-alt);
+
+  position: relative;
+  width: 100%;
+  max-width: calc(80dvh * var(--vv-w) / var(--vv-h));
+  aspect-ratio: var(--vv-w) / var(--vv-h);
+  margin-inline: 0;
+  background: var(--vv-surface);
+  outline: 2px solid var(--vv-accent);
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.vv.vv--portrait {
+  width: min(100%, calc(80dvh * var(--vv-w) / var(--vv-h)));
+  margin-inline: auto;
+}
+
+.vv:fullscreen {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  aspect-ratio: auto;
+  margin: 0;
+  background: var(--vv-bg);
+}
+
+/* X posts size themselves */
+.vv--x {
+  aspect-ratio: auto;
+  min-height: calc(var(--space-10) * 4);
+  width: min(100%, calc(var(--space-10) * 4.5));
+}
+.vv--x .vv__player { position: relative; inset: auto; height: auto; }
+
+.vv__poster,
+.vv__player,
+.vv__host,
+.vv__player iframe,
+.vv__player video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.vv__poster { object-fit: cover; }
+.vv__player { z-index: 0; }
+.vv__player video { object-fit: contain; background: var(--vv-surface); }
+.vv--own .vv__player iframe,
+.vv--own .vv__player video { pointer-events: none; }
+
+.vv__cover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--vv-surface);
+}
+.vv__shield {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.vv--x .vv__host { position: relative; height: auto; }
+
+/* Buttons */
+.vv__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--pad-xs) var(--pad-sm);
+  background: var(--vv-bg);
+  color: var(--vv-ink);
+  border: 1px solid var(--vv-ink);
+  border-radius: 0;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.vv__btn:hover { background: var(--vv-surface); }
+.vv__btn:focus-visible { outline: 2px solid var(--vv-accent); outline-offset: 2px; }
+
+.vv__play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  padding: var(--pad-sm) var(--pad-lg);
+  min-height: 44px;
+}
+.vv__open { position: absolute; left: var(--space-4); bottom: var(--space-4); z-index: 5; padding: var(--pad-sm) var(--pad-lg); min-height: 44px; }
+
+.vv__controls {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms linear;
+}
+.vv.is-controls .vv__controls,
+.vv:focus-within .vv__controls {
+  opacity: 1;
+}
+.vv__controls .vv__btn { pointer-events: auto; min-height: 44px; }
+
+.vv__mute {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--space-3);
+  padding: var(--pad-sm) var(--pad-md);
+}
+
+.vv__transport { position: absolute; left: var(--space-3); bottom: var(--space-3); display: flex; gap: var(--space-2); }
+.vv__icon-btn { width: 44px; height: 44px; justify-content: center; padding: var(--pad-xs); }
+
+/* Segmented progress bar (straight rectangles) */
+.vv__progress {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  gap: var(--space-1);
+  height: var(--space-1);
+  pointer-events: none;
+}
+.vv__seg { flex: 1; background: color-mix(in srgb, var(--vv-ink) 30%, transparent); overflow: hidden; }
+.vv__seg > span { display: block; height: 100%; background: var(--vv-accent); transform-origin: left; }
+
+/* Loading */
+.vv__loading { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: var(--pad-lg); pointer-events: none; }
+.vv__loading-bar { display: block; width: 40%; height: var(--space-1); background: var(--vv-accent); animation: vv-sweep 1.2s linear infinite; }
+@keyframes vv-sweep { from { transform: translateX(-100%); } to { transform: translateX(150%); } }
+
+/* Error */
+.vv__error {
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--pad-lg);
+  background: var(--vv-bg);
+  color: var(--vv-ink);
+  border: 1px solid var(--vv-ink);
+}
+.vv__error-text { margin: 0; }
+.vv__error-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* Screen-reader only */
+.vv__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vv__controls { transition: none; }
+  .vv__loading-bar { animation: none; width: 100%; }
+}
+
+.labList {
+  display: grid;
+  gap: var(--space-7);
+  margin: var(--space-6) 0 0;
+}
+.labItem { display: grid; gap: var(--space-3); }
+.labMeta { margin: 0; max-width: 68ch; }

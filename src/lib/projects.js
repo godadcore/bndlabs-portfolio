@@ -691,7 +691,7 @@ export function normalizeFlexibleCaseStudySection(section, index, projectTitle) 
         content,
         embedUrl: section?.embedUrl || null,
         code: section?.code || null,
-        language: firstPlainText(section?.language) || null,
+        language: firstString(section?.codeLanguage) || firstPlainText(section?.language) || null,
         caption: firstPlainText(section?.caption),
         captionContent: firstRichTextValue(section?.caption),
       };
@@ -946,29 +946,45 @@ function buildWhatsAppUrl(number, pageUrl = "[page url]") {
   return `https://wa.me/${normalized}?text=${encodeURIComponent(buildBrokenLinkMessage(pageUrl))}`;
 }
 
+function videoIdFromLink(url) {
+  const value = String(url || "");
+  const youtube = value.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube-nocookie\.com\/embed\/)([\w-]+)/);
+  if (youtube) return { provider: "YouTube", id: youtube[1], embed: `https://www.youtube-nocookie.com/embed/${youtube[1]}` };
+  const vimeo = value.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return { provider: "Vimeo", id: vimeo[1], embed: `https://player.vimeo.com/video/${vimeo[1]}` };
+  return null;
+}
+
 function normalizeDemonstrationVideos(value) {
   if (!Array.isArray(value)) return [];
 
   return value
     .map((item) => {
-      const poster = sanitizeMediaUrl(firstString(item?.poster?.src, item?.poster, item?.posterUrl));
-      const hostedUrl = sanitizeExternalUrl(firstString(item?.hostedUrl, item?.url));
-      const embedUrl = sanitizeExternalUrl(firstString(item?.embedUrl));
       const title = firstPlainText(item?.title);
-
+      const posterImage = normalizeSanityImage(item?.poster, title);
+      const poster = posterImage?.src || sanitizeMediaUrl(firstString(typeof item?.poster === "string" ? item.poster : item?.poster?.src, item?.posterUrl));
+      const hostedUrl = sanitizeExternalUrl(firstString(item?.hostedUrl, item?.url));
+      const parsed = videoIdFromLink(hostedUrl);
+      const embedUrl = sanitizeExternalUrl(firstString(item?.embedUrl, parsed?.embed));
       if (!title) return null;
 
       return {
         title,
-        provider: firstString(item?.provider),
+        provider: firstString(item?.provider, parsed?.provider),
         hostedUrl,
         embedUrl,
-        providerVideoId: firstString(item?.providerVideoId, item?.videoId),
+        providerVideoId: firstString(item?.providerVideoId, item?.videoId, parsed?.id),
         poster,
         posterAlt: firstString(item?.posterAlt, item?.poster?.alt, title),
         credit: firstString(item?.credit),
         duration: firstString(item?.duration),
         aspectRatio: firstString(item?.aspectRatio),
+        orientation: firstString(item?.orientation),
+        startSeconds: Number.isFinite(Number(item?.startSeconds)) ? Number(item.startSeconds) : undefined,
+        endSeconds: Number.isFinite(Number(item?.endSeconds)) ? Number(item.endSeconds) : undefined,
+        loop: Boolean(item?.loop),
+        ...(typeof item?.autoplay === "boolean" ? { autoplay: item.autoplay } : {}),
+        ...(typeof item?.muted === "boolean" ? { muted: item.muted } : {}),
         category: firstString(item?.category),
         playback: {
           autoplay: false,
@@ -1176,6 +1192,20 @@ function normalizeModernCaseStudy(raw) {
       prototypeImages,
       results,
       finalImages,
+      writing: toObjectArray(raw?.writing)
+        .map((item) => ({
+          heading: firstString(item?.heading),
+          body: firstString(item?.body),
+        }))
+        .filter((item) => item.heading || item.body),
+      codeSamples: toObjectArray(raw?.codeSamples)
+        .map((item) => ({
+          heading: firstString(item?.heading),
+          note: firstString(item?.note),
+          language: firstString(item?.language),
+          code: typeof item?.code === "string" ? item.code : "",
+        }))
+        .filter((item) => item.code || item.heading),
       liveUrl,
       repositoryUrl,
       liveProjectUrl: sampleOrExternalUrl(raw, firstString(raw?.liveProjectUrl, raw?.liveUrl)),

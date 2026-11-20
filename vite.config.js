@@ -166,9 +166,28 @@ function rejectSampleContent() {
   };
 }
 
+function rejectVideoLab() {
+  return {
+    name: "reject-video-lab",
+    generateBundle(_options, bundle) {
+      const markers = ["/dev/video-lab", "VideoLab"];
+      for (const file of Object.values(bundle)) {
+        const source = file.type === "chunk"
+          ? file.code
+          : typeof file.source === "string"
+            ? file.source
+            : "";
+        if (markers.some((marker) => source.includes(marker)) || file.fileName.includes("VideoLab")) {
+          this.error(`The video lab leaked into the production bundle (${file.fileName}).`);
+        }
+      }
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), decapAdminRewrite(), vercelApiBridge(), rejectSampleContent()],
+  plugins: [react(), decapAdminRewrite(), vercelApiBridge(), rejectSampleContent(), rejectVideoLab()],
   build: {
     rollupOptions: {
       output: {

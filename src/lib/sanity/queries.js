@@ -9,11 +9,13 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
   "slug": slug.current,
   description,
   category,
+  discipline,
   publishedDate,
   date,
   status,
   liveUrl,
   liveProjectUrl,
+  repositoryUrl,
   prototypeUrl,
   twitterUrl,
   whatsappNumber,
@@ -73,6 +75,7 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
     audioUrl,
     embedUrl,
     code,
+    codeLanguage,
     language,
     rows[]{
       cells
@@ -232,6 +235,45 @@ export const publishedCaseStudiesQuery = groq`*[_type == "caseStudy"] | order(co
         dimensions
       }
     }
+  },
+  writing[]{
+    heading,
+    body
+  },
+  codeSamples[]{
+    heading,
+    note,
+    language,
+    code
+  },
+  videos[]{
+    title,
+    hostedUrl,
+    embedUrl,
+    provider,
+    videoProvider,
+    providerVideoId,
+    embedId,
+    credit,
+    duration,
+    aspectRatio,
+    orientation,
+    startSeconds,
+    endSeconds,
+    autoplay,
+    muted,
+    loop,
+    poster{
+      asset->{
+        _ref,
+        url,
+        extension,
+        mimeType,
+        metadata{
+          dimensions
+        }
+      }
+    }
   }
 }`;
 
@@ -324,6 +366,7 @@ export const publishedPostsQuery = groq`*[_type == "post"] | order(coalesce(date
     audioUrl,
     embedUrl,
     code,
+    codeLanguage,
     language,
     rows[]{
       cells

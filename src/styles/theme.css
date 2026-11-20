@@ -40,6 +40,9 @@
   --footer-ink: #f4f1fb;
   --field: var(--surface);
   --placeholder: var(--surface-alt);
+  --code-string: #0b6b32;
+  --code-keyword: #9a4b00;
+  --code-number: #a32020;
 }
 
 [data-theme="dark"] {
@@ -67,6 +70,9 @@
   --footer-ink: #f4f1fb;
   --field: var(--surface);
   --placeholder: var(--surface-alt);
+  --code-string: #7ddea0;
+  --code-keyword: #f0b070;
+  --code-number: #ff8f8f;
 }
 
 html,

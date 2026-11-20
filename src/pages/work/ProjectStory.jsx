@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import BackMark from "../../components/shared/BackMark";
 import ShareSection from "../../components/shared/ShareSection";
 import Footer from "../../components/layout/Footer";
 import Frame from "../../components/paper/Frame";
@@ -7,6 +8,9 @@ import Seo from "../../components/seo/Seo";
 import { getDepartment, projectDiscipline } from "../../content/departments";
 import { displayImage, projectImage } from "../../lib/media";
 import { loadAllProjects, loadProjectBySlug } from "../../lib/projectData";
+import { highlightCodeHtml } from "../../components/blog-post/utils";
+import UniversalVideoViewport from "../../components/video/UniversalVideoViewport";
+import { viewportRecord } from "../../components/video/videoUtils";
 
 function plain(value) {
   if (!value) return "";
@@ -154,29 +158,12 @@ function blockFromSection(section, index) {
   };
 }
 
-function WatchVideo({ record, activeId, onWatch }) {
-  const id = record.providerVideoId;
-  const playing = Boolean(id) && activeId === id;
+function Clip({ record, index, leadRef }) {
   return (
     <figure className="storyClip">
-      {playing ? (
-        <div className="storyPlayer">
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&playsinline=1`}
-            title={record.title}
-            allow="autoplay; fullscreen"
-            allowFullScreen
-          />
-        </div>
-      ) : record.poster ? (
-        <div className="storyPoster">
-          <Frame src={record.poster} alt={record.posterAlt || record.title} variant="cover" />
-          {id ? (
-            <button type="button" className="liquid is-solid" onClick={() => onWatch(id)}>Watch</button>
-          ) : null}
-        </div>
-      ) : null}
+      <UniversalVideoViewport ref={leadRef} video={viewportRecord(record, index)} />
       {record.credit ? <p className="storyCredit">{record.credit}</p> : null}
+      {record.duration ? <p className="storyCredit">{record.duration}</p> : null}
     </figure>
   );
 }
@@ -185,7 +172,7 @@ export default function ProjectStory({ slug }) {
   const [project, setProject] = useState(null);
   const [projects, setProjects] = useState([]);
   const [state, setState] = useState("loading");
-  const [activeVideo, setActiveVideo] = useState("");
+  const leadRef = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -254,9 +241,14 @@ export default function ProjectStory({ slug }) {
     .map((item) => ({ title: realText(item.title), text: realText(item.description) }))
     .filter((item) => item.title || item.text);
   if (problems.length) addBlock({ id: "problem", label: "Problem", items: problems });
+  const productDesign = discipline.slug === "product-design";
   addBlock({ id: "research", label: names.research, text: realText(study.researchText), images: takeShots(study.researchImages), reading: true });
-  addBlock({ id: "wireframes", label: names.wireframes, text: realText(study.wireframeText), images: takeShots(study.wireframeImages) });
-  const screenShots = takeShots(study.prototypeImages);
+  if (!productDesign) {
+    addBlock({ id: "wireframes", label: names.wireframes, text: realText(study.wireframeText), images: takeShots(study.wireframeImages) });
+  }
+  const videos = Array.isArray(study.videos) ? study.videos.filter((item) => item?.title) : [];
+  const videoClip = discipline.slug === "video-clipping";
+  const screenShots = productDesign ? [] : takeShots(study.prototypeImages);
   (Array.isArray(study.sections) ? study.sections : []).forEach((section, index) => {
     const block = blockFromSection(section, index);
     if (!block) return;
@@ -268,6 +260,25 @@ export default function ProjectStory({ slug }) {
     });
     addBlock(block);
   });
+  (Array.isArray(study.writing) ? study.writing : []).forEach((piece, index) => {
+    addBlock({
+      id: `writing-${index + 1}`,
+      label: realText(piece.heading) || "Writing",
+      text: realText(piece.body),
+      reading: true,
+    });
+  });
+  (Array.isArray(study.codeSamples) ? study.codeSamples : []).forEach((sample, index) => {
+    const code = String(sample.code || "").trim();
+    if (!code) return;
+    addBlock({
+      id: `code-${index + 1}`,
+      label: realText(sample.heading) || "Code",
+      text: realText(sample.note),
+      code,
+      language: realText(sample.language),
+    });
+  });
   addBlock({
     id: "final",
     label: names.final,
@@ -278,8 +289,13 @@ export default function ProjectStory({ slug }) {
     .map((item) => ({ title: realText(item.metric), text: realText(item.description) }))
     .filter((item) => item.title || item.text);
   if (results.length || done) addBlock({ id: "results", label: "Results", text: done, items: results, summary: true });
-  const videos = Array.isArray(study.videos) ? study.videos.filter((item) => item?.title) : [];
-  if (videos.length) addBlock({ id: "playback", label: "Playback", videoRecords: videos });
+  if (!videoClip && videos.length) addBlock({ id: "playback", label: "Playback", videoRecords: videos });
+  if (videoClip) {
+    const did = overview || realText(study.researchText);
+    blocks.splice(0, blocks.length);
+    if (did) blocks.push({ id: "did", label: "What I did", text: did, reading: true });
+    if (results.length) blocks.push({ id: "result", label: "Result", items: results, summary: true });
+  }
   const usableLink = (href) => {
     const value = String(href || "");
     return value.startsWith("/demos/") || /^https?:\/\//i.test(value);
@@ -290,14 +306,23 @@ export default function ProjectStory({ slug }) {
     ? (study.prototypeUrl || project.prototypeUrl)
     : "";
   const softwareOrAi = discipline.slug === "software-engineering" || discipline.slug === "ai-machine-learning";
-  const productDesign = discipline.slug === "product-design";
   const buttons = [];
   if (softwareOrAi) {
     if (repositoryHref) buttons.push({ href: repositoryHref, label: "View on GitHub", external: true });
     if (liveHref) buttons.push({ href: liveHref, label: "View live site", external: !liveHref.startsWith("/") });
   } else if (productDesign) {
-    if (prototypeHref) buttons.push({ href: prototypeHref, label: "View prototype", external: true });
     if (liveHref) buttons.push({ href: liveHref, label: "View live site", external: !liveHref.startsWith("/") });
+  } else if (discipline.slug === "video-clipping" && videos.length) {
+    const film = videos[0];
+    const watchHref = film?.originalUrl || film?.hostedUrl || film?.videoUrl || "";
+    if (/^https?:\/\//i.test(String(watchHref))) {
+      buttons.push({
+        href: watchHref,
+        label: "Watch video",
+        external: true,
+        rel: "noopener noreferrer",
+      });
+    }
   } else if (prototypeHref) {
     buttons.push({ href: prototypeHref, label: "View prototype", external: true });
   } else if (liveHref && !liveHref.startsWith("/")) {
@@ -309,21 +334,30 @@ export default function ProjectStory({ slug }) {
     ? inDiscipline[disciplineIndex + 1]
     : null;
   const category = plain(project.category);
-  const facts = [
-    year ? ["Year", year] : null,
-    category ? ["Category", category] : null,
-    role.length ? ["Role", role.join(", ")] : null,
-    tools.length ? ["Tools", tools.join(", ")] : null,
-  ].filter(Boolean);
+  const leadFilm = videos[0];
+  const facts = (videoClip
+    ? [
+        leadFilm?.provider ? ["Platform", plain(leadFilm.provider)] : null,
+        leadFilm?.duration ? ["Duration", plain(leadFilm.duration)] : null,
+        year ? ["Year", year] : null,
+        category ? ["Category", category] : null,
+      ]
+    : [
+        year ? ["Year", year] : null,
+        category ? ["Category", category] : null,
+        role.length ? ["Role", role.join(", ")] : null,
+        tools.length ? ["Tools", tools.join(", ")] : null,
+      ]
+  ).filter(Boolean);
 
   return (
     <main className="bnd story">
       <Seo title={`${plain(project.title)} | bndlabs`} description={summary} canonicalPath={`/work/${project.slug}`} />
       <header className="wrap storyIntro">
-        <Link className="storyCrumb" to={`/work/${discipline.slug}`}>{`← ${discipline.title}`}</Link>
+        <BackMark to={`/work/${discipline.slug}`} label={discipline.title} />
         {project.sample ? <span className="sampleTag">SAMPLE</span> : null}
         <h1>{plain(project.title)}</h1>
-        {blocks.length > 1 ? (
+        {blocks.length > 1 && !videoClip ? (
           <nav className="storyIndex" aria-label="On this project">
             {blocks.map((block) => (
               <a key={block.id} href={`#${block.id}`}>{block.label}</a>
@@ -344,14 +378,20 @@ export default function ProjectStory({ slug }) {
         {buttons.length ? (
           <div className="storyActions">
             {buttons.map((button) => (
-              <a
-                key={button.label}
-                className="liquid is-solid"
-                href={button.href}
-                {...(button.external ? { target: "_blank", rel: "noreferrer" } : {})}
-              >
-                {button.label}
-              </a>
+              button.action ? (
+                <button key={button.label} type="button" className="liquid is-solid" onClick={button.action}>
+                  {button.label}
+                </button>
+              ) : (
+                <a
+                  key={button.label}
+                  className="liquid is-solid"
+                  href={button.href}
+                  {...(button.external ? { target: "_blank", rel: button.rel || "noreferrer" } : {})}
+                >
+                  {button.label}
+                </a>
+              )
             ))}
           </div>
         ) : null}
@@ -360,7 +400,11 @@ export default function ProjectStory({ slug }) {
         ) : null}
       </header>
 
-      {hero ? (
+      {videoClip && videos[0] ? (
+        <div className="wrap storyCover">
+          <Clip record={videos[0]} index={0} leadRef={leadRef} />
+        </div>
+      ) : hero ? (
         <div className="wrap storyCover">
           <Frame src={hero} alt="" variant="cover" />
         </div>
@@ -424,7 +468,7 @@ export default function ProjectStory({ slug }) {
               >
                 Copy
               </button>
-              <pre><code>{block.code}</code></pre>
+              <pre><code dangerouslySetInnerHTML={{ __html: highlightCodeHtml(block.code) }} /></pre>
             </div>
           ) : null}
           {block.video?.kind === "embed" ? (
@@ -439,16 +483,11 @@ export default function ProjectStory({ slug }) {
           ) : null}
           {block.videoRecords?.length ? (
             <>
-              <WatchVideo record={block.videoRecords[0]} activeId={activeVideo} onWatch={setActiveVideo} />
+              <Clip record={block.videoRecords[0]} index={0} leadRef={leadRef} />
               {block.videoRecords.length > 1 ? (
                 <div className="storyClips">
-                  {block.videoRecords.slice(1).map((record) => (
-                    <WatchVideo
-                      key={record.providerVideoId || record.title}
-                      record={record}
-                      activeId={activeVideo}
-                      onWatch={setActiveVideo}
-                    />
+                  {block.videoRecords.slice(1).map((record, index) => (
+                    <Clip key={viewportRecord(record, index + 1).id} record={record} index={index + 1} />
                   ))}
                 </div>
               ) : null}

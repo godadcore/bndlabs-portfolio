@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import ToolIcon from "../components/about/ToolIcon";
 import Footer from "../components/layout/Footer";
+import Frame from "../components/paper/Frame";
 import Seo from "../components/seo/Seo";
 import { PROFILE } from "../content/profile";
 import { displayImage } from "../lib/media";
@@ -17,12 +18,12 @@ export default function About() {
   const intro = settings?.aboutIntro || PROFILE.intro;
   const biography = settings?.aboutBiography || PROFILE.biography;
   const titles = settings?.professionalTitles || PROFILE.titles;
-  const photos = (settings?.profilePhotos?.length ? settings.profilePhotos : PROFILE.photos)
+  const photos = (PROFILE.photos.length ? PROFILE.photos : settings?.profilePhotos || [])
     .map((src) => displayImage(src))
     .filter(Boolean);
   const experience = rows(settings?.experience, PROFILE.experience.map(([dates, place, role]) => ({ dates, place, role })));
   const education = rows(settings?.education, PROFILE.education.map(([dates, place]) => ({ dates, place })));
-  const tools = rows(settings?.tools, PROFILE.tools);
+  const portraits = [photos[0] || "", photos[1] || ""];
 
   return (
     <main className="bnd">
@@ -39,15 +40,17 @@ export default function About() {
       </header>
 
       <div className="pageBody">
-      {photos.length ? (
-        <section className="photoRow" aria-label="Photographs">
-          {photos.slice(0, 2).map((src, index) => (
-            <figure key={src} className="photoSlot">
-              <img src={src} alt={`Photograph ${index + 1}`} />
-            </figure>
-          ))}
-        </section>
-      ) : null}
+      <section className="aboutPortraits" aria-label="Photographs">
+        {portraits.map((src, index) => (
+          <Frame
+            key={index}
+            src={src}
+            allowEmpty
+            alt={src ? `Portrait of ${PROFILE.name}` : ""}
+            variant="portrait"
+          />
+        ))}
+      </section>
 
       <section className="band">
         <h2>Background</h2>
@@ -101,18 +104,21 @@ export default function About() {
 
       <section className="band">
         <h2>Tools</h2>
-        <ul className="toolList">
-          {tools.map((tool) => (
-            <li key={tool.name}>
-              <ToolIcon name={tool.name} />
-              <div>
-                <strong>{tool.name}</strong>
-                {tool.category ? <span>{tool.category}</span> : null}
-                {tool.description ? <p>{tool.description}</p> : null}
-              </div>
-            </li>
+        <div className="toolGroups">
+          {PROFILE.toolGroups.map((group) => (
+            <div className="toolGroup" key={group.title}>
+              <h3>{group.title}</h3>
+              <ul>
+                {group.items.map((name) => (
+                  <li key={name}>
+                    <ToolIcon name={name} />
+                    <strong>{name}</strong>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
         <div className="actions">
           <Link className="liquid" to="/contact">Contact</Link>
           <a className="liquid" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>

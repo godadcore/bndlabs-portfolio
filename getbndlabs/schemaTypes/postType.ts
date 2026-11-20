@@ -34,7 +34,7 @@ const richTitlePreview = (value: unknown, fallback: string) =>
 
 export const postType = defineType({
   name: 'post',
-  title: 'Blog Posts',
+  title: 'Notes',
   type: 'document',
   fields: [
     defineField({

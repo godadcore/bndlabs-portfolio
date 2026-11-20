@@ -1,26 +1,23 @@
-import { createElement, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import BlogCard from "../../components/blog/BlogCard";
 import AudioBlock from "../../components/blog-post/AudioBlock";
 import CalloutBlock from "../../components/blog-post/CalloutBlock";
 import CodeBlock from "../../components/blog-post/CodeBlock";
 import MediaBlock from "../../components/blog-post/MediaBlock";
 import TableBlock from "../../components/blog-post/TableBlock";
-import TocSidebar from "../../components/blog-post/TocSidebar";
+import Frame from "../../components/paper/Frame";
 import BackMark from "../../components/shared/BackMark";
 import Footer from "../../components/layout/Footer";
 import Seo from "../../components/seo/Seo";
 import ShareSection from "../../components/shared/ShareSection";
-import usePullToRefresh from "../../hooks/usePullToRefresh";
 import { formatBlogDate, getInitialPosts, getPostBySlug, loadAllPosts } from "../../lib/blogData";
 import { BASE_KEYWORDS, NIGERIA_LOCATION_KEYWORDS, SITE_NAME, buildBlogPostSchema } from "../../lib/site";
 import { useSiteSettings } from "../../providers/siteSettingsContext.js";
 import { sanitizeBlogHtml } from "../../components/blog-post/utils";
-import OptimizedImage from "../../components/shared/OptimizedImage";
 import "./blog-post.css";
 
-function AuthorMark() {
-  return <div className="blogPostAuthorAvatar" aria-hidden="true">UX</div>;
+function plain(value) {
+  return String(value || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function TextBlock({ block }) {
@@ -31,35 +28,6 @@ function TextBlock({ block }) {
 
   return <div className="blogPostText" dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
 }
-
-function accentTitle(html) {
-  const value = String(html || "");
-  if (!value || /<em\b|<i\b/i.test(value)) return value;
-  const skip = new Set(["the", "a", "an", "of", "to", "and", "or", "for", "on", "in", "why", "how", "your"]);
-  const parts = value.split(/(\s+)/);
-  let words = 0;
-  for (let index = 0; index < parts.length; index += 1) {
-    if (!/[A-Za-z]/.test(parts[index])) continue;
-    const bare = parts[index].replace(/<[^>]+>/g, "").replace(/[^A-Za-z]/g, "").toLowerCase();
-    words += 1;
-    if (words > 1 && bare && !skip.has(bare)) {
-      parts[index] = `<em>${parts[index]}</em>`;
-      break;
-    }
-  }
-  return parts.join("");
-}
-
-function InlineHtml({ html, className = "", as: Tag = "span" }) {
-  const sanitizedHtml = sanitizeBlogHtml(html);
-  if (!sanitizedHtml) return null;
-
-  return createElement(Tag, {
-    className,
-    dangerouslySetInnerHTML: { __html: sanitizedHtml },
-  });
-}
-
 
 function renderFlexibleSection(section, index) {
   if (!section) return null;
@@ -224,10 +192,7 @@ function BlogPostContent({ slug }) {
   const [post, setPost] = useState(() => initialPost);
   const [isLoading, setIsLoading] = useState(() => !initialPost);
   const [activeHeading, setActiveHeading] = useState(() => initialPost?.headings?.[0]?.id || "");
-  const scrollRootRef = useRef(null);
   const siteSettings = useSiteSettings();
-
-  usePullToRefresh(scrollRootRef);
 
   useEffect(() => {
     let isMounted = true;
@@ -258,10 +223,9 @@ function BlogPostContent({ slug }) {
   }, [slug]);
 
   useEffect(() => {
-    const root = scrollRootRef.current;
-    if (!root || !post?.headings?.length) return undefined;
+    if (!post?.headings?.length) return undefined;
 
-    const targets = Array.from(root.querySelectorAll(".blogPostSectionHeading[id]"));
+    const targets = Array.from(document.querySelectorAll(".blogPostSectionHeading[id]"));
     if (!targets.length) return undefined;
 
     const observer = new IntersectionObserver(
@@ -274,7 +238,6 @@ function BlogPostContent({ slug }) {
         setActiveHeading(activeEntry.target.id);
       },
       {
-        root,
         rootMargin: "-18% 0px -62% 0px",
         threshold: [0.15, 0.35, 0.6],
       }
@@ -286,10 +249,26 @@ function BlogPostContent({ slug }) {
   }, [post]);
 
   const hasContent = Boolean(post?.contentBlocks?.length || post?.sections?.length);
-  const relatedPosts = selectRelatedPosts(posts, post?.slug || slug);
-  const hasRelatedPosts = relatedPosts.length > 0;
-  const seoTitle = post?.title ? `${post.title} | ${SITE_NAME}` : `Notes | ${SITE_NAME}`;
-  const seoDescription = post?.excerpt || "A note from Bndlabs.";
+  const nextNote = selectRelatedPosts(posts, post?.slug || slug)[0] || null;
+  const seoTitle = post?.title ? `${plain(post.title)} | ${SITE_NAME}` : `Notes | ${SITE_NAME}`;
+  const seoDescription = plain(post?.excerpt) || "A note from Bndlabs.";
+  const cover = post?.image || post?.thumbnail || "";
+  const dateLabel = formatBlogDate(post?.date);
+  const readLabel = plain(post?.readTime);
+  const categoryLabel = plain(post?.tag);
+  const authorLabel = plain(post?.author?.name) || "Bodunde Emmanuel";
+  const facts = [
+    dateLabel ? ["Date", dateLabel] : null,
+    readLabel ? ["Reading", readLabel] : null,
+    categoryLabel ? ["Category", categoryLabel] : null,
+    authorLabel ? ["Author", authorLabel] : null,
+  ].filter(Boolean);
+  const coverIsFirstImage = Boolean(
+    cover
+    && post?.contentBlocks?.[0]?.type === "image"
+    && post.contentBlocks[0].images?.length === 1
+    && post.contentBlocks[0].images[0]?.url === cover
+  );
   const seoKeywords = post
     ? [
         ...BASE_KEYWORDS,
@@ -303,121 +282,93 @@ function BlogPostContent({ slug }) {
     : [...BASE_KEYWORDS, ...NIGERIA_LOCATION_KEYWORDS, "notes", "product design notes"];
 
   return (
-    <main className="page blogPostPage">
+    <main className="bnd story">
       <Seo
         title={seoTitle}
         description={seoDescription}
         keywords={seoKeywords}
         canonicalPath={`/notes/${slug}`}
         type="article"
-        image={post?.thumbnail || post?.image || undefined}
-        imageAlt={post?.title ? `${post.title} note preview for ${SITE_NAME}` : `Note preview for ${SITE_NAME}`}
+        image={cover || undefined}
+        imageAlt={post?.title ? `${plain(post.title)} note preview for ${SITE_NAME}` : `Note preview for ${SITE_NAME}`}
         schema={post ? buildBlogPostSchema(post, siteSettings) : undefined}
       />
 
-      <section className="hero aboutCard" aria-label="Note">
-        <div className="cardScroll" ref={scrollRootRef}>
-          <section className="blogPostSection" id="top" aria-label="Note">
-            <div className="blogPostInner">
-              <div className="blogPostToolbar">
-                <BackMark to="/notes" label="Notes" />
-              </div>
+      {post && hasContent ? (
+        <>
+          <header className="wrap storyIntro">
+            <BackMark to="/notes" label="Notes" />
+            {post.sample ? <span className="sampleTag">SAMPLE</span> : null}
+            <h1>{plain(post.title)}</h1>
+            {post.headings?.length > 1 ? (
+              <nav className="storyIndex" aria-label="On this note">
+                {post.headings.map((heading) => (
+                  <a
+                    key={heading.id}
+                    href={`#${heading.id}`}
+                    aria-current={activeHeading === heading.id ? "true" : undefined}
+                  >
+                    {heading.text}
+                  </a>
+                ))}
+              </nav>
+            ) : null}
+            {plain(post.excerpt) ? <p className="noteLead">{plain(post.excerpt)}</p> : null}
+            {facts.length ? (
+              <dl className="facts">
+                {facts.map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+          </header>
 
-              <div className="blogPostLayout">
-                <article className="blogPostArticle">
-                  {post && hasContent ? (
-                    <>
-                      <div className="blogPostMeta">
-                        {formatBlogDate(post.date) ? <span>{formatBlogDate(post.date)}</span> : null}
-                        {formatBlogDate(post.date) && post.readTime ? <span className="blogPostMetaDot" /> : null}
-                        {post.readTime ? (
-                          <InlineHtml as="span" html={post.readTimeHtml || post.readTime} />
-                        ) : null}
-                        {post.tag ? (
-                          <>
-                            {(formatBlogDate(post.date) || post.readTime) ? <span className="blogPostMetaDot" /> : null}
-                            <InlineHtml
-                              as="span"
-                              className="blogPostMetaTag"
-                              html={post.tagHtml || post.tag}
-                            />
-                          </>
-                        ) : null}
-                      </div>
-
-                      <InlineHtml
-                        as="h1"
-                        className="blogPostTitle"
-                        html={accentTitle(post.titleHtml || post.title)}
-                      />
-
-                      <div className="blogPostAuthorRow">
-                        <AuthorMark />
-                        <div className="blogPostAuthorInfo">
-                          <InlineHtml
-                            as="p"
-                            className="blogPostAuthorName"
-                            html={post.author?.nameHtml || post.author?.name || "Bodunde Emmanuel"}
-                          />
-                          <p className="blogPostAuthorDate">
-                            {formatBlogDate(post.date) ? `Posted on ${formatBlogDate(post.date)}` : "Published on Bndlabs"}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="blogPostBody">
-                        {post.contentBlocks?.map((block, index) => renderBlock(block, index))}
-                        {post.sections?.map((section, index) => renderFlexibleSection(section, index))}
-                      </div>
-
-                      <ShareSection
-                        className="blogPostShare"
-                        path={`/notes/${post.slug || slug}`}
-                        shareTitle={seoTitle}
-                      />
-
-                      {hasRelatedPosts ? (
-                        <section className="blogPostMore" aria-labelledby="blog-post-more-title">
-                          <p className="blogPostMoreLabel">Related Posts</p>
-                          <h2 className="blogPostMoreTitle" id="blog-post-more-title">
-                            More notes
-                          </h2>
-
-                          <div className="blogPostMoreGrid">
-                            {relatedPosts.map((relatedPost, index) => (
-                              <div
-                                className="blogPostMoreCard"
-                                key={relatedPost.id || relatedPost.slug || index}
-                              >
-                                <BlogCard
-                                  post={relatedPost}
-                                  className="blogCard--related"
-                                  priority={index === 0}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        </section>
-                      ) : null}
-                    </>
-                  ) : null}
-
-                  {!post || !hasContent ? (
-                    <div className="blogPostEmptyState">
-                      <h1>{isLoading ? "Loading note" : "This note is not available."}</h1>
-                      <p>{isLoading ? "Loading the note." : "New writing is on the way."}</p>
-                    </div>
-                  ) : null}
-                </article>
-
-                <TocSidebar headings={post?.headings || []} activeHeading={activeHeading} />
-              </div>
+          {cover ? (
+            <div className="wrap storyCover">
+              <Frame src={cover} alt="" variant="cover" />
             </div>
-          </section>
+          ) : null}
 
-          <Footer />
-        </div>
-      </section>
+          <article className="wrap storyBlock is-reading">
+            <div className="blogPostBody">
+              {post.contentBlocks?.map((block, index) => (
+                coverIsFirstImage && index === 0 ? null : renderBlock(block, index)
+              ))}
+              {post.sections?.map((section, index) => renderFlexibleSection(section, index))}
+            </div>
+          </article>
+
+          <ShareSection
+            className="wrap storyShare"
+            path={`/notes/${post.slug || slug}`}
+            shareTitle={plain(post.title)}
+            iconWeight="regular"
+          />
+
+          {nextNote ? (
+            <section className="wrap storyNext">
+              <h2>Next note</h2>
+              <Link to={`/notes/${nextNote.slug}`}>
+                {(nextNote.image || nextNote.thumbnail) ? (
+                  <Frame src={nextNote.image || nextNote.thumbnail} alt="" variant="next" />
+                ) : null}
+                <strong>{plain(nextNote.title)}</strong>
+              </Link>
+              <Link className="liquid is-solid" to={`/notes/${nextNote.slug}`}>Read note</Link>
+            </section>
+          ) : null}
+        </>
+      ) : (
+        <header className="wrap storyIntro">
+          <BackMark to="/notes" label="Notes" />
+          <h1>{isLoading ? "Loading note" : "This note is not available."}</h1>
+          <p className="noteLead">{isLoading ? "Loading the note." : "New writing is on the way."}</p>
+        </header>
+      )}
+      <Footer />
     </main>
   );
 }

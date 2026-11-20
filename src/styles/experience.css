@@ -72,6 +72,7 @@
   position: fixed;
   z-index: 90;
   inset: 0;
+  height: 100dvh;
   overflow: hidden;
   color: var(--text);
   background: var(--bg) var(--paper-img);
@@ -100,31 +101,39 @@
 }
 
 .splash.is-leaving {
+  transform: translateY(-100%);
+  transition: transform 400ms linear;
+}
+
+.splash.is-reduced.is-leaving {
+  transform: none;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 400ms linear;
 }
 
-.splashPath {
+.splashFrame {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  z-index: 0;
+  inset: var(--space-5);
+  border: 2px dotted var(--accent);
+  border-radius: 0;
+  pointer-events: none;
 }
 
-.splashPath path {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-  stroke-dasharray: 2 12;
-  animation: splashDraw 2.8s linear infinite;
+.splashInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding-block: var(--space-5);
+  box-sizing: border-box;
 }
 
 .splashTop,
 .splashStage,
-.splashPercent,
-.splashEnter {
+.splashProgress {
   position: relative;
   z-index: 1;
 }
@@ -133,34 +142,59 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 28px;
-}
-
-.splashSkip,
-.splashEnter {
-  min-width: 108px;
-  height: 42px;
-  border: 1px solid var(--text);
-  border-radius: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 600 14px/1 "Space Grotesk", sans-serif;
-  cursor: pointer;
+  flex: none;
+  margin: 0;
+  padding: 0;
 }
 
 .splashStage {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 380px);
-  gap: 36px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: var(--space-8);
   align-items: center;
-  width: min(1080px, calc(100% - 56px));
-  margin: 7vh auto 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+}
+
+.splashGreet,
+.splashName {
+  animation: splashFade 300ms linear both;
+}
+
+.splashGreet {
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 0 var(--space-4);
+  padding: var(--pad-xs) var(--pad-sm);
+  border: 1.5px solid var(--text);
+  border-radius: 0;
+  color: var(--text);
+  background: var(--surface);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.splashName {
+  margin: 0 0 var(--space-5);
+  color: var(--text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
 .splashStage h1 {
-  margin: 0;
+  margin: 0 0 var(--space-5);
+  color: var(--text);
   font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(40px, 6vw, 78px);
+  font-size: clamp(40px, 5vw, 72px);
   font-weight: 600;
   letter-spacing: -0.05em;
   line-height: 0.92;
@@ -168,31 +202,127 @@
 
 .splashStage h1 span {
   display: block;
-  animation: lineIn 0.7s ease both;
+  animation: splashRise 400ms linear both;
 }
 
-.splashStage h1 span:nth-child(2) { animation-delay: 0.2s; }
-.splashStage h1 span:nth-child(3) { animation-delay: 0.4s; }
+.splashStage h1 span:nth-child(1) { animation-delay: 200ms; }
+.splashStage h1 span:nth-child(2) { animation-delay: 320ms; }
+.splashStage h1 span:nth-child(3) { animation-delay: 440ms; }
 
-.splashStage figure {
+.splashWelcome {
   margin: 0;
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.5;
 }
 
-.splashStage img {
-  display: block;
+.splashPortrait {
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-5);
+  box-sizing: border-box;
+  animation: splashCardIn 900ms linear 300ms both;
+}
+
+.splash .paperFrame.is-cover,
+.splash .paperFrame.is-cover .paperStage {
   width: 100%;
-  height: auto;
-  border: 1px solid var(--border);
-  animation: splashImage 7s ease-in-out infinite;
 }
 
-.splashPercent,
-.splashEnter {
-  position: absolute;
-  left: 28px;
-  bottom: 24px;
+.splash .paperFrame.is-cover .paperMat img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border: 0;
+  height: auto;
+  max-height: none;
+}
+
+.splash .paperWipe {
+  opacity: 0;
+  animation: none;
+}
+
+.splashProgress {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex: none;
   margin: 0;
-  font: 500 15px/1 "IBM Plex Mono", monospace;
+  padding-top: var(--space-4);
+}
+
+.splashCount {
+  margin: 0;
+  color: var(--text);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.splashMeterBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1 1 auto;
+  max-width: 280px;
+  min-width: 0;
+}
+
+.splashMeter {
+  height: var(--space-2);
+  background: var(--surface-alt);
+  border-radius: 0;
+}
+
+.splashMeter span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 0;
+}
+
+.splashCaption {
+  margin: 0;
+  color: var(--text);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+@media (max-width: 1119px) {
+  .splashFrame {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .splashStage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+    align-content: start;
+  }
+
+  .splashPortrait {
+    width: 70%;
+    margin-inline: auto;
+    padding: var(--space-3);
+  }
+
+  .splash .paperFrame.is-cover .paperMat img {
+    max-height: 18dvh;
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 700px) {
+  .splash .paperFrame.is-cover .paperMat img {
+    max-height: 14dvh;
+  }
 }
 
 .folioGate {
@@ -352,9 +482,16 @@
 
 .noteList a {
   display: grid;
-  grid-template-columns: 150px minmax(0, 1fr) 170px;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
   gap: 8px 24px;
   align-items: start;
+}
+
+.noteList a > .noteTag {
+  width: max-content;
+  max-width: none;
+  justify-self: start;
+  box-sizing: border-box;
 }
 
 .noteList p {
@@ -643,17 +780,19 @@
   color: var(--accent);
 }
 
-@keyframes splashDraw {
-  to { stroke-dashoffset: -280; }
+@keyframes splashFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes lineIn {
-  from { opacity: 0; transform: translateY(18px); }
+@keyframes splashRise {
+  from { opacity: 0; transform: translateY(var(--space-4)); }
   to { opacity: 1; transform: none; }
 }
 
-@keyframes splashImage {
-  50% { transform: translateY(-12px); }
+@keyframes splashCardIn {
+  from { transform: translateX(120%); }
+  to { transform: translateX(0); }
 }
 
 @keyframes gateLine {
@@ -667,7 +806,6 @@
 }
 
 @media (max-width: 900px) {
-  .splashStage,
   .storyReel,
   .deptRow,
   .facts,
@@ -695,7 +833,6 @@
     height: 88px;
   }
 
-  .splashStage,
   .contactLayout,
   .homeClose,
   .noteList a,
@@ -721,9 +858,6 @@
     padding: 0;
   }
 
-  .splashStage {
-    margin-top: 4vh;
-  }
 }
 
 @keyframes heroDraw {
@@ -751,12 +885,21 @@
     animation: none;
   }
 
-  .splashPath path,
+  .splashGreet,
+  .splashName,
   .splashStage h1 span,
-  .splashStage img,
+  .splashPortrait,
+  .splash .paperSlab,
+  .splash .paperMat,
+  .splash .paperMark,
+  .splash .paperWipe,
   .stageLink path,
   .folioLine,
   .folioGate {
     animation: none;
+  }
+
+  .splash .paperWipe {
+    opacity: 0;
   }
 }
