@@ -16,7 +16,6 @@ const NotFound = lazy(() => import("./pages/NotFound.jsx"));
 const ProjectDetails = lazy(() => import("./pages/work/ProjectDetails.jsx"));
 const PortfolioIndex = lazy(() => import("./pages/portfolio/Portfolio.jsx").then((module) => ({ default: module.PortfolioIndex })));
 const DepartmentPage = lazy(() => import("./pages/portfolio/Portfolio.jsx"));
-const DemoPage = import.meta.env.DEV ? lazy(() => import("./pages/demos/DemoPage.jsx")) : null;
 const VideoLab = import.meta.env.DEV ? lazy(() => import("./pages/dev/VideoLab.jsx")) : null;
 
 function scrollToPageTop() {
@@ -118,7 +117,6 @@ function AnimatedRoutes() {
           <Route path="/fieldnotes/:slug" element={<BlogPost />} />
           <Route path="/insights/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
-          {DemoPage ? <Route path="/demos/:slug" element={<DemoPage />} /> : null}
           {VideoLab ? <Route path="/dev/video-lab" element={<VideoLab />} /> : null}
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />

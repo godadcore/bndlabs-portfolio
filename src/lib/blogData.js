@@ -548,6 +548,7 @@ function isDisplayablePost(post) {
     post?.title &&
       post?.slug &&
       post?.id &&
+      !post?.sample &&
       hasPostImage(post) &&
       hasPostExcerpt(post) &&
       hasPostDate(post)
@@ -636,16 +637,6 @@ export function getPostBySlug(slug) {
   );
 }
 
-async function withSampleNotes(posts) {
-  if (!import.meta.env.DEV || import.meta.env.VITE_SHOW_SAMPLES !== "true") return posts;
-  const { sampleNotes } = await import("../samples/notes.js");
-  const extras = sampleNotes.map((note) => normalizePost(note)).filter(isDisplayablePost);
-  const real = (Array.isArray(posts) ? posts : []).filter((post) => !post?.sample);
-  const next = sortPostsNewestFirst([...real, ...extras]);
-  cachedPostsSnapshot = next;
-  return next;
-}
-
 export async function loadAllPosts(options = {}) {
   const forceRefresh = options?.force === true;
 
@@ -659,7 +650,7 @@ export async function loadAllPosts(options = {}) {
     });
   }
 
-  return withSampleNotes(await cachedRemotePostsPromise);
+  return cachedRemotePostsPromise;
 }
 
 export async function loadPostBySlug(slug, options = {}) {

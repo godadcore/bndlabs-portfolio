@@ -24,6 +24,7 @@ function isDisplayableProject(project) {
     project?.title &&
       project?.slug &&
       project?.id &&
+      !project?.sample &&
       isPublishedProject(project) &&
       hasProjectSummary(project) &&
       hasProjectDate(project)
@@ -90,21 +91,11 @@ async function fetchProjectsFromSanity() {
       source: payload?.source || "unknown",
     });
     cachedProjectsSnapshot = [];
-    return appendSamples(cachedProjectsSnapshot);
+    return cachedProjectsSnapshot;
   }
 
   cachedProjectsSnapshot = sortProjectsNewestFirst(normalizedProjects);
-  return appendSamples(cachedProjectsSnapshot);
-}
-
-async function appendSamples(projects) {
-  if (!import.meta.env.DEV || import.meta.env.VITE_SHOW_SAMPLES !== "true") return projects;
-  const { sampleProjects } = await import("../samples/projects.js");
-  const real = (Array.isArray(projects) ? projects : []).filter((project) => !project?.sample);
-  const samples = sampleProjects
-    .map((project) => normalizeProject(project))
-    .filter(isDisplayableProject);
-  return sortProjectsNewestFirst([...real, ...samples]);
+  return cachedProjectsSnapshot;
 }
 
 export function getInitialProjects() {
@@ -120,7 +111,7 @@ export async function loadAllProjects(options = {}) {
         message: error instanceof Error ? error.message : String(error),
       });
       cachedProjectsSnapshot = [];
-      return appendSamples([]);
+      return cachedProjectsSnapshot;
     });
   }
 
