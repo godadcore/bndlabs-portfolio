@@ -66,7 +66,7 @@ export default function About() {
           </article>
           <article>
             <h3>AI</h3>
-            <p>Applied AI work, evaluation and training. Handshake AI, AI Trainer and Evaluation Contributor from September 2025. AfterQuery is part of this work.</p>
+            <p>Applied AI work, evaluation and training. Handshake AI, AI Trainer and Evaluation Contributor, 2025 to present. AfterQuery, 2025 to present.</p>
           </article>
           <article>
             <h3>Creative and content</h3>
