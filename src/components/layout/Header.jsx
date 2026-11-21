@@ -191,6 +191,9 @@ export default function Header() {
           <span />
           <span />
           <span />
+          <span />
+          <span />
+          <span className="navVeil" />
         </div>,
         document.body,
       )}

@@ -216,43 +216,65 @@ header.siteNav .menuToggle:focus-visible {
 .navScrim span:nth-child(1) {
   -webkit-backdrop-filter: blur(0.5px);
   backdrop-filter: blur(0.5px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 46%, rgba(0, 0, 0, 0.82) 62%, rgba(0, 0, 0, 0.5) 74%, rgba(0, 0, 0, 0.24) 84%, rgba(0, 0, 0, 0.08) 91%, transparent 96%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 46%, rgba(0, 0, 0, 0.82) 62%, rgba(0, 0, 0, 0.5) 74%, rgba(0, 0, 0, 0.24) 84%, rgba(0, 0, 0, 0.08) 91%, transparent 96%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.92) 18%, rgba(0, 0, 0, 0.7) 36%, rgba(0, 0, 0, 0.42) 54%, rgba(0, 0, 0, 0.2) 70%, rgba(0, 0, 0, 0.08) 84%, transparent 94%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.92) 18%, rgba(0, 0, 0, 0.7) 36%, rgba(0, 0, 0, 0.42) 54%, rgba(0, 0, 0, 0.2) 70%, rgba(0, 0, 0, 0.08) 84%, transparent 94%, transparent 100%);
 }
 
 .navScrim span:nth-child(2) {
   -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 36%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.46) 62%, rgba(0, 0, 0, 0.2) 72%, rgba(0, 0, 0, 0.06) 80%, transparent 86%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 36%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.46) 62%, rgba(0, 0, 0, 0.2) 72%, rgba(0, 0, 0, 0.06) 80%, transparent 86%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.88) 16%, rgba(0, 0, 0, 0.62) 32%, rgba(0, 0, 0, 0.34) 48%, rgba(0, 0, 0, 0.14) 64%, rgba(0, 0, 0, 0.04) 78%, transparent 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.88) 16%, rgba(0, 0, 0, 0.62) 32%, rgba(0, 0, 0, 0.34) 48%, rgba(0, 0, 0, 0.14) 64%, rgba(0, 0, 0, 0.04) 78%, transparent 88%, transparent 100%);
 }
 
 .navScrim span:nth-child(3) {
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.78) 40%, rgba(0, 0, 0, 0.42) 50%, rgba(0, 0, 0, 0.16) 60%, transparent 70%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.78) 40%, rgba(0, 0, 0, 0.42) 50%, rgba(0, 0, 0, 0.16) 60%, transparent 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.84) 14%, rgba(0, 0, 0, 0.55) 28%, rgba(0, 0, 0, 0.28) 42%, rgba(0, 0, 0, 0.1) 56%, transparent 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.84) 14%, rgba(0, 0, 0, 0.55) 28%, rgba(0, 0, 0, 0.28) 42%, rgba(0, 0, 0, 0.1) 56%, transparent 70%, transparent 100%);
 }
 
 .navScrim span:nth-child(4) {
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 18%, rgba(0, 0, 0, 0.74) 28%, rgba(0, 0, 0, 0.36) 38%, rgba(0, 0, 0, 0.12) 48%, transparent 58%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 18%, rgba(0, 0, 0, 0.74) 28%, rgba(0, 0, 0, 0.36) 38%, rgba(0, 0, 0, 0.12) 48%, transparent 58%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.8) 12%, rgba(0, 0, 0, 0.48) 24%, rgba(0, 0, 0, 0.22) 36%, rgba(0, 0, 0, 0.08) 48%, transparent 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.8) 12%, rgba(0, 0, 0, 0.48) 24%, rgba(0, 0, 0, 0.22) 36%, rgba(0, 0, 0, 0.08) 48%, transparent 60%, transparent 100%);
 }
 
 .navScrim span:nth-child(5) {
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 10%, rgba(0, 0, 0, 0.7) 18%, rgba(0, 0, 0, 0.32) 28%, rgba(0, 0, 0, 0.1) 36%, transparent 44%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 10%, rgba(0, 0, 0, 0.7) 18%, rgba(0, 0, 0, 0.32) 28%, rgba(0, 0, 0, 0.1) 36%, transparent 44%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.76) 10%, rgba(0, 0, 0, 0.42) 20%, rgba(0, 0, 0, 0.18) 32%, rgba(0, 0, 0, 0.06) 42%, transparent 52%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.76) 10%, rgba(0, 0, 0, 0.42) 20%, rgba(0, 0, 0, 0.18) 32%, rgba(0, 0, 0, 0.06) 42%, transparent 52%, transparent 100%);
 }
 
 .navScrim span:nth-child(6) {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 6%, rgba(0, 0, 0, 0.7) 14%, rgba(0, 0, 0, 0.38) 24%, rgba(0, 0, 0, 0.16) 34%, rgba(0, 0, 0, 0.05) 44%, transparent 54%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 6%, rgba(0, 0, 0, 0.7) 14%, rgba(0, 0, 0, 0.38) 24%, rgba(0, 0, 0, 0.16) 34%, rgba(0, 0, 0, 0.05) 44%, transparent 54%, transparent 100%);
+}
+
+.navScrim span:nth-child(7) {
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 4%, rgba(0, 0, 0, 0.66) 12%, rgba(0, 0, 0, 0.28) 20%, rgba(0, 0, 0, 0.08) 26%, transparent 32%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 4%, rgba(0, 0, 0, 0.66) 12%, rgba(0, 0, 0, 0.28) 20%, rgba(0, 0, 0, 0.08) 26%, transparent 32%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 8%, rgba(0, 0, 0, 0.62) 16%, rgba(0, 0, 0, 0.32) 26%, rgba(0, 0, 0, 0.12) 36%, rgba(0, 0, 0, 0.04) 46%, transparent 56%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 8%, rgba(0, 0, 0, 0.62) 16%, rgba(0, 0, 0, 0.32) 26%, rgba(0, 0, 0, 0.12) 36%, rgba(0, 0, 0, 0.04) 46%, transparent 56%, transparent 100%);
+}
+
+.navScrim span:nth-child(8) {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 10%, rgba(0, 0, 0, 0.55) 18%, rgba(0, 0, 0, 0.28) 28%, rgba(0, 0, 0, 0.12) 38%, rgba(0, 0, 0, 0.04) 48%, transparent 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 10%, rgba(0, 0, 0, 0.55) 18%, rgba(0, 0, 0, 0.28) 28%, rgba(0, 0, 0, 0.12) 38%, rgba(0, 0, 0, 0.04) 48%, transparent 58%, transparent 100%);
+}
+
+.navScrim .navVeil {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 50%, transparent) 0%, color-mix(in srgb, var(--bg) 28%, transparent) 22%, color-mix(in srgb, var(--bg) 12%, transparent) 46%, color-mix(in srgb, var(--bg) 4%, transparent) 68%, transparent 86%, transparent 100%);
 }
 
 .navBackdrop {
