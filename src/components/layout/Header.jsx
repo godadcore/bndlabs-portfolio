@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   BehanceLogo,
   GithubLogo,
@@ -182,10 +183,17 @@ export default function Header() {
       className={`navDock${bar.condensed ? " is-condensed" : ""}`}
       style={{ "--nav-top": `${bar.top + bar.height}px`, "--bar-width": `${bar.width}px` }}
     >
-      <div className="navScrim" aria-hidden="true">
-        <span />
-        <span />
-      </div>
+      {createPortal(
+        <div className="navScrim" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>,
+        document.body,
+      )}
       <button
         type="button"
         className={`navBackdrop${open ? " is-open" : ""}`}

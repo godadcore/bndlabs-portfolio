@@ -78,6 +78,9 @@ body::after {
 .siteShell {
   display: flex;
   flex-direction: column;
+  flex: 1 0 auto;
+  width: 100%;
+  min-height: 100vh;
   min-height: 100dvh;
 }
 
@@ -99,7 +102,8 @@ body::after {
 }
 
 main.bnd {
-  min-height: 0;
+  flex: 1 0 auto;
+  min-height: auto;
 }
 
 main.bnd > .close,
@@ -186,34 +190,69 @@ header.siteNav .menuToggle:focus-visible {
   color: var(--bg);
 }
 
+:root {
+  --header-blur-extra: 104px;
+  --blur-height: calc(72px + var(--header-blur-extra));
+}
+
 .navScrim {
   position: fixed;
   z-index: 65;
   top: 0;
   right: 0;
   left: 0;
-  height: calc(var(--nav-top, 92px) + 72px);
+  height: calc(var(--blur-height) + env(safe-area-inset-top, 0px));
   pointer-events: none;
+  background: none;
 }
 
 .navScrim span {
   position: absolute;
   inset: 0;
+  background: none;
+  transform: translateZ(0);
 }
 
-.navScrim span:first-child {
-  backdrop-filter: blur(4px);
+.navScrim span:nth-child(1) {
+  -webkit-backdrop-filter: blur(0.5px);
+  backdrop-filter: blur(0.5px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 46%, rgba(0, 0, 0, 0.82) 62%, rgba(0, 0, 0, 0.5) 74%, rgba(0, 0, 0, 0.24) 84%, rgba(0, 0, 0, 0.08) 91%, transparent 96%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 46%, rgba(0, 0, 0, 0.82) 62%, rgba(0, 0, 0, 0.5) 74%, rgba(0, 0, 0, 0.24) 84%, rgba(0, 0, 0, 0.08) 91%, transparent 96%, transparent 100%);
+}
+
+.navScrim span:nth-child(2) {
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 36%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.46) 62%, rgba(0, 0, 0, 0.2) 72%, rgba(0, 0, 0, 0.06) 80%, transparent 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 36%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.46) 62%, rgba(0, 0, 0, 0.2) 72%, rgba(0, 0, 0, 0.06) 80%, transparent 86%, transparent 100%);
+}
+
+.navScrim span:nth-child(3) {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.78) 40%, rgba(0, 0, 0, 0.42) 50%, rgba(0, 0, 0, 0.16) 60%, transparent 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 28%, rgba(0, 0, 0, 0.78) 40%, rgba(0, 0, 0, 0.42) 50%, rgba(0, 0, 0, 0.16) 60%, transparent 70%, transparent 100%);
+}
+
+.navScrim span:nth-child(4) {
   -webkit-backdrop-filter: blur(4px);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 100%);
+  backdrop-filter: blur(4px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 18%, rgba(0, 0, 0, 0.74) 28%, rgba(0, 0, 0, 0.36) 38%, rgba(0, 0, 0, 0.12) 48%, transparent 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 18%, rgba(0, 0, 0, 0.74) 28%, rgba(0, 0, 0, 0.36) 38%, rgba(0, 0, 0, 0.12) 48%, transparent 58%, transparent 100%);
 }
 
-.navScrim span:last-child {
-  backdrop-filter: blur(8px);
+.navScrim span:nth-child(5) {
   -webkit-backdrop-filter: blur(8px);
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 22%, transparent), transparent 72%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 22%, transparent 64%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 22%, transparent 64%);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 10%, rgba(0, 0, 0, 0.7) 18%, rgba(0, 0, 0, 0.32) 28%, rgba(0, 0, 0, 0.1) 36%, transparent 44%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 10%, rgba(0, 0, 0, 0.7) 18%, rgba(0, 0, 0, 0.32) 28%, rgba(0, 0, 0, 0.1) 36%, transparent 44%, transparent 100%);
+}
+
+.navScrim span:nth-child(6) {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 4%, rgba(0, 0, 0, 0.66) 12%, rgba(0, 0, 0, 0.28) 20%, rgba(0, 0, 0, 0.08) 26%, transparent 32%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 4%, rgba(0, 0, 0, 0.66) 12%, rgba(0, 0, 0, 0.28) 20%, rgba(0, 0, 0, 0.08) 26%, transparent 32%, transparent 100%);
 }
 
 .navBackdrop {
@@ -559,7 +598,8 @@ header.siteNav .menuToggle:focus-visible {
 }
 
 .close {
-  margin-top: 0;
+  position: relative;
+  margin-top: auto;
   padding: var(--space-7) 0 calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
   clip-path: none;
 }
@@ -2264,30 +2304,23 @@ main.bnd:has(.pageIntro) {
   }
 }
 
-/* The canvas behind the page uses the footer colour, so a pull past the footer does not show the page colour. */
 html:has(.bnd),
 html:has(.bnd) body,
 html:has(.bnd) #root {
   height: auto;
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   overflow: visible;
-  overscroll-behavior-y: none;
+}
+
+html:has(.bnd) #root {
+  display: flex;
+  flex-direction: column;
 }
 
 html:has(.bnd) {
-  background-color: var(--footer);
-}
-
-html:has(.bnd)::before {
-  content: "";
-  position: fixed;
-  z-index: 0;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 50lvh;
-  background-color: var(--bg);
-  pointer-events: none;
+  min-height: 100%;
+  background: linear-gradient(to bottom, var(--bg) 50%, var(--footer) 50%);
 }
 
 html:has(.bnd) body {
