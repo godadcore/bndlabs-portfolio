@@ -3,8 +3,8 @@
   <head>
     <script>
       try {
-        var savedTheme = localStorage.getItem("bndlabs-theme");
-        document.documentElement.dataset.theme = savedTheme === "dark" ? "dark" : "light";
+        var theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = theme;
       } catch (error) {
         document.documentElement.dataset.theme = "light";
       }
@@ -20,7 +20,7 @@
     <link rel="icon" type="image/png" href="/apple-touch-icon.png?v=7" sizes="180x180" />
     <link rel="shortcut icon" href="/favicon.svg?v=7" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=7" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0E1118" />

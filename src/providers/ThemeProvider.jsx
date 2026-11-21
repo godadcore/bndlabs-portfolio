@@ -8,26 +8,36 @@ function systemTheme() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function storedChoice() {
-  try {
-    const value = localStorage.getItem(CHOICE_KEY);
-    return value === "dark" || value === "light" ? value : "";
-  } catch {
-    return "";
-  }
-}
-
 export function ThemeProvider({ children }) {
-  const [choice, setChoice] = useState(storedChoice);
+  const [choice, setChoice] = useState("");
   const [system, setSystem] = useState(systemTheme);
   const theme = choice || system;
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = () => setSystem(media.matches ? "dark" : "light");
-    apply();
-    media.addEventListener("change", apply);
-    return () => media.removeEventListener("change", apply);
+    const applySystem = () => setSystem(media.matches ? "dark" : "light");
+    const followSystem = () => {
+      applySystem();
+      setChoice("");
+      try {
+        localStorage.removeItem(CHOICE_KEY);
+      } catch {
+        /* storage can be blocked */
+      }
+    };
+    applySystem();
+    try {
+      localStorage.removeItem(CHOICE_KEY);
+      localStorage.removeItem("bndlabs-theme");
+    } catch {
+      /* storage can be blocked */
+    }
+    if (media.addEventListener) media.addEventListener("change", followSystem);
+    else media.addListener(followSystem);
+    return () => {
+      if (media.removeEventListener) media.removeEventListener("change", followSystem);
+      else media.removeListener(followSystem);
+    };
   }, []);
 
   useEffect(() => {
@@ -38,7 +48,8 @@ export function ThemeProvider({ children }) {
     const value = next === "dark" ? "dark" : "light";
     setChoice(value);
     try {
-      localStorage.setItem(CHOICE_KEY, value);
+      localStorage.removeItem(CHOICE_KEY);
+      localStorage.removeItem("bndlabs-theme");
     } catch {
       /* storage can be blocked */
     }
