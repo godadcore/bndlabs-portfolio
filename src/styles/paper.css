@@ -87,6 +87,7 @@ body::after {
   flex: 1 0 auto;
   width: 100%;
   min-width: 0;
+  overflow-x: clip;
 }
 
 .pageSlot > main {
@@ -559,7 +560,7 @@ header.siteNav .menuToggle:focus-visible {
 
 .close {
   margin-top: 0;
-  padding: var(--space-7) 0 var(--space-6);
+  padding: var(--space-7) 0 calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
   clip-path: none;
 }
 
@@ -923,7 +924,7 @@ header.siteNav .menuToggle:focus-visible {
 @media (max-width: 767px) {
   .blogPostPage .aboutHeroShell,
   .blogPostPage .blogPostSection {
-    padding-top: calc(77px + var(--space-6) + var(--space-2));
+    padding-top: calc(77px + var(--space-6) + var(--space-2) + env(safe-area-inset-top, 0px));
   }
 }
 
@@ -1641,7 +1642,7 @@ header.siteNav .menuToggle:focus-visible {
   }
 
   .close {
-    padding: var(--space-5) 0 var(--space-4);
+    padding: var(--space-5) 0 calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   }
 
   .close .closeInner {
@@ -1883,7 +1884,7 @@ main.bnd:has(.pageIntro) {
   }
 
   main.bnd:has(.pageIntro) {
-    padding-top: calc(77px + var(--space-6) + var(--space-2));
+    padding-top: calc(77px + var(--space-6) + var(--space-2) + env(safe-area-inset-top, 0px));
   }
 
   .pageBody {
@@ -2260,5 +2261,92 @@ main.bnd:has(.pageIntro) {
 
   .aboutPortraits .paperFrame:nth-child(2) {
     margin-top: var(--space-5);
+  }
+}
+
+/* iOS Safari ignores backdrop-filter inside an overflow container, and a mask
+   makes the blur fade out. The viewport itself scrolls, and the glass sits on
+   a sibling of the transformed header so the logo stays sharp. */
+html:has(.bnd),
+html:has(.bnd) body,
+html:has(.bnd) #root {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+  overscroll-behavior-y: none;
+}
+
+html:has(.bnd) {
+  background-color: var(--footer);
+}
+
+html:has(.bnd)::before {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 50lvh;
+  background-color: var(--bg);
+  pointer-events: none;
+}
+
+html:has(.bnd) body {
+  position: relative;
+  z-index: 1;
+  background-color: var(--bg);
+}
+
+@media (max-width: 640px) {
+  .bnd {
+    padding-top: calc(105px + env(safe-area-inset-top, 0px));
+  }
+}
+
+@media (max-width: 767px) {
+  header.siteNav {
+    margin-top: env(safe-area-inset-top, 0px);
+  }
+
+  header.siteNav,
+  header.siteNav.is-condensed,
+  [data-theme="dark"] header.siteNav,
+  [data-theme="dark"] header.siteNav.is-condensed {
+    background-color: transparent;
+    background-image: none;
+  }
+
+  .navScrim {
+    height: calc(var(--nav-top, 77px) + env(safe-area-inset-top, 0px) + 8px);
+  }
+
+  .navScrim span:first-child {
+    background: color-mix(in srgb, var(--bg) 58%, transparent);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .navScrim span:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .navScrim span:first-child {
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  @media (max-width: 767px) {
+    .navScrim span:first-child {
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+    }
   }
 }
