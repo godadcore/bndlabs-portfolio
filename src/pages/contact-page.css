@@ -26,6 +26,14 @@
   background: var(--surface);
 }
 
+.contactPage .formTrap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .contactPage .formGrid {
   gap: 18px;
 }
