@@ -1,71 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://getbndlabs.com/</loc>
-    <lastmod>2026-11-20T11:13:35.521Z</lastmod>
+    <loc>https://www.bndlabs.tech/</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/about</loc>
-    <lastmod>2026-11-20T11:13:35.521Z</lastmod>
+    <loc>https://www.bndlabs.tech/about</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/blog</loc>
-    <lastmod>2026-11-20T11:13:35.521Z</lastmod>
+    <loc>https://www.bndlabs.tech/notes</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work</loc>
-    <lastmod>2026-11-20T11:13:35.521Z</lastmod>
+    <loc>https://www.bndlabs.tech/work</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/contact</loc>
-    <lastmod>2026-11-20T11:13:35.521Z</lastmod>
+    <loc>https://www.bndlabs.tech/contact</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/bndlabs-football-ecommerce-redesign</loc>
+    <loc>https://www.bndlabs.tech/work/product-design</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/software-engineering</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/ai-machine-learning</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/graphic-design</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/content-language</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/video-clipping</loc>
+    <lastmod>2026-11-26T18:02:23.198Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/bndlabs-football-ecommerce-redesign</loc>
     <lastmod>2026-08-08T19:11:49.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/camera-store</loc>
+    <loc>https://www.bndlabs.tech/work/camera-store</loc>
     <lastmod>2026-08-13T19:56:24.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/hopebridge</loc>
+    <loc>https://www.bndlabs.tech/work/counter-notes-manager</loc>
+    <lastmod>2026-11-23T14:48:13.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/enrollaa-internship</loc>
+    <lastmod>2026-11-23T17:16:13.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/enrollaa-waitlist</loc>
+    <lastmod>2026-11-24T21:41:15.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://www.bndlabs.tech/work/hopebridge</loc>
     <lastmod>2026-04-01T12:44:21.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/ile-chop-food-subscription-waitlist-landing-page</loc>
+    <loc>https://www.bndlabs.tech/work/ile-chop-food-subscription-waitlist-landing-page</loc>
     <lastmod>2026-08-13T19:59:21.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/improving-chowdeck-s-pay-for-me-flow-with-payment-codes</loc>
+    <loc>https://www.bndlabs.tech/work/improving-chowdeck-s-pay-for-me-flow-with-payment-codes</loc>
     <lastmod>2026-05-20T23:16:26.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/novavoyage</loc>
+    <loc>https://www.bndlabs.tech/work/novavoyage</loc>
     <lastmod>2026-03-31T17:16:36.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/pawmart</loc>
+    <loc>https://www.bndlabs.tech/work/pawmart</loc>
     <lastmod>2026-04-01T11:54:50.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/phantom-wallet-1-1-ui-redesign</loc>
+    <loc>https://www.bndlabs.tech/work/phantom-wallet-1-1-ui-redesign</loc>
     <lastmod>2026-08-08T17:11:35.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/work/shashabank</loc>
+    <loc>https://www.bndlabs.tech/work/shashabank</loc>
     <lastmod>2026-03-31T14:51:42.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/blog/design-engineers-ux-design-s-demise-forget-your-lovable-products</loc>
+    <loc>https://www.bndlabs.tech/notes/design-engineers-ux-design-s-demise-forget-your-lovable-products</loc>
     <lastmod>2026-03-31T14:59:23.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/blog/the-ground-is-shaking-why-designers-must-flip-the-script-on-ai</loc>
+    <loc>https://www.bndlabs.tech/notes/the-ground-is-shaking-why-designers-must-flip-the-script-on-ai</loc>
     <lastmod>2026-03-31T17:16:59.000Z</lastmod>
   </url>
   <url>
-    <loc>https://getbndlabs.com/blog/why-chatgpt-style-answers-are-the-future-of-site-search-and-how-to-add-it-to-your-website</loc>
+    <loc>https://www.bndlabs.tech/notes/why-chatgpt-style-answers-are-the-future-of-site-search-and-how-to-add-it-to-your-website</loc>
     <lastmod>2026-04-01T11:48:24.000Z</lastmod>
   </url>
 </urlset>

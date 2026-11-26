@@ -1,10 +1,80 @@
 import siteSettings from "../content/site/settings.json" with { type: "json" };
 import { sanitizeExternalUrl } from "./urlSecurity.js";
 
-export const SITE_URL = "https://getbndlabs.com";
-export const SITE_NAME = "bndlabs";
+export const SITE_URL = "https://www.bndlabs.tech";
+const OFFICIAL_CONTACT_EMAIL = "hello@bndlabs.tech";
+
+function officialContactEmail(value) {
+  const email = String(value ?? "").trim();
+  if (!email || /@getbndlabs\.com$/i.test(email)) return OFFICIAL_CONTACT_EMAIL;
+  return email;
+}
+
+function rewriteOwnedHost(value) {
+  try {
+    const parsed = new URL(value);
+    const host = parsed.hostname.toLowerCase();
+    if (
+      host === "bndlabs.tech" ||
+      host === "www.bndlabs.tech" ||
+      host === "getbndlabs.com" ||
+      host === "www.getbndlabs.com"
+    ) {
+      parsed.protocol = "https:";
+      parsed.hostname = "www.bndlabs.tech";
+      return parsed.toString();
+    }
+  } catch {
+    return value;
+  }
+
+  return value;
+}
+export const SITE_NAME = "Bndlabs";
 export const PERSON_NAME = "Bodunde Emmanuel";
-export const PERSON_TITLE = "UI/UX Designer, Product Designer and Frontend Developer";
+export const PERSON_TITLE = "Product Designer & Full-Stack Software Engineer";
+
+export const PAGE_COPY = {
+  home: {
+    title: `Bodunde Emmanuel | ${PERSON_TITLE} | ${SITE_NAME}`,
+    description:
+      "Portfolio of Bodunde Emmanuel, a product designer and full-stack software engineer at Bndlabs in Lagos, Nigeria. Product design, UI/UX, software, and AI for clients in Nigeria and internationally.",
+  },
+  about: {
+    title: `About Bodunde Emmanuel | ${PERSON_TITLE} | ${SITE_NAME}`,
+    description:
+      "Bodunde Emmanuel leads Bndlabs from Lagos, Nigeria, designing products and building full-stack software, with UI/UX and AI work for Nigerian and international clients.",
+  },
+  work: {
+    title: `Selected Work | Product Design, Software and AI | ${SITE_NAME}`,
+    description:
+      "Project work by Bodunde Emmanuel of Bndlabs across product design and UI/UX, software engineering, AI, branding, content, and video.",
+  },
+  notes: {
+    title: `Notes | Design, Software and AI | ${SITE_NAME}`,
+    description: "Notes from Bodunde Emmanuel of Bndlabs on product design, software engineering, and AI.",
+  },
+  contact: {
+    title: `Contact ${SITE_NAME} | Product Design and Software Engineering`,
+    description: "Contact Bodunde Emmanuel at Bndlabs about product design, UI/UX, full-stack software, and AI projects.",
+  },
+};
+
+export function projectPageTitle(title, category = "") {
+  const name = String(title || "Project").replace(/\s+/g, " ").trim() || "Project";
+  const group = String(category || "").replace(/\s+/g, " ").trim();
+  return group ? `${name} | ${group} | ${SITE_NAME}` : `${name} | ${SITE_NAME}`;
+}
+
+export function imageMimeType(url) {
+  const path = String(url || "").split("?")[0].split("#")[0].toLowerCase();
+  if (path.endsWith(".png")) return "image/png";
+  if (path.endsWith(".webp")) return "image/webp";
+  if (path.endsWith(".gif")) return "image/gif";
+  if (path.endsWith(".jpg") || path.endsWith(".jpeg")) return "image/jpeg";
+  if (path.endsWith(".avif")) return "image/avif";
+  return "";
+}
 export const LOCATION_LABEL = "Lagos, Nigeria";
 export const DEFAULT_ROBOTS = "index, follow, max-image-preview:large";
 export const DEFAULT_OG_IMAGE_PATH = "/og-image.png";
@@ -152,7 +222,7 @@ export function buildSiteSettings(value = {}) {
   const input = value && typeof value === "object" ? value : {};
 
   return {
-    contactEmail: String(input?.email || defaults?.email || "hello@getbndlabs.com").trim(),
+    contactEmail: officialContactEmail(input?.email || defaults?.email),
     whatsappNumber: String(input?.whatsapp_number || defaults?.whatsapp_number || "").trim(),
     socialLinks: {
       linkedin: sanitizeExternalUrl(input?.linkedin || defaults?.linkedin),
@@ -195,7 +265,7 @@ export function absoluteUrl(path = "/") {
 
 export function toAbsoluteAssetUrl(value) {
   if (!value) return absoluteUrl(DEFAULT_OG_IMAGE_PATH);
-  if (/^https?:\/\//i.test(value)) return value;
+  if (/^https?:\/\//i.test(value)) return rewriteOwnedHost(value);
   return absoluteUrl(value);
 }
 
@@ -279,7 +349,7 @@ export function buildPersonSchema(siteData = fallbackSiteSettings) {
         name: PERSON_NAME,
         jobTitle: PERSON_TITLE,
         description:
-          "Bodunde Emmanuel is a UI/UX designer, product designer, and frontend developer in Lagos, Nigeria, creating clear digital products, websites, apps, and design systems for clients across Nigeria.",
+          "Bodunde Emmanuel is a product designer and full-stack software engineer in Lagos, Nigeria, creating digital products, interfaces, and websites for clients in Nigeria and internationally.",
         url: SITE_URL,
         email: contactEmail,
         image: absoluteUrl(DEFAULT_OG_IMAGE_PATH),
@@ -330,7 +400,7 @@ export function buildPersonSchema(siteData = fallbackSiteSettings) {
         image: absoluteUrl(DEFAULT_OG_IMAGE_PATH),
         email: contactEmail,
         description:
-          "Bndlabs is the portfolio and independent design practice of Bodunde Emmanuel, offering UI/UX design, product design, website design, app design, and frontend development from Lagos to clients across Nigeria.",
+          "Bndlabs is the portfolio and independent practice of Bodunde Emmanuel, offering product design, UI/UX, full-stack software, and frontend development from Lagos for clients in Nigeria and internationally.",
         address: {
           "@type": "PostalAddress",
           addressLocality: "Lagos",

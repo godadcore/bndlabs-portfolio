@@ -190,7 +190,7 @@ collections:
         label: "Social & Contact"
         file: "src/content/site/settings.json"
         fields:
-          - { label: "Email", name: "email", widget: "string", default: "hello@getbndlabs.com" }
+          - { label: "Email", name: "email", widget: "string", default: "hello@bndlabs.tech" }
           - { label: "Behance", name: "behance", widget: "string", default: "https://www.behance.net/bodundeemmanuel" }
           - { label: "X", name: "x", widget: "string", default: "https://x.com/bndlabs" }
           - { label: "Instagram", name: "instagram", widget: "string", default: "https://www.instagram.com/bndlabs" }

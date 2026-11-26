@@ -1,5 +1,5 @@
 const headers = {
-  "User-Agent": "BndlabsPortfolioSampleBot/1.0 (local sample assets; hello@getbndlabs.com)",
+  "User-Agent": "BndlabsPortfolioSampleBot/1.0 (local sample assets; hello@bndlabs.tech)",
 };
 
 const pages = [

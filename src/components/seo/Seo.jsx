@@ -9,6 +9,7 @@ import {
   DEFAULT_ROBOTS,
   PERSON_NAME,
   SITE_NAME,
+  imageMimeType,
   absoluteUrl,
   buildWebPageSchema,
   keywordContent,
@@ -98,6 +99,7 @@ export default function Seo({
   const ogImage = toAbsoluteAssetUrl(image);
   const defaultOgImage = toAbsoluteAssetUrl(DEFAULT_OG_IMAGE_PATH);
   const usesDefaultOgImage = ogImage === defaultOgImage;
+  const imageType = usesDefaultOgImage ? DEFAULT_OG_IMAGE_TYPE : imageMimeType(ogImage);
   const metaTitle = cleanMetaContent(title);
   const metaDescription = cleanMetaContent(description);
   const metaImageAlt = cleanMetaContent(imageAlt);
@@ -132,7 +134,7 @@ export default function Seo({
     upsertMeta('meta[property="og:image:secure_url"]', { property: "og:image:secure_url", content: ogImage });
     upsertMeta('meta[property="og:image:type"]', {
       property: "og:image:type",
-      content: usesDefaultOgImage ? DEFAULT_OG_IMAGE_TYPE : "",
+      content: imageType,
     });
     upsertMeta('meta[property="og:image:width"]', {
       property: "og:image:width",
@@ -158,7 +160,7 @@ export default function Seo({
 
     upsertLink('link[rel="canonical"]', { rel: "canonical", href: canonicalUrl });
     upsertJsonLd("seo-person-schema", schemaValue);
-  }, [canonicalUrl, metaDescription, metaImageAlt, metaKeywords, metaTitle, ogImage, robots, schemaValue, type, usesDefaultOgImage]);
+  }, [canonicalUrl, imageType, metaDescription, metaImageAlt, metaKeywords, metaTitle, ogImage, robots, schemaValue, type, usesDefaultOgImage]);
 
   return null;
 }

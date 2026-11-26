@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@sanity/client";
+import { DEPARTMENTS } from "../src/content/departments.js";
 import { normalizePost } from "../src/lib/blogData.js";
 import { normalizeProject } from "../src/lib/projects.js";
 import {
@@ -18,9 +19,12 @@ import {
   DEFAULT_OG_IMAGE_WIDTH,
   DEFAULT_ROBOTS,
   NIGERIA_LOCATION_KEYWORDS,
+  PAGE_COPY,
   PERSON_NAME,
   SITE_NAME,
   SITE_URL,
+  imageMimeType,
+  projectPageTitle,
   buildBlogPostSchema,
   buildWebPageSchema,
   buildProjectSchema,
@@ -61,6 +65,7 @@ const sanityClient =
         useCdn: true,
         perspective: "published",
         stega: false,
+        timeout: 20000,
         ...(sanityReadToken ? { token: sanityReadToken } : {}),
       })
     : null;
@@ -196,7 +201,7 @@ function buildPostRoutes(posts) {
       if (!slug) return null;
 
       return {
-        path: `/blog/${slug}`,
+        path: `/notes/${slug}`,
         lastmod: lastModified(post?.updatedAt || post?.date || post?.createdAt),
       };
     })
@@ -205,12 +210,17 @@ function buildPostRoutes(posts) {
 }
 
 async function generateSitemap(projectRoutes, postRoutes) {
+  const now = new Date().toISOString();
   const staticRoutes = [
-    { path: "/", lastmod: new Date().toISOString() },
-    { path: "/about", lastmod: new Date().toISOString() },
-    { path: "/blog", lastmod: new Date().toISOString() },
-    { path: "/work", lastmod: new Date().toISOString() },
-    { path: "/contact", lastmod: new Date().toISOString() },
+    { path: "/", lastmod: now },
+    { path: "/about", lastmod: now },
+    { path: "/notes", lastmod: now },
+    { path: "/work", lastmod: now },
+    { path: "/contact", lastmod: now },
+    ...DEPARTMENTS.map((department) => ({
+      path: `/work/${department.slug}`,
+      lastmod: now,
+    })),
   ];
 
   const urls = [...staticRoutes, ...projectRoutes, ...postRoutes]
@@ -298,6 +308,7 @@ function renderRouteHtml(baseHtml, metadata) {
   const imageUrl = toAbsoluteAssetUrl(metadata.image || DEFAULT_OG_IMAGE_PATH);
   const defaultImageUrl = toAbsoluteAssetUrl(DEFAULT_OG_IMAGE_PATH);
   const usesDefaultImage = imageUrl === defaultImageUrl;
+  const imageType = usesDefaultImage ? DEFAULT_OG_IMAGE_TYPE : imageMimeType(imageUrl);
   let html = baseHtml;
 
   html = setTitle(html, metadata.title);
@@ -312,7 +323,7 @@ function renderRouteHtml(baseHtml, metadata) {
   html = setMeta(html, "property", "og:image", imageUrl);
   html = setMeta(html, "property", "og:image:url", imageUrl);
   html = setMeta(html, "property", "og:image:secure_url", imageUrl);
-  html = setMeta(html, "property", "og:image:type", usesDefaultImage ? DEFAULT_OG_IMAGE_TYPE : null);
+  html = setMeta(html, "property", "og:image:type", imageType || null);
   html = setMeta(html, "property", "og:image:width", usesDefaultImage ? String(DEFAULT_OG_IMAGE_WIDTH) : null);
   html = setMeta(html, "property", "og:image:height", usesDefaultImage ? String(DEFAULT_OG_IMAGE_HEIGHT) : null);
   html = setMeta(html, "property", "og:image:alt", metadata.imageAlt || DEFAULT_OG_IMAGE_ALT);
@@ -366,7 +377,7 @@ function projectMetadata(project) {
   const image = project.cover || project.image || project.thumbnail || DEFAULT_OG_IMAGE_PATH;
 
   return {
-    title: `${project.title} UI/UX Case Study by Bodunde Emmanuel | ${SITE_NAME}`,
+    title: projectPageTitle(project.title, project.category),
     description: buildProjectSeoDescription(project),
     keywords: keywordContent(buildProjectSeoKeywords(project)),
     url: absoluteUrl(pathName),
@@ -378,7 +389,7 @@ function projectMetadata(project) {
 }
 
 function postMetadata(post) {
-  const pathName = `/blog/${post.slug}`;
+  const pathName = `/notes/${post.slug}`;
   const image = post.thumbnail || post.image || DEFAULT_OG_IMAGE_PATH;
   const keywords = [
     ...BASE_KEYWORDS,
@@ -415,9 +426,8 @@ function staticPageMetadata() {
   const pages = [
     {
       path: "/",
-      title: `Bodunde Emmanuel | UI/UX Designer in Nigeria, Product Designer & Frontend Developer | ${SITE_NAME}`,
-      description:
-        "Portfolio of Bodunde Emmanuel, the designer behind Bndlabs: a UI/UX designer, product designer, and frontend developer in Lagos serving clients across Nigeria, including Abuja, Ibadan, Port Harcourt, Kano, Enugu, and Benin City.",
+      title: PAGE_COPY.home.title,
+      description: PAGE_COPY.home.description,
       keywords: homepageKeywords,
       url: absoluteUrl("/"),
       image: DEFAULT_OG_IMAGE_PATH,
@@ -426,9 +436,8 @@ function staticPageMetadata() {
     },
     {
       path: "/about",
-      title: `About Bodunde Emmanuel | UI/UX Designer & Product Designer in Lagos, Nigeria | ${SITE_NAME}`,
-      description:
-        "Learn about Bodunde Emmanuel, founder of Bndlabs and a Lagos-based UI/UX designer, product designer, and frontend developer creating thoughtful websites, apps, and design systems for clients across Nigeria.",
+      title: PAGE_COPY.about.title,
+      description: PAGE_COPY.about.description,
       keywords: keywordContent([...BASE_KEYWORDS, ...NIGERIA_LOCATION_KEYWORDS, "About Bodunde Emmanuel", "product designer Lagos", "frontend developer Nigeria"]),
       url: absoluteUrl("/about"),
       image: DEFAULT_OG_IMAGE_PATH,
@@ -437,9 +446,8 @@ function staticPageMetadata() {
     },
     {
       path: "/work",
-      title: `UI/UX Design Case Studies in Nigeria by Bodunde Emmanuel | ${SITE_NAME}`,
-      description:
-        "Explore UI/UX, product design, website design, app design, and frontend development case studies by Bodunde Emmanuel, the designer behind Bndlabs in Lagos, Nigeria.",
+      title: PAGE_COPY.work.title,
+      description: PAGE_COPY.work.description,
       keywords: keywordContent([
         ...BASE_KEYWORDS,
         ...NIGERIA_LOCATION_KEYWORDS,
@@ -455,10 +463,9 @@ function staticPageMetadata() {
       type: "website",
     },
     {
-      path: "/blog",
-      title: `UI/UX Design & Frontend Blog in Nigeria by Bodunde Emmanuel | ${SITE_NAME}`,
-      description:
-        "Design notes, product thinking, UI/UX process, frontend development lessons, and digital product reflections from Bodunde Emmanuel of Bndlabs in Lagos, Nigeria.",
+      path: "/notes",
+      title: PAGE_COPY.notes.title,
+      description: PAGE_COPY.notes.description,
       keywords: keywordContent([
         ...BASE_KEYWORDS,
         ...NIGERIA_LOCATION_KEYWORDS,
@@ -467,16 +474,15 @@ function staticPageMetadata() {
         "UI UX writing",
         "frontend development notes",
       ]),
-      url: absoluteUrl("/blog"),
+      url: absoluteUrl("/notes"),
       image: DEFAULT_OG_IMAGE_PATH,
       imageAlt: `Blog page preview for ${SITE_NAME}`,
       type: "website",
     },
     {
       path: "/contact",
-      title: `Hire Bodunde Emmanuel | UI/UX Designer & Frontend Developer in Nigeria | ${SITE_NAME}`,
-      description:
-        "Contact Bodunde Emmanuel of Bndlabs for UI/UX design, product design, website design, app design, design systems, and frontend development from Lagos for clients across Nigeria.",
+      title: PAGE_COPY.contact.title,
+      description: PAGE_COPY.contact.description,
       keywords: keywordContent([...BASE_KEYWORDS, ...NIGERIA_LOCATION_KEYWORDS, "contact UI UX designer", "hire product designer in Nigeria", "contact frontend developer Lagos"]),
       url: absoluteUrl("/contact"),
       image: DEFAULT_OG_IMAGE_PATH,
@@ -484,6 +490,19 @@ function staticPageMetadata() {
       type: "website",
     },
   ];
+
+  pages.push(
+    ...DEPARTMENTS.map((department) => ({
+      path: `/work/${department.slug}`,
+      title: `${department.title} | ${SITE_NAME}`,
+      description: `${department.summary} Selected work by Bodunde Emmanuel of Bndlabs.`,
+      keywords: keywordContent([...BASE_KEYWORDS, department.title]),
+      url: absoluteUrl(`/work/${department.slug}`),
+      image: DEFAULT_OG_IMAGE_PATH,
+      imageAlt: `${department.title} preview for ${SITE_NAME}`,
+      type: "website",
+    }))
+  );
 
   return pages.map((metadata) => ({
     ...metadata,
@@ -509,23 +528,67 @@ async function generateRouteHtml(projects, posts) {
     path: metadata.path,
     html: renderRouteHtml(baseHtml, metadata),
   }));
+  const notesPage = staticPages.find((page) => page.path === "/notes");
+  if (notesPage) staticPages.push({ path: "/blog", html: notesPage.html });
   const projectPages = projects.map((project) => ({
     path: `/work/${project.slug}`,
     html: renderRouteHtml(baseHtml, projectMetadata(project)),
   }));
-  const postPages = posts.map((post) => ({
-    path: `/blog/${post.slug}`,
-    html: renderRouteHtml(baseHtml, postMetadata(post)),
-  }));
+  const postPages = posts.flatMap((post) => {
+    const html = renderRouteHtml(baseHtml, postMetadata(post));
+    const slug = safeLowerSlug(post.slug || post.title);
+    if (!slug) return [];
+    return [
+      { path: `/notes/${slug}`, html },
+      { path: `/blog/${slug}`, html },
+    ];
+  });
 
   await Promise.all(
     [...staticPages, ...projectPages, ...postPages].map((page) => writeRouteHtml(page.path, page.html))
   );
 }
 
+async function existingSitemapPaths() {
+  try {
+    const xml = await fs.readFile(path.join(publicDir, "sitemap.xml"), "utf8");
+    return [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)]
+      .map((match) => {
+        try {
+          const pathname = new URL(match[1].trim()).pathname;
+          return pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+        } catch {
+          return "";
+        }
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 const [projects, posts] = await Promise.all([loadProjects(), loadPosts()]);
-const projectRoutes = buildProjectRoutes(projects);
-const postRoutes = buildPostRoutes(posts);
+let projectRoutes = buildProjectRoutes(projects);
+let postRoutes = buildPostRoutes(posts);
+
+if (!projectRoutes.length || !postRoutes.length) {
+  const existing = await existingSitemapPaths();
+  const departmentPaths = new Set(DEPARTMENTS.map((department) => `/work/${department.slug}`));
+
+  if (!projectRoutes.length) {
+    projectRoutes = existing
+      .filter((pathname) => pathname.startsWith("/work/") && !departmentPaths.has(pathname))
+      .map((pathname) => ({ path: pathname, lastmod: new Date().toISOString() }));
+  }
+
+  if (!postRoutes.length) {
+    postRoutes = [...new Set(
+      existing
+        .filter((pathname) => pathname.startsWith("/notes/") || pathname.startsWith("/blog/"))
+        .map((pathname) => pathname.replace(/^\/blog\//, "/notes/"))
+    )].map((pathname) => ({ path: pathname, lastmod: new Date().toISOString() }));
+  }
+}
 
 await Promise.all([
   generateSitemap(projectRoutes, postRoutes),

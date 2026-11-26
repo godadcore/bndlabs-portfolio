@@ -37,7 +37,7 @@ export function sanitizeUrl(
   }
 
   try {
-    const parsed = new URL(normalizedValue, "https://getbndlabs.com");
+    const parsed = new URL(normalizedValue, "https://www.bndlabs.tech");
 
     if (!isRelative && !protocolSet.has(parsed.protocol.toLowerCase())) {
       return "";

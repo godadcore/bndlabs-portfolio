@@ -27,6 +27,26 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "bndlabs.tech" }],
+      "destination": "https://www.bndlabs.tech/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "getbndlabs.com" }],
+      "destination": "https://www.bndlabs.tech/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.getbndlabs.com" }],
+      "destination": "https://www.bndlabs.tech/:path*",
+      "permanent": true
+    }
+  ],
   "routes": [
     {
       "handle": "filesystem"

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const folder = path.join(root, "src", "assets", "samples");
 const headers = {
-  "User-Agent": "BndlabsPortfolioSampleBot/1.0 (local sample assets; hello@getbndlabs.com)",
+  "User-Agent": "BndlabsPortfolioSampleBot/1.0 (local sample assets; hello@bndlabs.tech)",
 };
 
 function strip(value) {

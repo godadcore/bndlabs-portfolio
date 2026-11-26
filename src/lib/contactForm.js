@@ -55,5 +55,7 @@ export function makeContactPayload(values, source = "contact-page") {
     subject: safeString(values.subject),
     message: safeString(values.message),
     subscribe: Boolean(values.subscribe),
+    company: safeString(values.company),
+    turnstileToken: safeString(values.turnstileToken),
   };
 }

@@ -1,7 +1,7 @@
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url";
 import { sanityClient } from "./client.js";
 
-const BUILDER = sanityClient ? imageUrlBuilder(sanityClient) : null;
+const BUILDER = sanityClient ? createImageUrlBuilder(sanityClient) : null;
 
 const DEFAULT_WIDTHS = [320, 480, 640, 768, 960, 1200, 1440, 1600, 1920, 2560];
 

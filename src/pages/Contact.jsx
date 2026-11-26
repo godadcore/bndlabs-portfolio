@@ -8,15 +8,16 @@
   WhatsappLogo,
   XLogo,
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Footer from "../components/layout/Footer";
 import Frame from "../components/paper/Frame";
 import Seo from "../components/seo/Seo";
 import SocialLink from "../components/social/SocialLink";
 import { makeContactPayload, submitContactForm } from "../lib/contactForm";
 import { displayImage } from "../lib/media";
-import { CONTACT_EMAIL, SITE_NAME, SOCIAL_LINKS } from "../lib/site";
+import { CONTACT_EMAIL, PAGE_COPY, SOCIAL_LINKS } from "../lib/site";
 import { useSiteSettings } from "../providers/siteSettingsContext";
+import "./contact-page.css";
 
 const SOCIAL = [
   ["Email", `mailto:${CONTACT_EMAIL}`, EnvelopeSimple],
@@ -35,7 +36,62 @@ const INITIAL = {
   email: "",
   subject: "",
   message: "",
+  company: "",
+  turnstileToken: "",
 };
+
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
+
+function TurnstileField({ onToken }) {
+  const containerRef = useRef(null);
+  const onTokenRef = useRef(onToken);
+
+  useEffect(() => {
+    onTokenRef.current = onToken;
+  }, [onToken]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!TURNSTILE_SITE_KEY || !container) return undefined;
+
+    let widgetId = "";
+    let cancelled = false;
+
+    const renderWidget = () => {
+      if (cancelled || !container || !window.turnstile) return;
+      widgetId = window.turnstile.render(container, {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: "auto",
+        callback: (token) => onTokenRef.current(token || ""),
+        "expired-callback": () => onTokenRef.current(""),
+        "error-callback": () => onTokenRef.current(""),
+      });
+    };
+
+    if (window.turnstile) {
+      renderWidget();
+    } else {
+      const existing = document.querySelector("script[data-turnstile]");
+      const script = existing || document.createElement("script");
+      if (!existing) {
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        script.async = true;
+        script.dataset.turnstile = "true";
+        document.head.appendChild(script);
+      }
+      script.addEventListener("load", renderWidget);
+    }
+
+    return () => {
+      cancelled = true;
+      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+    };
+  }, []);
+
+  if (!TURNSTILE_SITE_KEY) return null;
+
+  return <div ref={containerRef} className="formCheck" />;
+}
 
 const localContactFiles = import.meta.glob("../assets/contact/*", {
   eager: true,
@@ -59,14 +115,19 @@ export default function Contact() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    if (!form.firstName || !form.lastName || !form.subject || form.message.trim().length < 8) {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.subject.trim() || !form.message.trim()) {
       setStatus("error");
-      setError("Add your name, a subject, and a short message.");
+      setError("Add your name, a subject, and a message.");
       return;
     }
     if (!EMAIL_PATTERN.test(form.email)) {
       setStatus("error");
       setError("Enter a valid email address.");
+      return;
+    }
+    if (TURNSTILE_SITE_KEY && !form.turnstileToken) {
+      setStatus("error");
+      setError("Complete the spam check before sending.");
       return;
     }
     setStatus("sending");
@@ -82,10 +143,10 @@ export default function Contact() {
   };
 
   return (
-    <main className="bnd">
+    <main className="bnd contactPage">
       <Seo
-        title={`Contact | ${SITE_NAME}`}
-        description="Contact Bodunde Emmanuel Olatunde at Bndlabs."
+        title={PAGE_COPY.contact.title}
+        description={PAGE_COPY.contact.description}
         canonicalPath="/contact"
       />
       <div className="pageFrame pageStack">
@@ -95,7 +156,19 @@ export default function Contact() {
       </header>
       <section className={`contactLayout${contactSrc ? " has-image" : ""}`}>
         <div className="contactCopy">
-          <form className="formGrid" onSubmit={onSubmit}>
+          <form className="formGrid" onSubmit={onSubmit} noValidate>
+            <div className="formTrap" aria-hidden="true">
+              <label>
+                Company
+                <input
+                  name="company"
+                  value={form.company}
+                  onChange={onChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </label>
+            </div>
             <div className="formRow">
               <label>
                 First name
@@ -118,15 +191,20 @@ export default function Contact() {
               Message
               <textarea name="message" rows="6" value={form.message} onChange={onChange} required />
             </label>
-            <button className="liquid is-solid" type="submit" disabled={status === "sending"}>
-              {status === "sending" ? "Sending" : "Send"}
+            <TurnstileField onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
+            <button className="liquid is-solid contactSubmit" type="submit" disabled={status === "sending"}>
+              {status === "sending" ? "Sending" : "Send message"}
             </button>
-            {status === "success" ? <p className="formNote">Message sent.</p> : null}
-            {status === "error" ? <p className="formNote">{error}</p> : null}
+            {status === "success" ? (
+              <p className="formNote is-success" role="status">Message sent. A confirmation is on its way to your inbox.</p>
+            ) : null}
+            {status === "error" ? (
+              <p className="formNote is-error" role="alert">{error}</p>
+            ) : null}
           </form>
         </div>
         <aside className="contactAside">
-          {contactSrc ? <Frame src={contactSrc} alt="" variant="cover" /> : null}
+          {contactSrc ? <Frame src={contactSrc} alt="Bodunde Emmanuel Olatunde" variant="cover" /> : null}
           <a className="contactMail" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           <nav className="socialIcons" aria-label="Social">
             {SOCIAL.map(([label, href, Icon]) => (
